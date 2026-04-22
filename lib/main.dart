@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/start_screen.dart';
+import 'screens/auth/start_screen.dart';
 
 String generoJogador = "masculino";
 void main() {
