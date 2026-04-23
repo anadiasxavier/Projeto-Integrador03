@@ -18,7 +18,11 @@ class _UsernameScreenState extends State<UsernameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Nome do Jogador")),
+      appBar: AppBar(
+      title: const Text("Nome do Jogador"),
+      backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
+      foregroundColor: Colors.white, // texto + ícone branco
+    ),
 
       body: Background(
         child: Center(
@@ -31,7 +35,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                   "Digite seu nome para começar a aventura",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.red,
+                    color:  Color.fromARGB(255, 255, 213, 0),
                     fontFamily: 'PressStart2P',
                     fontSize: 16,
                   ),
@@ -40,27 +44,42 @@ class _UsernameScreenState extends State<UsernameScreen> {
                 const SizedBox(height: 30),
 
                 /// CAMPO NOME
-                TextField(
+               TextField(
                   controller: nomeController,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    hintText: "Seu nome",
+                    hintStyle: const TextStyle(color: Colors.white54),
+
                     filled: true,
                     fillColor: Colors.black54,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      borderSide: BorderSide(color: Colors.black54),
+
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
                     ),
-                    labelText: "Seu nome",
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 204, 204, 204),
+                        width: 1.5,
+                      ),
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 30),
 
                 const Text(
                   "Escolha seu personagem",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.red,
+                    color: Color.fromARGB(255, 255, 249, 208),
                     fontFamily: 'PressStart2P',
                     fontSize: 14,
                   ),
@@ -98,7 +117,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: generoSelecionado == "feminino"
-                            ? Colors.pink
+                            ? const Color.fromARGB(255, 195, 9, 71)
                             : Colors.grey,
                         minimumSize: const Size(200, 50),
                       ),
@@ -178,7 +197,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                               "Começar aventura",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.red,
+                                color:  Color.fromARGB(255, 255, 213, 0),
                                 fontFamily: 'PressStart2P',
                               ),
                             ),
@@ -189,7 +208,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                               "Entrar no jogo",
                               style: TextStyle(
                                 fontSize: 10,
-                                color: Colors.white70,
+                                color: Color.fromARGB(255, 255, 249, 208),
                               ),
                             ),
                           ],

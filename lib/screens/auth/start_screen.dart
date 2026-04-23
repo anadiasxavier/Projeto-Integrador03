@@ -32,7 +32,7 @@ class StartScreen extends StatelessWidget {
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'PressStart2P',
-                    color: Colors.red,
+                    color: Color.fromARGB(255, 255, 213, 0),
                     letterSpacing: 2,
                   ),
                 ),
@@ -76,7 +76,7 @@ class StartScreen extends StatelessWidget {
                               "Novo Jogo",
                               style: TextStyle(
                                 fontFamily: 'PressStart2P',
-                               color: Colors.red,
+                               color: Color.fromARGB(255, 255, 213, 0),
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -85,7 +85,7 @@ class StartScreen extends StatelessWidget {
                             Text(
                               "Começar a aventura no campus",
                               style: TextStyle(
-                                color: Colors.redAccent,
+                                color: Color.fromARGB(255, 255, 249, 208),
                                 fontSize: 13,
                               ),
                             ),
