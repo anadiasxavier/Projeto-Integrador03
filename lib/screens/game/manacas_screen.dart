@@ -10,6 +10,7 @@ class ManacasScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Manacás")),
 
       body: Background(
+        imagem: "assets/puc.png",
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

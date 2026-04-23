@@ -3,10 +3,12 @@ import '../../widgets/background.dart';
 
 class NarradorScreen extends StatelessWidget {
   final Widget proximaTela;
+  final String imagemFundo;
 
   const NarradorScreen({
     super.key,
     required this.proximaTela,
+    required this.imagemFundo,
   });
 
   @override
@@ -18,6 +20,7 @@ class NarradorScreen extends StatelessWidget {
       ),
 
       body: Background(
+        imagem: imagemFundo,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(20),

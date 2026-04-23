@@ -25,6 +25,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
     ),
 
       body: Background(
+        imagem: "assets/puc.png",
         child: Center(
           child: SizedBox(
             width: 320,

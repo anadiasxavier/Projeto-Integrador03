@@ -7,16 +7,14 @@ class ArenaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Arena Gamer"),
-      ),
+      appBar: AppBar(title: const Text("Arena Gamer")),
 
       body: Background(
+        imagem: "assets/arena.png",
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
-
               Text(
                 "Arena Gamer",
                 style: TextStyle(
@@ -31,12 +29,8 @@ class ArenaScreen extends StatelessWidget {
               Text(
                 "Os computadores desligados iluminam fracamente o ambiente...",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-
             ],
           ),
         ),

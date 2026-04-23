@@ -4,10 +4,12 @@ import '../../main.dart';
 
 class PersonagemScreen extends StatefulWidget {
   final Widget proximaTela;
+  final String imagemFundo;
 
   const PersonagemScreen({
     super.key,
     required this.proximaTela,
+    required this.imagemFundo,
   });
 
   @override
@@ -47,6 +49,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
     return Scaffold(
       body: Background(
+        imagem: widget.imagemFundo,
         child: Stack(
           children: [
 

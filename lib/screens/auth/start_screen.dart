@@ -26,7 +26,7 @@ class StartScreen extends StatelessWidget {
               children: [ //  Lista de widgets na coluna
                 /// TÍTULO
                 const Text(
-                  "CAMPUS QUEST", // Título do jogo
+                  "UMA NOITE NO CAMPUS", // Título do jogo
                   textAlign: TextAlign.center, // Centraliza o texto
                   style: TextStyle( //  Estilo do texto
                     fontSize: 50,

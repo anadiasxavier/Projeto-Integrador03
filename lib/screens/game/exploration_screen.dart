@@ -13,13 +13,16 @@ class ExplorationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // widget de estrutura básica da tela
+    return Scaffold(
+      // widget de estrutura básica da tela
       // estrutura básica da tela
-      appBar: AppBar( // barra de navegação superior
+      appBar: AppBar(
+        // barra de navegação superior
         title: const Text("Exploração do Campus"),
       ), // barra de navegação com título
 
       body: Background(
+        imagem: "assets/puc.png",
         child: Stack(
           children: [
             /// CONTEÚDO PRINCIPAL
@@ -59,6 +62,7 @@ class ExplorationScreen extends StatelessWidget {
                       "",
                       Icons.menu_book,
                       const BibliotecaScreen(),
+                      "assets/biblioteca.png",
                     ),
 
                     buildAmbiente(
@@ -67,6 +71,7 @@ class ExplorationScreen extends StatelessWidget {
                       "",
                       Icons.coffee,
                       const ManacasScreen(),
+                      "assets/manacas.png",
                     ),
 
                     buildAmbiente(
@@ -75,6 +80,7 @@ class ExplorationScreen extends StatelessWidget {
                       "",
                       Icons.laptop,
                       const MesclaScreen(),
+                      "assets/mescla.png",
                     ),
 
                     buildAmbiente(
@@ -82,7 +88,8 @@ class ExplorationScreen extends StatelessWidget {
                       "Praça de Alimentação",
                       "",
                       Icons.restaurant,
-                      const PracaScreen(), //
+                      const PracaScreen(),
+                      "assets/praca.png",
                     ),
 
                     buildAmbiente(
@@ -91,6 +98,7 @@ class ExplorationScreen extends StatelessWidget {
                       "",
                       Icons.sports_esports,
                       const ArenaScreen(),
+                      "assets/arena.png",
                     ),
 
                     const SizedBox(height: 80),
@@ -111,6 +119,7 @@ Widget buildAmbiente(
   String descricao,
   IconData icone,
   Widget tela,
+  String imagemFundo,
 ) {
   return GestureDetector(
     onTap: () {
@@ -118,7 +127,9 @@ Widget buildAmbiente(
         context,
         MaterialPageRoute(
           builder: (context) => NarradorScreen(
+            imagemFundo: imagemFundo,
             proximaTela: PersonagemScreen(
+              imagemFundo: imagemFundo,
               proximaTela: tela,
             ),
           ),
@@ -140,11 +151,7 @@ Widget buildAmbiente(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icone,
-            color: Colors.white,
-            size: 20,
-          ),
+          Icon(icone, color: Colors.white, size: 20),
 
           const SizedBox(height: 10),
 

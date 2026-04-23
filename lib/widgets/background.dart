@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
   final Widget child;
+  final String imagem;
 
-  const Background({super.key, required this.child});
+  const Background({
+    super.key,
+    required this.child,
+    required this.imagem,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        /// IMAGEM DE FUNDO
         Positioned.fill(
-          child: Image.asset("assets/puc.png", fit: BoxFit.cover),
+          child: Image.asset(imagem, fit: BoxFit.cover),
         ),
-
-        /// CAMADA ESCURA
-        Positioned.fill(child: Container(color: Color.fromRGBO(0, 0, 0, 0.6))),
-
-        /// CONTEÚDO DA TELA
+        Positioned.fill(
+          child: Container(color: Color.fromRGBO(0, 0, 0, 0.6)),
+        ),
         child,
       ],
     );

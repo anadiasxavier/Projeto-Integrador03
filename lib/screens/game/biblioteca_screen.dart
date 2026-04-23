@@ -12,6 +12,7 @@ class BibliotecaScreen extends StatelessWidget {
       ),
 
       body: Background(
+        imagem: "assets/biblioteca.png",
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

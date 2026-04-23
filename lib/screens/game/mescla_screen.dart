@@ -12,6 +12,7 @@ class MesclaScreen extends StatelessWidget {
       ),
 
       body: Background(
+        imagem: "assets/puc.png",
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
