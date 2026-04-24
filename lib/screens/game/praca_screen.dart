@@ -8,11 +8,13 @@ class PracaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Praça de Alimentação"),
-      ),
+      title: const Text("Praça de Alimentação"),
+      backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
+      foregroundColor: Colors.white, // texto + ícone branco
+       ),
 
       body: Background(
-        imagem: "assets/puc.png",
+        imagem: "assets/praca.png",
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -8,8 +8,10 @@ class BibliotecaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Biblioteca"),
-      ),
+      title: const Text("Biblioteca"),
+      backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
+      foregroundColor: Colors.white, // texto + ícone branco
+       ),
 
       body: Background(
         imagem: "assets/biblioteca.png",

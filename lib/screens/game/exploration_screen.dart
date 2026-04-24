@@ -17,9 +17,10 @@ class ExplorationScreen extends StatelessWidget {
       // widget de estrutura básica da tela
       // estrutura básica da tela
       appBar: AppBar(
-        // barra de navegação superior
-        title: const Text("Exploração do Campus"),
-      ), // barra de navegação com título
+      title: const Text("Exploração do Campus"),
+      backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
+      foregroundColor: Colors.white, // texto + ícone branco
+       ),
 
       body: Background(
         imagem: "assets/puc.png",

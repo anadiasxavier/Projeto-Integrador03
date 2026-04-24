@@ -60,6 +60,7 @@ flutter:
     - assets/personagemfeminina.png
     - assets/arena.png
     - assets/biblioteca.png
+    - assets/praca.png
 
   fonts:
     - family: PressStart2P

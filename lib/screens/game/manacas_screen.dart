@@ -7,7 +7,11 @@ class ManacasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Manacás")),
+      appBar: AppBar(
+      title: const Text("Manacás"),
+      backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
+      foregroundColor: Colors.white, // texto + ícone branco
+       ),
 
       body: Background(
         imagem: "assets/puc.png",
