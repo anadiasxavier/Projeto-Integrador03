@@ -11,6 +11,17 @@ import 'personagem_screen.dart';
 class ExplorationScreen extends StatelessWidget {
   const ExplorationScreen({super.key});
 
+  static const List<String> _falasMesclaRelatorio = [
+    'O Mescla não deveria estar vazio, mas ainda está funcionando.',
+    'Essas telas não param, códigos passando, gráficos mudando.',
+    'E mesmo assim nada parece sob controle.',
+    'Essa máquina ligou sozinha e parou do nada.',
+    'As luzes estão piscando estranho.',
+    'Isso não parece normal.',
+    'Esse lugar não tá estável.',
+    'Preciso descobrir o que aconteceu...',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +92,22 @@ class ExplorationScreen extends StatelessWidget {
                       "",
                       Icons.laptop,
                       const MesclaScreen(),
-                      "assets/mescla.png",
+                      "assets/puc.png",
+                      corpoNarrador:
+                          'Durante a noite, o Mescla deixa de parecer um espaço de colaboração. '
+                          'Telas e equipamentos continuam ligados, com códigos e gráficos mudando sozinhos. '
+                          'A iluminação fria pisca de forma irregular. '
+                          'Máquinas ligam e desligam sem aviso. '
+                          'O ambiente parece executar processos fora de controle.',
+                      dicaNarrador:
+                          'Toque em Continuar para as falas do personagem.\n\n'
+                          'Use a seta para voltar uma etapa na barra superior.\n\n'
+                          'Na caixa de diálogo, toque para avançar cada fala.',
+                      hintDialogoPersonagem:
+                          'Toque nesta caixa para a próxima fala.',
+                      falasPersonagem: _falasMesclaRelatorio,
+                      manterEtapaAnteriorNoFinalDasFalas: true,
+                      exibirNarracaoEmCaixa: true,
                     ),
 
                     buildAmbiente(
@@ -120,7 +146,14 @@ Widget buildAmbiente(
   String descricao,
   IconData icone,
   Widget tela,
-  String imagemFundo,
+  String imagemFundo, {
+  String? corpoNarrador,
+  String? dicaNarrador,
+  String? hintDialogoPersonagem,
+  List<String>? falasPersonagem,
+  bool manterEtapaAnteriorNoFinalDasFalas = false,
+  bool exibirNarracaoEmCaixa = false,
+}
 ) {
   return GestureDetector(
     onTap: () {
@@ -129,9 +162,15 @@ Widget buildAmbiente(
         MaterialPageRoute(
           builder: (context) => NarradorScreen(
             imagemFundo: imagemFundo,
+            corpoNarracao: corpoNarrador,
+            dica: dicaNarrador,
+            exibirNarracaoEmCaixa: exibirNarracaoEmCaixa,
             proximaTela: PersonagemScreen(
               imagemFundo: imagemFundo,
               proximaTela: tela,
+              falasCustom: falasPersonagem,
+              instrucaoToque: hintDialogoPersonagem,
+              substituirAoAvancarFinal: !manterEtapaAnteriorNoFinalDasFalas,
             ),
           ),
         ),
@@ -144,9 +183,9 @@ Widget buildAmbiente(
       margin: const EdgeInsets.only(bottom: 15),
 
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.15)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
       ),
 
       child: Column(

@@ -11,6 +11,11 @@ class MesclaScreen extends StatelessWidget {
       title: const Text("Mescla"),
       backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
       foregroundColor: Colors.white, // texto + ícone branco
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        tooltip: 'Voltar uma etapa',
+        onPressed: () => Navigator.maybePop(context),
+      ),
        ),
       body: Background(
         imagem: "assets/puc.png",
