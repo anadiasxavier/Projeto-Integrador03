@@ -7,28 +7,79 @@ import 'mescla_screen.dart';
 import 'praca_screen.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
+import '../../services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 
-class ExplorationScreen extends StatelessWidget {
+class ExplorationScreen extends StatefulWidget {
   const ExplorationScreen({super.key});
 
+  @override
+  State<ExplorationScreen> createState() => _ExplorationScreenState();
+}
+
+class _ExplorationScreenState extends State<ExplorationScreen> {
+
+  String localizacaoTexto = "Carregando localização...";
+
+  // COORDENADAS REAIS (PUC)
+  static const Map<String, Map<String, double>> locais = {
+    "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
+    "Manacás": {"lat": -22.8323, "lng": -47.05144},
+    "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+    "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
+    "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
+  };
+
+  // VALIDA DISTÂNCIA
+  Future<bool> estaPerto(String lugar) async {
+    Position pos = await LocationService.getCurrentLocation();
+
+    double lat = locais[lugar]!["lat"]!;
+    double lng = locais[lugar]!["lng"]!;
+
+    double distancia = Geolocator.distanceBetween(
+      pos.latitude,
+      pos.longitude,
+      lat,
+      lng,
+    );
+
+    return distancia <= 10; 
+  }
+
   static const List<String> _falasMesclaRelatorio = [
-    'O Mescla não deveria estar vazio, mas ainda está funcionando.',
-    'Essas telas não param, códigos passando, gráficos mudando.',
-    'E mesmo assim nada parece sob controle.',
-    'Essa máquina ligou sozinha e parou do nada.',
-    'As luzes estão piscando estranho.',
-    'Isso não parece normal.',
-    'Esse lugar não tá estável.',
-    'Preciso descobrir o que aconteceu...',
+    'O Mescla não deveria estar vazio...',
+    'Essas telas não param...',
+    'Nada parece sob controle...',
   ];
 
   static const List<String> _falasEntradaBiblioteca = [
-    'Que silêncio... não tem ninguém aqui.',
-    'Tá tudo tão organizado, mas algo não parece certo.',
-    'Esse silêncio incomoda... não é normal.',
-    'Sinto como se tivesse alguém me observando.',
-    'Preciso tomar cuidado e explorar com atenção.',
+    'Que silêncio...',
+    'Algo não parece certo...',
+    'Preciso explorar com cuidado...',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    carregarLocalizacao();
+  }
+
+  void carregarLocalizacao() async {
+    try {
+      Position pos = await LocationService.getCurrentLocation();
+
+      setState(() {
+        localizacaoTexto =
+            "Lat: ${pos.latitude}, Long: ${pos.longitude}";
+      });
+
+    } catch (e) {
+      setState(() {
+        localizacaoTexto = "Erro: $e";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,184 +91,144 @@ class ExplorationScreen extends StatelessWidget {
       ),
       body: Background(
         imagem: "assets/puc.png",
-        child: Stack(
-          children: [
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.explore, size: 80, color: Colors.white),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Explorando o Campus...",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "Defina sua localização atual e comece sua jornada!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                    const SizedBox(height: 30),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
 
-                    // 🔹 BIBLIOTECA
-                    buildAmbiente(
-                      context,
-                      "Biblioteca",
-                      Icons.menu_book,
-                      const BibliotecaScreen(),
-                      "assets/biblioteca.png",
-                      corpoNarrador:
-                          'Você chega à entrada da biblioteca.\n\n'
-                          'O prédio está escuro, mas a porta está entreaberta. '
-                          'Um ar frio escapa por ela, trazendo um cheiro de '
-                          'papel velho e poeira.\n\n'
-                          'O silêncio que vem de dentro é diferente - não é '
-                          'apenas ausência de som, é algo mais denso, mais pesado.\n\n'
-                          'Você sente um arrepio na espinha, mas algo lhe diz '
-                          'que precisa entrar.',
-                      dicaNarrador:
-                          'Toque em Continuar para entrar na biblioteca.\n\n'
-                          'Use a seta para voltar uma etapa na barra superior.\n\n'
-                          'Na caixa de diálogo, toque para avançar cada fala.',
-                      hintDialogoPersonagem:
-                          'Toque nesta caixa para a próxima fala.',
-                      falasPersonagem: _falasEntradaBiblioteca,
-                      manterEtapaAnteriorNoFinalDasFalas: true,
-                      exibirNarracaoEmCaixa: true,
-                    ),
+                const Icon(Icons.explore, size: 80, color: Colors.white),
 
-                    // 🔹 MANACÁS
-                    buildAmbiente(
-                      context,
-                      "Manacás",
-                      Icons.coffee,
-                      const ManacasScreen(),
-                      "assets/manacas.png",
-                    ),
+                const SizedBox(height: 20),
 
-                    // 🔹 MESCLA
-                    buildAmbiente(
-                      context,
-                      "Mescla",
-                      Icons.laptop,
-                      const MesclaScreen(),
-                      "assets/puc.png",
-                      corpoNarrador:
-                          'Durante a noite, o Mescla deixa de parecer um espaço de colaboração. '
-                          'Telas e equipamentos continuam ligados, com códigos e gráficos mudando sozinhos. '
-                          'A iluminação fria pisca de forma irregular. '
-                          'Máquinas ligam e desligam sem aviso. '
-                          'O ambiente parece executar processos fora de controle.',
-                      dicaNarrador:
-                          'Toque em Continuar para as falas do personagem.\n\n'
-                          'Use a seta para voltar uma etapa na barra superior.\n\n'
-                          'Na caixa de diálogo, toque para avançar cada fala.',
-                      hintDialogoPersonagem:
-                          'Toque nesta caixa para a próxima fala.',
-                      falasPersonagem: _falasMesclaRelatorio,
-                      manterEtapaAnteriorNoFinalDasFalas: true,
-                      exibirNarracaoEmCaixa: true,
-                    ),
-
-                    // 🔹 PRAÇA DE ALIMENTAÇÃO
-                    buildAmbiente(
-                      context,
-                      "Praça de Alimentação",
-                      Icons.restaurant,
-                      const PracaScreen(),
-                      "assets/praca.png",
-                    ),
-
-                    // 🔹 ARENA GAMER
-                    buildAmbiente(
-                      context,
-                      "Arena Gamer",
-                      Icons.sports_esports,
-                      const ArenaScreen(),
-                      "assets/arena.png",
-                    ),
-
-                    const SizedBox(height: 80),
-                  ],
+                const Text(
+                  "Explorando o Campus...",
+                  style: TextStyle(color: Colors.white),
                 ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  localizacaoTexto,
+                  style: const TextStyle(color: Colors.white),
+                ),
+
+                const SizedBox(height: 30),
+
+              
+                ambienteComValidacao(
+                  context,
+                  "Biblioteca",
+                  Icons.menu_book,
+                  const BibliotecaScreen(),
+                  "assets/biblioteca.png",
+                  falas: _falasEntradaBiblioteca,
+                ),
+
+              
+                ambienteComValidacao(
+                  context,
+                  "Manacás",
+                  Icons.coffee,
+                  const ManacasScreen(),
+                  "assets/manacas.png",
+                ),
+
+             
+                ambienteComValidacao(
+                  context,
+                  "Mescla",
+                  Icons.laptop,
+                  const MesclaScreen(),
+                  "assets/puc.png",
+                  falas: _falasMesclaRelatorio,
+                ),
+
+                ambienteComValidacao(
+                  context,
+                  "Praça",
+                  Icons.restaurant,
+                  const PracaScreen(),
+                  "assets/praca.png",
+                ),
+
+               
+                ambienteComValidacao(
+                  context,
+                  "Arena",
+                  Icons.sports_esports,
+                  const ArenaScreen(),
+                  "assets/arena.png",
+                ),
+
+                const SizedBox(height: 80),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //  FUNÇÃO PADRÃO COM VALIDAÇÃO
+  Widget ambienteComValidacao(
+    BuildContext context,
+    String nome,
+    IconData icone,
+    Widget tela,
+    String imagem, {
+    List<String>? falas,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        bool podeEntrar = await estaPerto(nome);
+
+        if (!mounted) return;
+
+        if (!podeEntrar) {
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Você precisa estar em $nome para entrar!"),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context, // ignore: use_build_context_synchronously
+          MaterialPageRoute(
+            builder: (context) => NarradorScreen(
+              imagemFundo: imagem,
+              proximaTela: PersonagemScreen(
+                imagemFundo: imagem,
+                proximaTela: tela,
+                falasCustom: falas,
               ),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 320,
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 15),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icone, color: Colors.white),
+            const SizedBox(height: 10),
+            Text(
+              nome,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-// Versão simplificada do buildAmbiente (sem o parâmetro 'descricao' que não era usado)
-Widget buildAmbiente(
-  BuildContext context,
-  String titulo,
-  IconData icone,
-  Widget tela,
-  String imagemFundo, {
-  String? corpoNarrador,
-  String? dicaNarrador,
-  String? hintDialogoPersonagem,
-  List<String>? falasPersonagem,
-  bool manterEtapaAnteriorNoFinalDasFalas = false,
-  bool exibirNarracaoEmCaixa = false,
-}) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NarradorScreen(
-            imagemFundo: imagemFundo,
-            corpoNarracao: corpoNarrador,
-            dica: dicaNarrador,
-            exibirNarracaoEmCaixa: exibirNarracaoEmCaixa,
-            proximaTela: PersonagemScreen(
-              imagemFundo: imagemFundo,
-              proximaTela: tela,
-              falasCustom: falasPersonagem,
-              instrucaoToque: hintDialogoPersonagem,
-              substituirAoAvancarFinal: !manterEtapaAnteriorNoFinalDasFalas,
-            ),
-          ),
-        ),
-      );
-    },
-    child: Container(
-      width: 320,
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icone, color: Colors.white, size: 20),
-          const SizedBox(height: 10),
-          Text(
-            titulo,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'PressStart2P',
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
