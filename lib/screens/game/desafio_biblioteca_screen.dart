@@ -191,11 +191,11 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.amber.withValues(alpha: 0.2),
+                  color: Colors.amber.withOpacity(0.2),
                   border: Border.all(color: Colors.amber, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.3),
+                      color: Colors.amber.withOpacity(0.3),
                       blurRadius: 30,
                       spreadRadius: 10,
                     ),
@@ -224,7 +224,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                 "A biblioteca está em paz agora.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                   fontSize: 12,
                   fontFamily: 'PressStart2P',
                   height: 1.6,
@@ -241,7 +241,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                     vertical: 15,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(color: Colors.white24),
                   ),
@@ -292,10 +292,10 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.brown.withValues(alpha: 0.3),
+                    color: Colors.brown.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Colors.amber.withValues(alpha: 0.4),
+                      color: Colors.amber.withOpacity(0.4),
                       width: 2,
                     ),
                   ),
@@ -310,10 +310,10 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.75),
+                    color: Colors.black.withOpacity(0.75),
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: Colors.amber.withValues(alpha: 0.3),
+                      color: Colors.amber.withOpacity(0.3),
                     ),
                   ),
                   child: Text(
@@ -346,8 +346,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                             ? (index == _respostaCorretaIndex
                                     ? Colors.green
                                     : Colors.redAccent)
-                                .withValues(alpha: 0.2)
-                            : Colors.white.withValues(alpha: 0.08),
+                                .withOpacity(0.2)
+                            : Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selecionada

@@ -88,7 +88,7 @@ class BibliotecaScreen extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 30),
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
+                        color: Colors.black.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.white12),
                       ),
@@ -115,10 +115,10 @@ class BibliotecaScreen extends StatelessWidget {
                         width: 300,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.cyan.withValues(alpha: 0.1),
+                          color: Colors.cyan.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: Colors.cyan.withValues(alpha: 0.4),
+                            color: Colors.cyan.withOpacity(0.4),
                           ),
                         ),
                         child: const Row(

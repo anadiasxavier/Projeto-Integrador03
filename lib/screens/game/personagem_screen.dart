@@ -83,7 +83,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black.withValues(alpha: 0.88),
+        backgroundColor: Colors.black.withOpacity(0.88),
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 2,
@@ -91,7 +91,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
           icon: Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
+              color: Colors.white.withOpacity(0.16),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.arrow_back),
@@ -116,7 +116,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.85),
+                    color: Colors.black.withOpacity(0.85),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white),
                   ),

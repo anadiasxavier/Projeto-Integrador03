@@ -25,8 +25,8 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   static const Map<String, Map<String, double>> locais = {
     "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
     "Manacás": {"lat": -22.8323, "lng": -47.05144},
-    "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
-    "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
+      "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+    "Praça": {"lat": -22.8341, "lng": -47.0523566},
     "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
   };
 
@@ -147,7 +147,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   context,
                   "Praça",
                   Icons.restaurant,
-                  const PracaScreen(),
+                  const PracaAlimentacaoScreen(),
                   "assets/praca.png",
                 ),
 
@@ -215,7 +215,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.only(bottom: 15),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: Colors.white.withOpacity(0.08),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

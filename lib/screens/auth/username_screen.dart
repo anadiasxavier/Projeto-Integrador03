@@ -176,7 +176,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.4),
+                      color: Colors.black.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white24),
                     ),
@@ -227,3 +227,4 @@ class _UsernameScreenState extends State<UsernameScreen> {
     );
   }
 }
+

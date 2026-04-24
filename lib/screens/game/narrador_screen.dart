@@ -87,7 +87,7 @@ class NarradorScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: exibirNarracaoEmCaixa
-                        ? Colors.black.withValues(alpha: 0.62)
+                        ? Colors.black.withOpacity(0.62)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border: exibirNarracaoEmCaixa
@@ -139,7 +139,7 @@ class NarradorScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.4),
+                      color: Colors.black.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white24),
                     ),
