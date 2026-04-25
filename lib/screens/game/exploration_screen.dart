@@ -18,7 +18,6 @@ class ExplorationScreen extends StatefulWidget {
 }
 
 class _ExplorationScreenState extends State<ExplorationScreen> {
-
   String localizacaoTexto = "Carregando localização...";
 
   // COORDENADAS REAIS (PUC)
@@ -45,7 +44,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
       lng,
     );
 
-    return distancia <= 10; 
+    return distancia <= 10;
   }
 
   static const List<String> _falasMesclaRelatorio = [
@@ -58,7 +57,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     'Esse lugar não tá estável.',
     'Preciso descobrir o que aconteceu...',
   ];
-
 
   static const List<String> _falasEntradaBiblioteca = [
     'Que silêncio...',
@@ -77,10 +75,8 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
       Position pos = await LocationService.getCurrentLocation();
 
       setState(() {
-        localizacaoTexto =
-            "Lat: ${pos.latitude}, Long: ${pos.longitude}";
+        localizacaoTexto = "Lat: ${pos.latitude}, Long: ${pos.longitude}";
       });
-
     } catch (e) {
       setState(() {
         localizacaoTexto = "Erro: $e";
@@ -102,7 +98,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-
                 const Icon(Icons.explore, size: 80, color: Colors.white),
 
                 const SizedBox(height: 20),
@@ -121,7 +116,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
 
                 const SizedBox(height: 30),
 
-              
                 ambienteComValidacao(
                   context,
                   "Biblioteca",
@@ -131,7 +125,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   falas: _falasEntradaBiblioteca,
                 ),
 
-              
                 ambienteComValidacao(
                   context,
                   "Manacás",
@@ -140,7 +133,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   "assets/manacas.png",
                 ),
 
-              
                 buildAmbiente(
                   context,
                   "Mescla",
@@ -173,7 +165,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   "assets/praca.png",
                 ),
 
-               
                 ambienteComValidacao(
                   context,
                   "Arena",
