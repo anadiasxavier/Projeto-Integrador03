@@ -25,7 +25,8 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   static const Map<String, Map<String, double>> locais = {
     "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
     "Manacás": {"lat": -22.8323, "lng": -47.05144},
-      "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+    "Mescla": {"lat": -22.83416204909936, "lng": -47.05235984253339},
+    //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
     "Praça": {"lat": -22.8341, "lng": -47.0523566},
     "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
   };
@@ -48,10 +49,16 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   }
 
   static const List<String> _falasMesclaRelatorio = [
-    'O Mescla não deveria estar vazio...',
-    'Essas telas não param...',
-    'Nada parece sob controle...',
+    'O Mescla não deveria estar vazio, mas ainda está funcionando.',
+    'Essas telas não param, códigos passando, gráficos mudando.',
+    'E mesmo assim nada parece sob controle.',
+    'Essa máquina ligou sozinha e parou do nada.',
+    'As luzes estão piscando estranho.',
+    'Isso não parece normal.',
+    'Esse lugar não tá estável.',
+    'Preciso descobrir o que aconteceu...',
   ];
+
 
   static const List<String> _falasEntradaBiblioteca = [
     'Que silêncio...',
@@ -133,14 +140,29 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   "assets/manacas.png",
                 ),
 
-             
-                ambienteComValidacao(
+              
+                buildAmbiente(
                   context,
                   "Mescla",
+                  "Laboratório de tecnologia",
                   Icons.laptop,
                   const MesclaScreen(),
-                  "assets/puc.png",
-                  falas: _falasMesclaRelatorio,
+                  "assets/mescla.png",
+                  corpoNarrador:
+                      'Durante a noite, o Mescla deixa de parecer um espaço de colaboração. '
+                      'Telas e equipamentos continuam ligados, com códigos e gráficos mudando sozinhos. '
+                      'A iluminação fria pisca de forma irregular. '
+                      'Máquinas ligam e desligam sem aviso. '
+                      'O ambiente parece executar processos fora de controle.',
+                  dicaNarrador:
+                      'Toque em Continuar para as falas do personagem.\n\n'
+                      'Use a seta para voltar uma etapa na barra superior.\n\n'
+                      'Na caixa de diálogo, toque para avançar cada fala.',
+                  hintDialogoPersonagem:
+                      'Toque nesta caixa para a próxima fala.',
+                  falasPersonagem: _falasMesclaRelatorio,
+                  manterEtapaAnteriorNoFinalDasFalas: true,
+                  exibirNarracaoEmCaixa: true,
                 ),
 
                 ambienteComValidacao(
@@ -214,9 +236,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         width: 320,
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.only(bottom: 15),
+
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
+          color: Colors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
         ),
         child: Column(
           children: [
@@ -224,7 +248,78 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
             const SizedBox(height: 10),
             Text(
               nome,
-              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'PressStart2P',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildAmbiente(
+    BuildContext context,
+    String titulo,
+    String descricao,
+    IconData icone,
+    Widget tela,
+    String imagemFundo, {
+    String? corpoNarrador,
+    String? dicaNarrador,
+    String? hintDialogoPersonagem,
+    List<String>? falasPersonagem,
+    bool manterEtapaAnteriorNoFinalDasFalas = false,
+    bool exibirNarracaoEmCaixa = false,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NarradorScreen(
+              imagemFundo: imagemFundo,
+              corpoNarracao: corpoNarrador,
+              dica: dicaNarrador,
+              exibirNarracaoEmCaixa: exibirNarracaoEmCaixa,
+              proximaTela: PersonagemScreen(
+                imagemFundo: imagemFundo,
+                proximaTela: tela,
+                falasCustom: falasPersonagem,
+                instrucaoToque: hintDialogoPersonagem,
+                substituirAoAvancarFinal: !manterEtapaAnteriorNoFinalDasFalas,
+              ),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 320,
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 15),
+
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        ),
+        child: Column(
+          children: [
+            Icon(icone, color: Colors.white),
+            const SizedBox(height: 10),
+            Text(
+              titulo,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'PressStart2P',
+              ),
             ),
           ],
         ),

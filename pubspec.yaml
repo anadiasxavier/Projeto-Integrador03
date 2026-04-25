@@ -61,6 +61,7 @@ flutter:
     - assets/arena.png
     - assets/biblioteca.png
     - assets/praca.png
+    - assets/mescla.png
 
   fonts:
     - family: PressStart2P
