@@ -77,7 +77,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Praça de Alimentação"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
         leading: IconButton(
@@ -195,7 +194,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => NarradorScreen(
-          tituloAppBar: "Chegada à Praça",
           imagemFundo: "assets/praca.png",
           corpoNarracao:
               'Você empurra a porta de vidro e entra na praça de alimentação.\n\n'
@@ -233,7 +231,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 3: Sons e eventos estranhos
   Widget _etapaSons() {
     return NarradorScreen(
-      tituloAppBar: "Algo se Move...",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'Enquanto você observa o ambiente, um som corta o silêncio.\n\n'
@@ -257,7 +254,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 4: Personagem pergunta quem está ali
   Widget _etapaPergunta() {
     return NarradorScreen(
-      tituloAppBar: "Presença Invisível",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'O ar fica ainda mais pesado.\n\n'
@@ -280,7 +276,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 5: Guardião responde
   Widget _etapaGuardiaoResponde() {
     return NarradorScreen(
-      tituloAppBar: "O Guardião",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'Das sombras entre as lanchonetes fechadas, '
@@ -304,7 +299,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 6: Marcas aparecem sozinhas
   Widget _etapaMarcas() {
     return NarradorScreen(
-      tituloAppBar: "Marcas no Chão",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'A voz do guardião some, mas algo novo chama sua atenção.\n\n'
@@ -328,7 +322,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 7: Mesa treme e painel se forma
   Widget _etapaPainel() {
     return NarradorScreen(
-      tituloAppBar: "O Painel se Forma",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'Uma das mesas no centro da praça começa a tremer.\n\n'
@@ -353,7 +346,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 8: Guardião instrui sobre o desafio
   Widget _etapaInstrucaoDesafio() {
     return NarradorScreen(
-      tituloAppBar: "O Desafio",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'O painel à sua frente é formado por bandejas, talheres, '
@@ -377,7 +369,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // Método público para ser chamado quando o jogador acerta
   static Widget telaAcerto() {
     return NarradorScreen(
-      tituloAppBar: "Ordem Restaurada",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'O painel se reorganiza perfeitamente.\n\n'
@@ -401,7 +392,6 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // Método público para ser chamado quando o jogador erra
   static Widget telaErro() {
     return NarradorScreen(
-      tituloAppBar: "Desordem",
       imagemFundo: "assets/praca.png",
       corpoNarracao:
           'As peças se embaralham novamente.\n\n'
