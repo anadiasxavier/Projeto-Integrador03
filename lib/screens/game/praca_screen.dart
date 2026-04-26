@@ -86,7 +86,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
         ),
       ),
       body: Background(
-        imagem: "assets/praca_alimentacao.png",
+        imagem: "assets/praca.png",
         child: Stack(
           children: [
             Center(
@@ -113,7 +113,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 30),
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.white12),
                       ),
@@ -140,10 +140,10 @@ class PracaAlimentacaoScreen extends StatelessWidget {
                         width: 300,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.1),
+                          color: Colors.orange.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: Colors.orange.withOpacity(0.4),
+                            color: Colors.orange.withValues(alpha: 0.4),
                           ),
                         ),
                         child: const Row(

@@ -26,7 +26,8 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     "Manacás": {"lat": -22.8323, "lng": -47.05144},
     "Mescla": {"lat": -22.83416204909936, "lng": -47.05235984253339},
     //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
-    "Praça": {"lat": -22.8341, "lng": -47.0523566},
+    // "Praça": {"lat": -22.8341, "lng": -47.0523566},
+    "Praça": {"lat": -22.94804, "lng": -47.05876294},
     "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
   };
 
