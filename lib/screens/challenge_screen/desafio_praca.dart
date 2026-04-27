@@ -1,7 +1,7 @@
 // arquivo: desafio_praca.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
-import 'praca_screen.dart';
+import '../game/praca_screen.dart';
 
 class DesafioPracaScreen extends StatefulWidget {
   const DesafioPracaScreen({super.key});

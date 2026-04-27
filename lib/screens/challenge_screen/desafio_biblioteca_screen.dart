@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
-import 'personagem_screen.dart';
-import 'narrador_screen.dart';
+import '../game/personagem_screen.dart';
+import '../game/narrador_screen.dart';
 
 class DesafioBibliotecaScreen extends StatefulWidget {
   const DesafioBibliotecaScreen({super.key});

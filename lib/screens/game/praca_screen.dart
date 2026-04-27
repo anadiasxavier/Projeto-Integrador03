@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
-import 'desafio_praca.dart';
+import '../challenge_screen/desafio_praca.dart';
 
 class PracaAlimentacaoScreen extends StatelessWidget {
   const PracaAlimentacaoScreen({super.key});

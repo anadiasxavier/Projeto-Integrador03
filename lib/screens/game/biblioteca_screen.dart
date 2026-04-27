@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
-import 'desafio_biblioteca_screen.dart';
+import '../challenge_screen/desafio_biblioteca_screen.dart';
 
 class BibliotecaScreen extends StatelessWidget {
   const BibliotecaScreen({super.key});
