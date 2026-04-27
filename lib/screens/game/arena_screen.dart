@@ -83,7 +83,6 @@ class ArenaScreen extends StatelessWidget {
 
                 const SizedBox(height: 40),
 
-                // BOTÃO PRINCIPAL
                 GestureDetector(
                   onTap: () => _iniciarFluxo(context),
                   child: Container(
@@ -92,17 +91,13 @@ class ArenaScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFB388FF).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: const Color(0xFFB388FF),
-                      ),
+                      border: Border.all(color: const Color(0xFFB388FF)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.explore,
-                            color: Colors.cyan, size: 28),
+                        const Icon(Icons.explore, color: Colors.cyan, size: 28),
                         const SizedBox(width: 15),
 
-                        // 👇 evita overflow
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +136,6 @@ class ArenaScreen extends StatelessWidget {
     );
   }
 
-  // 🚀 INÍCIO DO FLUXO (SEM DUPLICAÇÃO DE BOTÃO)
   void _iniciarFluxo(BuildContext context) {
     Navigator.push(
       context,
