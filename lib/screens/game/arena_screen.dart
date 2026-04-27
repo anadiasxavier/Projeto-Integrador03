@@ -155,7 +155,6 @@ class ArenaScreen extends StatelessWidget {
               'O som de partidas ecoa.\n\n'
               'Mas não há ninguém ali...',
 
-          // 🔥 remove botão duplicado
           dica: '',
           exibirNarracaoEmCaixa: true,
 
@@ -171,7 +170,6 @@ class ArenaScreen extends StatelessWidget {
     );
   }
 
-  // 👻 GUARDIÃO (para usar depois do quiz)
   Widget _etapaGuardiaoArena() {
     return NarradorScreen(
       tituloAppBar: "Presença na Arena",
