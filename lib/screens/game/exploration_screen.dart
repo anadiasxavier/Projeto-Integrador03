@@ -3,7 +3,7 @@ import '../../widgets/background.dart';
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
 import 'manacas_screen.dart';
-import 'mescla_screen.dart';
+import 'mescla_puzzle_screen.dart';
 import 'praca_screen.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
@@ -24,7 +24,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   static const Map<String, Map<String, double>> locais = {
     "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
     "Manacás": {"lat": -22.8323, "lng": -47.05144},
-    "Mescla": {"lat": -22.83416204909936, "lng": -47.05235984253339},
+    "Mescla": {"lat": -22.832110737004133, "lng": -47.025027955668925},
     //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
     // "Praça": {"lat": -22.8341, "lng": -47.0523566},
     "Praça": {"lat": -22.94804, "lng": -47.05876294},
@@ -59,13 +59,13 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   }
 
   static const List<String> _falasMesclaRelatorio = [
-    'O Mescla não deveria estar vazio, mas ainda está funcionando.',
-    'Essas telas não param, códigos passando, gráficos mudando.',
-    'E mesmo assim nada parece sob controle.',
-    'Essa máquina ligou sozinha e parou do nada.',
-    'As luzes estão piscando estranho.',
-    'Isso não parece normal.',
-    'Esse lugar não tá estável.',
+    'O Mescla não deveria estar vazio, mas ainda está funcionando',
+    'Essas telas não param, códigos passando, gráficos mudando',
+    'E mesmo assim nada parece sob controle',
+    'Essa máquina ligou sozinha e parou do nada!',
+    'As luzes estão piscando estranho',
+    'Isso não parece normal',
+    'Esse lugar não tá estável!',
     'Preciso descobrir o que aconteceu...',
   ];
 
@@ -149,7 +149,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   "Mescla",
                   "Laboratório de tecnologia",
                   Icons.laptop,
-                  const MesclaScreen(),
+                  const MesclaPuzzleScreen(),
                   "assets/mescla.png",
                   corpoNarrador:
                       'Durante a noite, o Mescla deixa de parecer um espaço de colaboração. '
