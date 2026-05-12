@@ -1,8 +1,9 @@
-// Tela de abertura do jogo
+﻿// Tela de abertura do jogo
 import 'package:flutter/material.dart';
-import 'username_screen.dart';
+import 'register_screen.dart';
+import 'login_screen.dart';
 
-class StartScreen extends StatelessWidget { // Estático
+class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
 
   @override
@@ -10,93 +11,176 @@ class StartScreen extends StatelessWidget { // Estático
     return Scaffold(
       body: Stack(
         children: [
-          /// Imagem de fundo
           Positioned.fill(
-            child: Image.asset("assets/puc.png", fit: BoxFit.cover), //  Imagem de fundo cobrindo toda a tela
+            child: Image.asset('assets/puc.png', fit: BoxFit.cover),
           ),
-
-           /// Camada de escurecimento
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.7)),
           ),
-
-          /// CONTEÚDO DA TELA
           Center(
-            child: Column( // Centraliza horizontalmente  
-              mainAxisAlignment: MainAxisAlignment.center, // Centraliza verticalmente
-              children: [ //  Lista de widgets na coluna
-                /// TÍTULO
-                const Text(
-                  "UMA NOITE NO CAMPUS", // Título do jogo
-                  textAlign: TextAlign.center, // Centraliza o texto
-                  style: TextStyle( //  Estilo do texto
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PressStart2P',
-                    color: Color.fromARGB(255, 255, 213, 0),
-                    letterSpacing: 2,
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const UsernameScreen(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final buttonWidth = constraints.maxWidth > 360
+                      ? 340.0
+                      : constraints.maxWidth * 0.92;
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'UMA NOITE NO CAMPUS',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                          color: Color.fromARGB(255, 255, 213, 0),
+                          letterSpacing: 2,
+                        ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 320,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: Row(
-                      children: [
-                        
-                        const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-
-                        const SizedBox(width: 14),
-
-                        
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Novo Jogo",
-                              style: TextStyle(
-                                fontFamily: 'PressStart2P',
-                               color: Color.fromARGB(255, 255, 213, 0),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                      const SizedBox(height: 40),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: buttonWidth,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.2),
                               ),
                             ),
-
-                            Text(
-                              "Começar a aventura no campus",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 255, 249, 208),
-                                fontSize: 13,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Iniciar Novo Jogo',
+                                        style: TextStyle(
+                                          fontFamily: 'PressStart2P',
+                                          color: Color.fromARGB(
+                                            255,
+                                            255,
+                                            213,
+                                            0,
+                                          ),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Cadastrar e começar a aventura',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            255,
+                                            249,
+                                            208,
+                                          ),
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: buttonWidth,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.2),
                               ),
                             ),
-                          ],
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.login,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Continuar Jogo',
+                                        style: TextStyle(
+                                          fontFamily: 'PressStart2P',
+                                          color: Color.fromARGB(
+                                            255,
+                                            255,
+                                            213,
+                                            0,
+                                          ),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Entrar com conta existente',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            255,
+                                            249,
+                                            208,
+                                          ),
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ],
