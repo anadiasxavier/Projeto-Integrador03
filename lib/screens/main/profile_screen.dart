@@ -1,3 +1,4 @@
+// Essa tela exibe as informações e status do personagem do jogador.
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
 
           children: [
-
+          // Um círculo com ícone genérico de pessoa — placeholder para a imagem do personagem.
             CircleAvatar(
               radius: 40,
               child: Icon(Icons.person),

@@ -10,6 +10,8 @@ import 'personagem_screen.dart';
 import '../../services/location_service.dart';
 import 'package:geolocator/geolocator.dart';
 
+// Mapa de exploração onde o jogador escolhe para qual local do campus ir.
+
 class ExplorationScreen extends StatefulWidget {
   const ExplorationScreen({super.key});
 

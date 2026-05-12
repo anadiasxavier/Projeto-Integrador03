@@ -1,7 +1,8 @@
+// Tela de abertura do jogo
 import 'package:flutter/material.dart';
 import 'username_screen.dart';
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends StatelessWidget { // Estático
   const StartScreen({super.key});
 
   @override

@@ -3,7 +3,9 @@ import '../../widgets/background.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart'; 
 
-class UsernameScreen extends StatefulWidget {
+// Tela onde o jogador configura seu personagem antes de entrar no jogo.
+
+class UsernameScreen extends StatefulWidget { // Tela muda dinamicamente
   const UsernameScreen({super.key});
 
   @override
@@ -11,7 +13,7 @@ class UsernameScreen extends StatefulWidget {
 }
 
 class _UsernameScreenState extends State<UsernameScreen> {
-  TextEditingController nomeController = TextEditingController();
+  TextEditingController nomeController = TextEditingController(); // Captura o que o usuário digitar em "nome"
 
   String generoSelecionado = "masculino";
 
@@ -99,6 +101,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                         minimumSize: const Size(200, 50),
                       ),
                       onPressed: () {
+                        // O setState avisa o Flutter para redesenhar a tela com a nova seleção.
                         setState(() {
                           generoSelecionado = "masculino";
                         });
@@ -123,6 +126,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                         minimumSize: const Size(200, 50),
                       ),
                       onPressed: () {
+                        // O setState avisa o Flutter para redesenhar a tela com a nova seleção.
                         setState(() {
                           generoSelecionado = "feminino";
                         });
@@ -144,6 +148,7 @@ class _UsernameScreenState extends State<UsernameScreen> {
                 /// BOTÃO COMEÇAR
                 GestureDetector(
                   onTap: () {
+                    // Se o jogador tentar começar sem digitar o nome, aparece uma mensagem de erro vermelha na parte de baixo da tela.
                     if (nomeController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -160,7 +165,8 @@ class _UsernameScreenState extends State<UsernameScreen> {
                       return;
                     }
 
-                    ///  SALVA O GÊNERO 
+                    //  SALVA O GÊNERO 
+                    // Salva o nome e gênero em variáveis globais definidas no main.dart e navega para a ExplorationScreen — a tela de exploração do campus.
                     generoJogador = generoSelecionado;
                     nomeJogador = nomeController.text.trim();
 

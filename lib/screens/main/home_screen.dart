@@ -1,3 +1,4 @@
+// Rever se tela esta sendo realmente usada!
 import 'package:flutter/material.dart';
 import '../game/exploration_screen.dart';
 

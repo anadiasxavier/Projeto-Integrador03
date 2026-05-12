@@ -40,25 +40,25 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
 
   void responder(int index) {
     if (index == perguntas[perguntaAtual]['correta']) {
-      acertos++;
+      acertos++; // Contabiliza acertos
     }
 
     if (perguntaAtual < perguntas.length - 1) {
-      setState(() => perguntaAtual++);
+      setState(() => perguntaAtual++); // Avança para a próxima
     } else {
-      _finalizar();
+      _finalizar(); // Acabou as perguntas
     }
   }
 
   void _finalizar() {
-    if (acertos == 3) {
+    if (acertos == 3) { // Acertou todas
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => _telaFragmentoObtido(),
         ),
       );
-    } else {
+    } else { // Errou alguma
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -78,7 +78,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
     }
   }
 
-  // 🏆 TELA DE RECOMPENSA
+  // TELA DE RECOMPENSA
   Widget _telaFragmentoObtido() {
     return Scaffold(
       appBar: AppBar(

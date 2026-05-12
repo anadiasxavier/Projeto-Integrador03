@@ -1,3 +1,4 @@
+// Itens coletados pelo jogador durante o jogo
 import 'package:flutter/material.dart';
 
 class InventoryScreen extends StatelessWidget {
