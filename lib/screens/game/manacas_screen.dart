@@ -7,9 +7,8 @@ import '../challenge_screen/desafio_manacas.dart';
 class ManacasScreen extends StatelessWidget {
   const ManacasScreen({super.key});
 
-  // TODAS as falas organizadas por etapas
-
-  static const List<String> _falasInicio = [
+  // TODAS as falas do Manacás
+  static const List<String> _falasManacas = [
     'Você não deveria estar aqui.',
     'Me desculpa, eu acabei dormindo na aula e não estou conseguindo ir embora… você pode me ajudar?',
     'Você é engraçada… AQUI ninguém vai embora tão fácil.',
@@ -17,15 +16,9 @@ class ManacasScreen extends StatelessWidget {
     'Este lugar mudou… E agora ele escolhe quem pode sair.',
     'Isso não faz sentido… eu só quero ir pra casa!',
     'Então prove.',
-  ];
-
-  static const List<String> _falasExplicacao = [
     'Cada lugar deste campus guarda um fragmento…',
     'Memórias esquecidas… erros e decisões.',
     'Se quiser sair… você precisa enfrentar o que está escondido aqui.',
-  ];
-
-  static const List<String> _falasDesafio = [
     'Ganhe de mim… e eu te darei a chave para a próxima sala.',
     'Isso só pode ser brincadeira…',
     'Você acha que é apenas um jogo.',
@@ -41,92 +34,163 @@ class ManacasScreen extends StatelessWidget {
         title: const Text("Manacás"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Background(
         imagem: "assets/manacas.png",
-        child: Center(
-          child: GestureDetector(
-            onTap: () => _iniciarFluxo(context),
-            child: Container(
-              width: 300,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.green),
-              ),
-              child: const Text(
-                "EXPLORAR MANACÁS",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.green,
-                  fontFamily: 'PressStart2P',
-                  fontSize: 12,
+        child: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+
+                    const Text(
+                      "MANACÁS",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'PressStart2P',
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white12),
+                      ),
+                      child: const Text(
+                        "As luzes piscam lentamente.\n"
+                        "O ambiente parece vazio.\n"
+                        "Mas algo observa você no silêncio...",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          fontFamily: 'PressStart2P',
+                          height: 1.6,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    GestureDetector(
+                      onTap: () => _iniciarFluxo(context),
+                      child: Container(
+                        width: 300,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: Colors.green.withOpacity(0.4),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.explore,
+                              color: Colors.green,
+                              size: 28,
+                            ),
+                            SizedBox(width: 15),
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "EXPLORAR MANACÁS",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'PressStart2P',
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Investigar o ambiente estranho",
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
   void _iniciarFluxo(BuildContext context) {
-    // ETAPA 1
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => NarradorScreen(
+          tituloAppBar: "Entrando no Manacás",
           imagemFundo: "assets/manacas.png",
           corpoNarracao:
-              'Você entra no Manacás.\n\nO ambiente está silencioso demais.\n\nAlgo observa você nas sombras.',
-          dica: 'Toque para continuar.',
+              'Você atravessa lentamente o corredor do Manacás.\n\n'
+              'As luzes piscam de forma irregular.\n\n'
+              'As salas estão vazias.\n\n'
+              'O silêncio parece pesado demais.\n\n'
+              'Como se algo estivesse esperando por você...',
+          dica: 'Toque em Continuar.',
           exibirNarracaoEmCaixa: true,
-          proximaTela: PersonagemScreen(
+          proximaTela: NarradorScreen(
+            tituloAppBar: "Uma Presença...",
             imagemFundo: "assets/manacas.png",
-            falasCustom: _falasInicio,
-            substituirAoAvancarFinal: false,
-            proximaTela: _etapaExplicacao(),
+            corpoNarracao:
+                'No fim do corredor, uma figura surge lentamente.\n\n'
+                'Ela permanece imóvel por alguns segundos.\n\n'
+                'Os olhos acompanham cada movimento seu.\n\n'
+                'Então... ela começa a se aproximar.',
+            dica: 'Toque em Continuar.',
+            exibirNarracaoEmCaixa: true,
+            proximaTela: PersonagemScreen(
+              imagemFundo: "assets/manacas.png",
+              falasCustom: _falasManacas,
+              instrucaoToque: 'Toque para continuar',
+              substituirAoAvancarFinal: false,
+              proximaTela: NarradorScreen(
+                tituloAppBar: "O Desafio",
+                imagemFundo: "assets/manacas.png",
+                corpoNarracao:
+                    'Sobre a mesa, linhas começam a surgir sozinhas.\n\n'
+                    'Peças aparecem lentamente diante dos seus olhos.\n\n'
+                    'Um jogo da velha toma forma.',
+                dica: 'Toque em Continuar.',
+                exibirNarracaoEmCaixa: true,
+                proximaTela: const DesafioManacasScreen(),
+              ),
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  // ETAPA 2
-  Widget _etapaExplicacao() {
-    return NarradorScreen(
-      imagemFundo: "assets/manacas.png",
-      corpoNarracao:
-          'O guardião se aproxima lentamente.\n\n'
-          'Sua presença faz o ar ficar pesado.\n\n'
-          'Ele aponta para uma mesa no centro do ambiente...',
-      dica: 'Toque para continuar.',
-      exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/manacas.png",
-        falasCustom: _falasExplicacao,
-        substituirAoAvancarFinal: false,
-        proximaTela: _etapaDesafio(),
-      ),
-    );
-  }
-
-  // ETAPA 3
-  Widget _etapaDesafio() {
-    return NarradorScreen(
-      imagemFundo: "assets/manacas.png",
-      corpoNarracao:
-          'Sobre a mesa, um tabuleiro começa a se formar sozinho.\n\n'
-          'As peças se movem lentamente...\n\n'
-          'Um jogo da velha aparece diante de você.',
-      dica: 'Toque para começar o desafio.',
-      exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/manacas.png",
-        falasCustom: _falasDesafio,
-        substituirAoAvancarFinal: false,
-        proximaTela: const DesafioManacasScreen(),
       ),
     );
   }
