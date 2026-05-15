@@ -1,6 +1,8 @@
 // arquivo: desafio_praca.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../game/narrador_screen.dart';
+import '../game/personagem_screen.dart';
 import '../game/praca_screen.dart';
 
 class DesafioPracaScreen extends StatefulWidget {
@@ -11,42 +13,62 @@ class DesafioPracaScreen extends StatefulWidget {
 }
 
 class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
-  // Os 6 slots - cada um deve receber um item específico
-  // null = vazio
-  List<String?> _slots = List.filled(6, null);
+  // Dicionário para controlar qual lixeira cada item está
+  // null = não está em nenhuma lixeira
+  Map<String, String?> _itensNasLixeiras = {};
   
   // Item selecionado da lista
   String? _itemSelecionado;
   
-  // Ordem correta para vencer
-  final List<String> _ordemCorreta = [
-    '🍔 Embalagem',
-    '🧃 Suco derramado',
-    '🥤 Copo vazio',
-    '🍟 Batatas frias',
-    '🍫 Chocolate',
-    '🍎 Maçã mordida',
+  // Contador de tentativas
+  int _tentativas = 0;
+  
+  // Falas finais após vencer
+  static const List<String> _falasFinais = [
+    '...Você limpou a praça.',
+    'O meio ambiente agradece.',
+    'Leve isso como recompensa.',
   ];
   
-  String _mensagem = "Selecione um item e depois toque no slot";
+  // Mapeamento correto dos itens
+  final Map<String, String> _classificacaoCorreta = {
+    '🍟 Restos de batata': 'organico',
+    '🧃 Caixinha de suco': 'reciclavel',
+    '🥤 Copo plástico': 'reciclavel',
+    '🍫 Papel de chocolate': 'organico',
+    '📦 Embalagem de papel': 'reciclavel',
+    '🍎 Maçã mordida': 'organico',
+  };
+  
+  String _mensagem = "Selecione um item e coloque na lixeira correta!";
   Color _mensagemCor = Colors.white70;
+  bool _acertou = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializa todos os itens como não classificados (null)
+    for (String item in _classificacaoCorreta.keys) {
+      _itensNasLixeiras[item] = null;
+    }
+  }
 
   void _selecionarItem(String item) {
+    if (_acertou) return;
+    
     setState(() {
-      // Se o item já está em algum slot, remove de lá
-      for (int i = 0; i < _slots.length; i++) {
-        if (_slots[i] == item) {
-          _slots[i] = null;
-          break;
-        }
+      if (_itensNasLixeiras[item] != null) {
+        _itensNasLixeiras[item] = null;
       }
       _itemSelecionado = item;
-      _mensagem = "Item '$item' selecionado. Toque em um slot";
+      _mensagem = "Item selecionado. Escolha a lixeira";
       _mensagemCor = Colors.cyan;
     });
   }
 
-  void _colocarNoSlot(int slotIndex) {
+  void _colocarNaLixeira(String tipoLixeira) {
+    if (_acertou) return;
+    
     if (_itemSelecionado == null) {
       setState(() {
         _mensagem = "Selecione um item primeiro!";
@@ -56,75 +78,243 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     }
 
     setState(() {
-      // Se já tem outro item neste slot, libera ele
-      String? itemAtual = _slots[slotIndex];
-      
-      // Coloca o item selecionado no slot
-      _slots[slotIndex] = _itemSelecionado;
+      _itensNasLixeiras[_itemSelecionado!] = tipoLixeira;
       _itemSelecionado = null;
-      _mensagem = "Item colocado! Selecione outro ou verifique";
-      _mensagemCor = Colors.white70;
+      
+      if (tipoLixeira == 'organico') {
+        _mensagem = "Item colocado no orgânico! 🌱";
+      } else {
+        _mensagem = "Item colocado no reciclável! ♻️";
+      }
+      _mensagemCor = Colors.green;
     });
   }
 
-  void _removerDoSlot(int slotIndex) {
+  void _removerDaLixeira(String item) {
+    if (_acertou) return;
+    
     setState(() {
-      _slots[slotIndex] = null;
+      _itensNasLixeiras[item] = null;
+      _itemSelecionado = null;
       _mensagem = "Item removido. Você pode recolocá-lo";
       _mensagemCor = Colors.yellow;
     });
   }
 
-  bool _todosSlotsPreenchidos() {
-    return !_slots.contains(null);
+  bool _todosItensClassificados() {
+    return !_itensNasLixeiras.values.contains(null);
+  }
+
+  List<String> _getItensNaLixeira(String tipoLixeira) {
+    return _itensNasLixeiras.entries
+        .where((entry) => entry.value == tipoLixeira)
+        .map((entry) => entry.key)
+        .toList();
   }
 
   void _verificarResolucao() {
     bool acertou = true;
-    for (int i = 0; i < _slots.length; i++) {
-      if (_slots[i] != _ordemCorreta[i]) {
+    
+    for (var entry in _itensNasLixeiras.entries) {
+      if (entry.value != _classificacaoCorreta[entry.key]) {
         acertou = false;
         break;
       }
     }
 
-    if (acertou) {
-      // VENCEU!
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PracaAlimentacaoScreen.telaAcerto(),
-        ),
-      );
-    } else {
-      // ERROU
-      setState(() {
-        _mensagem = "❌ Ordem errada! Tente novamente...";
+    setState(() {
+      _tentativas++;
+      
+      if (acertou) {
+        // VENCEU!
+        _acertou = true;
+        _vitoria();
+      } else {
+        // ERROU - Reseta os itens
+        _mensagem = "❌ Não foi dessa vez! Tente novamente...";
         _mensagemCor = Colors.red;
-        _slots = List.filled(6, null);
-        _itemSelecionado = null;
-      });
-
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PracaAlimentacaoScreen.telaErro(),
-            ),
-          );
+        
+        _itensNasLixeiras = {};
+        for (String item in _classificacaoCorreta.keys) {
+          _itensNasLixeiras[item] = null;
         }
-      });
-    }
+        _itemSelecionado = null;
+        
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted && !_acertou) {
+            setState(() {
+              _mensagem = "Selecione um item e coloque na lixeira correta!";
+              _mensagemCor = Colors.white70;
+            });
+          }
+        });
+      }
+    });
+  }
+
+  void _vitoria() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NarradorScreen(
+          tituloAppBar: "Vitória",
+          imagemFundo: "assets/praca.png",
+          corpoNarracao:
+              'Você organizou todo o lixo corretamente.\n\n'
+              'A praça está limpa novamente.\n\n'
+              'O ar parece mais puro agora.',
+          dica: 'Toque em Continuar.',
+          exibirNarracaoEmCaixa: true,
+          proximaTela: PersonagemScreen(
+            imagemFundo: "assets/praca.png",
+            falasCustom: _falasFinais,
+            instrucaoToque: 'Toque para continuar',
+            substituirAoAvancarFinal: false,
+            proximaTela: _fragmento(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _fragmento() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Fragmento de Chave"),
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
+      ),
+      body: Background(
+        imagem: "assets/praca.png",
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Ícone do fragmento com efeito
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.amber.withOpacity(0.2),
+                  border: Border.all(
+                    color: Colors.amber,
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withOpacity(0.3),
+                      blurRadius: 30,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.vpn_key,
+                  color: Colors.amber,
+                  size: 80,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Texto principal
+              const Text(
+                "FRAGMENTO DE CHAVE\nOBTIDO!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'PressStart2P',
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // Texto descritivo
+              Text(
+                "A praça está limpa novamente.\n"
+                "A natureza agradece seu esforço.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 12,
+                  fontFamily: 'PressStart2P',
+                  height: 1.6,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Botão voltar
+              GestureDetector(
+                onTap: () {
+                  Navigator.popUntil(
+                    context,
+                    (route) => route.isFirst,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        "VOLTAR AO CAMPUS",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Desafio dos Restos"),
+        title: const Text("Coleta Seletiva na Praça"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        actions: [
+          // Contador de tentativas
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: Text(
+                "Tentativa: $_tentativas",
+                style: const TextStyle(
+                  color: Colors.orange,
+                  fontSize: 10,
+                  fontFamily: 'PressStart2P',
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Background(
         imagem: "assets/praca.png",
@@ -141,7 +331,11 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: _acertou 
+                        ? Colors.green.withValues(alpha: 0.5)
+                        : Colors.orange.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Text(
                   _mensagem,
@@ -157,108 +351,35 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               
               const SizedBox(height: 15),
               
-              // Título da área de slots
-              const Text(
-                "MESA PARA ORGANIZAR:",
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-              
-              const SizedBox(height: 10),
-              
-              // Grid de slots
+              // Área das lixeiras
               Expanded(
                 flex: 3,
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 1.2,
-                  ),
-                  itemCount: 6,
-                  itemBuilder: (context, index) {
-                    bool preenchido = _slots[index] != null;
-                    bool selecionado = _itemSelecionado != null;
-                    
-                    return GestureDetector(
-                      onTap: () {
-                        if (preenchido) {
-                          _removerDoSlot(index);
-                        } else {
-                          _colocarNoSlot(index);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: preenchido
-                              ? Colors.orange.withValues(alpha: 0.3)
-                              : selecionado
-                                  ? Colors.cyan.withValues(alpha: 0.2)
-                                  : Colors.grey.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: preenchido
-                                ? Colors.orange
-                                : selecionado
-                                    ? Colors.cyan.withValues(alpha: 0.6)
-                                    : Colors.grey.withValues(alpha: 0.4),
-                            width: selecionado && !preenchido ? 2 : 1,
-                          ),
-                        ),
-                        child: preenchido
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        _slots[index]!,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontFamily: 'PressStart2P',
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    const Text(
-                                      '(toque para remover)',
-                                      style: TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 7,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    '?',
-                                    style: TextStyle(
-                                      color: Colors.white24,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Slot ${index + 1}',
-                                    style: const TextStyle(
-                                      color: Colors.white24,
-                                      fontSize: 8,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                child: Row(
+                  children: [
+                    // Lixeira de Orgânico
+                    Expanded(
+                      child: _buildLixeira(
+                        "ORGÂNICO",
+                        "organico",
+                        Colors.green,
+                        "🗑️🌱",
+                        _getItensNaLixeira("organico"),
+                        "Restos de comida,\ncascas, folhas",
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 10),
+                    // Lixeira de Reciclável
+                    Expanded(
+                      child: _buildLixeira(
+                        "RECICLÁVEL",
+                        "reciclavel",
+                        Colors.blue,
+                        "♻️",
+                        _getItensNaLixeira("reciclavel"),
+                        "Plástico, papel,\nmetal, vidro",
+                      ),
+                    ),
+                  ],
                 ),
               ),
               
@@ -266,7 +387,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               
               // Título dos itens
               const Text(
-                "ITENS ENCONTRADOS:",
+                "ITENS ENCONTRADOS NA PRAÇA:",
                 style: TextStyle(
                   color: Colors.cyan,
                   fontSize: 10,
@@ -276,7 +397,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               
               const SizedBox(height: 8),
               
-              // Lista de itens
+              // Lista de itens para classificar
               Expanded(
                 flex: 2,
                 child: GridView.builder(
@@ -284,16 +405,16 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                     crossAxisCount: 3,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: 1.3,
                   ),
-                  itemCount: _ordemCorreta.length,
+                  itemCount: _classificacaoCorreta.length,
                   itemBuilder: (context, index) {
-                    String item = _ordemCorreta[index];
-                    bool estaEmUso = _slots.contains(item);
+                    String item = _classificacaoCorreta.keys.elementAt(index);
+                    bool estaEmUso = _itensNasLixeiras[item] != null;
                     bool estaSelecionado = _itemSelecionado == item;
                     
                     return GestureDetector(
-                      onTap: estaEmUso ? null : () => _selecionarItem(item),
+                      onTap: (estaEmUso || _acertou) ? null : () => _selecionarItem(item),
                       child: Container(
                         decoration: BoxDecoration(
                           color: estaSelecionado
@@ -311,18 +432,34 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                             width: estaSelecionado ? 2 : 1,
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            item,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: estaEmUso ? Colors.grey : Colors.white,
-                              fontSize: 9,
-                              fontFamily: 'PressStart2P',
-                              decoration: estaEmUso
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                item.split(' ').first,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color: estaEmUso ? Colors.grey : null,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Flexible(
+                                child: Text(
+                                  item.substring(item.indexOf(' ') + 1),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: estaEmUso ? Colors.grey : Colors.white,
+                                    fontSize: 8,
+                                    fontFamily: 'PressStart2P',
+                                    decoration: estaEmUso
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -335,30 +472,49 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               
               // Botão verificar
               GestureDetector(
-                onTap: _todosSlotsPreenchidos() ? _verificarResolucao : null,
+                onTap: (_todosItensClassificados() && !_acertou) 
+                    ? _verificarResolucao 
+                    : null,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   decoration: BoxDecoration(
-                    color: _todosSlotsPreenchidos()
+                    color: (_todosItensClassificados() && !_acertou)
                         ? Colors.orange.withValues(alpha: 0.8)
                         : Colors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: _todosSlotsPreenchidos()
+                      color: (_todosItensClassificados() && !_acertou)
                           ? Colors.orange
                           : Colors.grey,
                     ),
                   ),
-                  child: const Center(
-                    child: Text(
-                      "VERIFICAR ORDEM",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontFamily: 'PressStart2P',
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _acertou 
+                              ? Icons.check_circle 
+                              : Icons.recycling, 
+                          color: Colors.white, 
+                          size: 20
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _acertou
+                              ? "CLASSIFICAÇÃO CORRETA!"
+                              : _todosItensClassificados()
+                                  ? "VERIFICAR CLASSIFICAÇÃO"
+                                  : "CLASSIFIQUE TODOS OS ITENS",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontFamily: 'PressStart2P',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -367,6 +523,152 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               const SizedBox(height: 15),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLixeira(
+    String titulo,
+    String tipoLixeira,
+    Color cor,
+    String icone,
+    List<String> itens,
+    String descricao,
+  ) {
+    bool isSelected = _itemSelecionado != null && 
+                      _itensNasLixeiras[_itemSelecionado!] == null &&
+                      !_acertou;
+    
+    return GestureDetector(
+      onTap: isSelected ? () => _colocarNaLixeira(tipoLixeira) : null,
+      child: Container(
+        decoration: BoxDecoration(
+          color: cor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: isSelected ? cor : cor.withValues(alpha: 0.3),
+            width: isSelected ? 3 : 1,
+          ),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: cor.withValues(alpha: 0.3),
+              blurRadius: 10,
+              spreadRadius: 2,
+            )
+          ] : [],
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            Text(
+              icone,
+              style: const TextStyle(fontSize: 32),
+            ),
+            Text(
+              titulo,
+              style: TextStyle(
+                color: cor,
+                fontSize: 11,
+                fontFamily: 'PressStart2P',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              descricao,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: cor.withValues(alpha: 0.7),
+                fontSize: 7,
+                fontFamily: 'PressStart2P',
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              color: cor.withValues(alpha: 0.3),
+            ),
+            
+            const SizedBox(height: 8),
+            
+            Expanded(
+              child: itens.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.delete_outline,
+                            color: Colors.white.withValues(alpha: 0.2),
+                            size: 24,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Toque aqui\npara descartar',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              fontSize: 8,
+                              fontFamily: 'PressStart2P',
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: itens.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: _acertou ? null : () => _removerDaLixeira(itens[index]),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 4),
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: cor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: cor.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  itens[index].split(' ').first,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    itens[index].substring(itens[index].indexOf(' ') + 1),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                      fontFamily: 'PressStart2P',
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (!_acertou)
+                                  const Icon(
+                                    Icons.close,
+                                    color: Colors.white38,
+                                    size: 14,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );
