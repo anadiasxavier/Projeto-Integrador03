@@ -7,6 +7,7 @@ class PersonagemScreen extends StatefulWidget {
   final String imagemFundo;
   final String? instrucaoToque;
   final List<String>? falasCustom;
+  final bool exibirReacoes;
   final bool substituirAoAvancarFinal;
 
   const PersonagemScreen({
@@ -15,6 +16,7 @@ class PersonagemScreen extends StatefulWidget {
     required this.imagemFundo,
     this.instrucaoToque,
     this.falasCustom,
+    this.exibirReacoes = false,
     this.substituirAoAvancarFinal = true,
   });
 
@@ -32,19 +34,69 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     "Preciso descobrir o que aconteceu...",
   ];
 
+  static const Map<String, String> _reactionAssetNames = {
+    'confuso': 'Confuso',
+    'confusa': 'Confusa',
+    'inquieto': 'Inquieto',
+    'inquieta': 'Inquieta',
+    'surpreso': 'Surpreso',
+    'surpresa': 'Surpresa',
+    'feliz': 'Feliz',
+    'triste': 'Triste',
+  };
+
+  bool get _showReactions => widget.exibirReacoes;
+
   List<String> get _falas => widget.falasCustom ?? _falasPadrao;
 
   bool get _ultimaFala => indice >= _falas.length - 1;
+
+  String _defaultCharacterImage() {
+    return generoJogador == 'feminino'
+        ? 'assets/personagemfeminina.png'
+        : 'assets/personagem.png';
+  }
+
+  String _dialogText(int index) {
+    if (!_showReactions) return _falas[index];
+    return _parseFala(_falas[index]).key;
+  }
+
+  MapEntry<String, String> _parseFala(String fala) {
+    final match = RegExp(r'^\s*\[([^\]]+)\]\s*(.*)').firstMatch(fala);
+    if (match != null) {
+      final type = match.group(1)!.toLowerCase().trim();
+      final text = match.group(2) ?? '';
+      if (_reactionAssetNames.containsKey(type)) {
+        return MapEntry(text.isEmpty ? fala : text, type);
+      }
+    }
+    return MapEntry(fala, '');
+  }
+
+  String _reactionForIndex(int index) {
+    final parsed = _parseFala(_falas[index]);
+    return parsed.value;
+  }
+
+  String _reactionAssetPath(String reaction) {
+    if (reaction.isEmpty || !_reactionAssetNames.containsKey(reaction)) {
+      return _defaultCharacterImage();
+    }
+
+    final assetName = _reactionAssetNames[reaction]!;
+    final prefix = generoJogador == 'feminino' ? 'Feminino' : 'Masculino';
+    return 'assets/reactions/${prefix}_$assetName.png';
+  }
 
   void proximaFala() {
     if (!_ultimaFala) {
       setState(() => indice++);
       return;
     }
+
     if (widget.proximaTela != null) {
-      final rota = MaterialPageRoute(
-        builder: (context) => widget.proximaTela!,
-      );
+      final rota = MaterialPageRoute(builder: (context) => widget.proximaTela!);
       if (widget.substituirAoAvancarFinal) {
         Navigator.pushReplacement(context, rota);
       } else {
@@ -77,13 +129,13 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String imagem = generoJogador == "feminino"
-        ? "assets/personagemfeminina.png"
-        : "assets/personagem.png";
+    final reactionImage = _showReactions
+        ? _reactionAssetPath(_reactionForIndex(indice))
+        : null;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.88),
+        backgroundColor: Colors.black.withValues(alpha: 0.88),
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 2,
@@ -91,7 +143,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
           icon: Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
+              color: Colors.white.withValues(alpha: 0.16),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.arrow_back),
@@ -105,8 +157,31 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         imagem: widget.imagemFundo,
         child: Stack(
           children: [
-
-            /// CAIXA DE DIÁLOGO
+            if (reactionImage != null)
+              Positioned(
+                bottom: 130,
+                left: -95,
+                child: Transform.rotate(
+                  angle: -0.04,
+                  child: Container(
+                    width: 450,
+                    height: 450,
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset(
+                      reactionImage,
+                      width: 210,
+                      height: 210,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        _defaultCharacterImage(),
+                        width: 210,
+                        height: 210,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Positioned(
               bottom: 20,
               left: 20,
@@ -116,20 +191,21 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.85),
+                    color: Colors.black.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white),
                   ),
-
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-                      /// PERSONAGEM
-                      Image.asset(imagem, width: 70, height: 70),
-
-                      const SizedBox(width: 10),
-
-                      /// TEXTO
+                      Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        child: Image.asset(
+                          _defaultCharacterImage(),
+                          width: 60,
+                          height: 60,
+                        ),
+                      ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,11 +218,9 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                                 fontFamily: 'PressStart2P',
                               ),
                             ),
-
                             const SizedBox(height: 6),
-
                             Text(
-                              _falas[indice],
+                              _dialogText(indice),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,

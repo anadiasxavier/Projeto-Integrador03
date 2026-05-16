@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/background.dart';
-import 'narrador_screen.dart';
-import 'personagem_screen.dart';
-import 'mescla_screen.dart';
+import '../../main.dart';
+import '../game/narrador_screen.dart';
+import '../game/personagem_screen.dart';
+import '../game/mescla_screen.dart';
 
 class MesclaPuzzleScreen extends StatefulWidget {
   const MesclaPuzzleScreen({super.key});
@@ -15,19 +16,19 @@ class MesclaPuzzleScreen extends StatefulWidget {
 class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
 
-  static const List<String> _falasGuardiaoFinal = <String>[
-    '...PROCESSO CONCLUÍDO.',
-    'Você não respondeu para mim...',
-    'respondeu para o sistema.',
-    'Siga o fluxo.',
-    'Onde as máquinas jogam sozinhas...',
-    'há outra peça esperando.',
+  List<String> get _falasGuardiaoFinal => [
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} ...PROCESSO CONCLUÍDO.',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Você não respondeu para mim...',
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} respondeu para o sistema.',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Siga o fluxo.',
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Onde as máquinas jogam sozinhas...',
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} há outra peça esperando.',
   ];
 
-  static const List<String> _falasPersonagemFinal = <String>[
-    'Funcionou... acho que agora ele me deixou passar...',
-    'Vejo algo brilhar próximo aos equipamentos.',
-    'É um fragmento... de chave!',
+  List<String> get _falasPersonagemFinal => [
+    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou... acho que agora ele me deixou passar...',
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Vejo algo brilhar próximo aos equipamentos.',
+    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento... de chave!',
   ];
 
   static const List<String> _linhasSistema = <String>[
@@ -68,11 +69,13 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
           proximaTela: PersonagemScreen(
             imagemFundo: 'assets/mescla.png',
             falasCustom: _falasGuardiaoFinal,
+            exibirReacoes: true,
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: false,
             proximaTela: PersonagemScreen(
               imagemFundo: 'assets/mescla.png',
               falasCustom: _falasPersonagemFinal,
+              exibirReacoes: true,
               instrucaoToque: 'Toque para continuar',
               substituirAoAvancarFinal: false,
               proximaTela: _telaFragmentoObtido(),
@@ -110,11 +113,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.vpn_key,
-                  color: Colors.amber,
-                  size: 80,
-                ),
+                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
               ),
               const SizedBox(height: 30),
               const Text(
@@ -142,7 +141,8 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
               ),
               const SizedBox(height: 40),
               GestureDetector(
-                onTap: () => Navigator.popUntil(context, (route) => route.isFirst),
+                onTap: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
@@ -309,4 +309,3 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     );
   }
 }
-

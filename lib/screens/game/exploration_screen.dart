@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../../main.dart';
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
 import 'manacas_screen.dart';
-import 'mescla_puzzle_screen.dart';
+import '../challenge_screen/desafio_mescla_screen.dart';
 import 'praca_screen.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
@@ -22,7 +23,6 @@ class ExplorationScreen extends StatefulWidget {
 class _ExplorationScreenState extends State<ExplorationScreen> {
   String localizacaoTexto = "Carregando localização...";
 
- 
   static const Map<String, Map<String, double>> locais = {
     "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
     "Manacás": {"lat": -22.8323, "lng": -47.05144},
@@ -60,15 +60,15 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     return distancia <= 10;
   }
 
-  static const List<String> _falasMesclaRelatorio = [
-    'O Mescla não deveria estar vazio, mas ainda está funcionando',
-    'Essas telas não param, códigos passando, gráficos mudando',
-    'E mesmo assim nada parece sob controle',
-    'Essa máquina ligou sozinha e parou do nada!',
-    'As luzes estão piscando estranho',
-    'Isso não parece normal',
-    'Esse lugar não tá estável!',
-    'Preciso descobrir o que aconteceu...',
+  List<String> get _falasMesclaRelatorio => [
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} O Mescla não deveria estar vazio assim, mas ainda está funcionando',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Essas telas não param, códigos passando, gráficos mudando',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} E mesmo assim nada parece sob controle...',
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Essa máquina ligou sozinha e parou do nada!',
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} As luzes estão piscando estranho',
+    // 'Isso não parece normal',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse lugar está que nem os outros: totalmente instável!',
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso concluir logo o desafio do Mescla, antes que fique pior!',
   ];
 
   static const List<String> _falasEntradaBiblioteca = [
@@ -166,6 +166,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                   hintDialogoPersonagem:
                       'Toque nesta caixa para a próxima fala.',
                   falasPersonagem: _falasMesclaRelatorio,
+                  exibirReacoes: true,
                   manterEtapaAnteriorNoFinalDasFalas: true,
                   exibirNarracaoEmCaixa: true,
                 ),
@@ -279,6 +280,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     List<String>? falasPersonagem,
     bool manterEtapaAnteriorNoFinalDasFalas = false,
     bool exibirNarracaoEmCaixa = false,
+    bool exibirReacoes = false,
   }) {
     return GestureDetector(
       onTap: () {
@@ -294,6 +296,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                 imagemFundo: imagemFundo,
                 proximaTela: tela,
                 falasCustom: falasPersonagem,
+                exibirReacoes: exibirReacoes,
                 instrucaoToque: hintDialogoPersonagem,
                 substituirAoAvancarFinal: !manterEtapaAnteriorNoFinalDasFalas,
               ),

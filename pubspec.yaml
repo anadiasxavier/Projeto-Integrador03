@@ -33,6 +33,7 @@ flutter:
     - assets/praca.png
     - assets/mescla.png
     - assets/manacas.png
+    - assets/reactions/
 
   fonts:
     - family: PressStart2P
