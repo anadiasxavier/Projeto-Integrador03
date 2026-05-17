@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/background.dart';
 import '../../main.dart';
-import '../game/narrador_screen.dart';
 import '../game/personagem_screen.dart';
-import '../game/mescla_screen.dart';
+import '../game/exploration_screen.dart';
+import '../../services/firestore_service.dart';
 
 class MesclaPuzzleScreen extends StatefulWidget {
   const MesclaPuzzleScreen({super.key});
@@ -15,7 +16,9 @@ class MesclaPuzzleScreen extends StatefulWidget {
 
 class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
+  final FirestoreService firestore = FirestoreService();
 
+  // ⭐ FALAS DO GUARDIÃO COM GÊNERO
   List<String> get _falasGuardiaoFinal => [
     '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} ...PROCESSO CONCLUÍDO.',
     '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Você não respondeu para mim...',
@@ -25,11 +28,32 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} há outra peça esperando.',
   ];
 
+  // ⭐ FALAS DO PERSONAGEM COM GÊNERO
   List<String> get _falasPersonagemFinal => [
     '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou... acho que agora ele me deixou passar...',
     '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Vejo algo brilhar próximo aos equipamentos.',
     '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento... de chave!',
+    '${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Preciso continuar minha jornada.',
   ];
+
+  // Tela do computador (sem gênero, é uma mensagem fixa)
+  Widget _telaComputadorConcluido() {
+    return PersonagemScreen(
+      imagemFundo: "assets/mescla.png",
+      falasCustom: [
+        'Olhando para a tela do computador...',
+        'Uma mensagem começa a piscar no monitor:',
+        '',
+        '    "DESAFIO CONCLUÍDO!"',
+        '    "SIGA PARA A PRÓXIMA SALA"',
+        '',
+        'O sistema parece ter se estabilizado...',
+      ],
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: true,
+      proximaTela: const SizedBox.shrink(),
+    );
+  }
 
   static const List<String> _linhasSistema = <String>[
     'PROCESSO INICIADO...',
@@ -49,145 +73,89 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     'Energia',
   ];
 
-  void _fluxoAcerto() {
-    Navigator.pushReplacement(
+  void _fluxoAcerto() async {
+    // ⭐ FLUXO SEQUENCIAL DE FALAS
+    // Primeiro: Falas do Guardião (Sistema)
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => NarradorScreen(
-          tituloAppBar: 'Resposta Correta!',
-          imagemFundo: 'assets/mescla.png',
-          corpoNarracao:
-              'A interface estabiliza por um instante.\n\n'
-              'Linhas de código param de correr sozinhas.\n'
-              'Os gráficos congelam.\n\n'
-              '“RESPOSTA ACEITA...”\n'
-              '“PROCESSO LIBERADO”\n\n'
-              'E então... silêncio.\n'
-              'Como se o Mescla tivesse respirado.',
-          dica: 'Toque em Continuar.',
-          exibirNarracaoEmCaixa: true,
-          proximaTela: PersonagemScreen(
-            imagemFundo: 'assets/mescla.png',
-            falasCustom: _falasGuardiaoFinal,
-            exibirReacoes: true,
-            instrucaoToque: 'Toque para continuar',
-            substituirAoAvancarFinal: false,
-            proximaTela: PersonagemScreen(
-              imagemFundo: 'assets/mescla.png',
-              falasCustom: _falasPersonagemFinal,
-              exibirReacoes: true,
-              instrucaoToque: 'Toque para continuar',
-              substituirAoAvancarFinal: false,
-              proximaTela: _telaFragmentoObtido(),
-            ),
-          ),
+        builder: (_) => PersonagemScreen(
+          imagemFundo: "assets/mescla.png",
+          falasCustom: _falasGuardiaoFinal, // ⭐ Com gênero
+          exibirReacoes: true,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
         ),
       ),
     );
+
+    // Segundo: Falas do Personagem
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PersonagemScreen(
+          imagemFundo: "assets/mescla.png",
+          falasCustom: _falasPersonagemFinal, // ⭐ Com gênero
+          exibirReacoes: true,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
+        ),
+      ),
+    );
+
+    // Terceiro: Tela do Computador
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _telaComputadorConcluido(),
+      ),
+    );
+
+    // Finalmente: Salva e volta para Exploration
+    await _salvarProgressoERetornar();
   }
 
-  Widget _telaFragmentoObtido() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Fragmento de Chave'),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-      ),
-      body: Background(
-        imagem: 'assets/mescla.png',
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withValues(alpha: 0.2),
-                  border: Border.all(color: Colors.amber, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'FRAGMENTO DE CHAVE\nOBTIDO!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                'As telas voltam a piscar.\n'
-                'O Mescla parece... instável de novo.\n'
-                'Mas agora você tem uma peça a mais.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 40),
-              GestureDetector(
-                onTap: () =>
-                    Navigator.popUntil(context, (route) => route.isFirst),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.exit_to_app, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
-                      Text(
-                        'VOLTAR AO CAMPUS',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const MesclaScreen()),
-                  );
-                },
-                child: const Text(
-                  'Continuar no Mescla',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ),
-            ],
+  // Função que salva o progresso no Firestore
+  Future<void> _salvarProgressoERetornar() async {
+    try {
+      print('Salvando progresso do Mescla...');
+      
+      await firestore.updatePlayerData(
+        raJogador,
+        {
+          'salasConcluidas': FieldValue.arrayUnion(['Mescla']),
+        },
+      );
+      
+      print('Progresso do Mescla salvo com sucesso!');
+      
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print('Erro ao salvar progresso do Mescla: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: $e'),
+            backgroundColor: Colors.red,
           ),
-        ),
-      ),
-    );
+        );
+        
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    }
   }
 
   void _selecionarOpcao(int index) async {
@@ -215,7 +183,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mescla'),
+        title: const Text('Mescla - Desafio'),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
         leading: IconButton(
@@ -239,6 +207,23 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Ícone do sistema
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.cyan.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.cyan, width: 2),
+                    ),
+                    child: const Icon(
+                      Icons.computer,
+                      color: Colors.cyan,
+                      size: 40,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
                   const Text(
                     'PUZZLE',
                     textAlign: TextAlign.center,
@@ -268,13 +253,15 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                   const SizedBox(height: 14),
                   Text(
                     _charada,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                      height: 1.4,
+                      fontSize: 14,
+                      fontFamily: 'PressStart2P',
+                      height: 1.6,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 20),
                   for (int i = 0; i < _opcoes.length; i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -287,18 +274,32 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: i == 1 ? Colors.green.withOpacity(0.5) : Colors.white.withValues(alpha: 0.2),
+                              width: i == 1 ? 2 : 1,
                             ),
                           ),
                         ),
-                        child: Text(_opcoes[i]),
+                        child: Text(
+                          _opcoes[i],
+                          style: const TextStyle(
+                            fontFamily: 'PressStart2P',
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                     ),
                   if (_travado)
-                    const Text(
-                      'Sistema instável... aguarde.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white70),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        'Sistema instável... aguarde.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 10,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
                     ),
                 ],
               ),

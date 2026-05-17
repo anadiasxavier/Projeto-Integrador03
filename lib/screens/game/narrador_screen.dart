@@ -5,8 +5,8 @@ class NarradorScreen extends StatelessWidget {
   final Widget proximaTela;
   final String imagemFundo;
   final String tituloAppBar;
-  final String corpoNarracao;
-  final String dica;
+  final String? corpoNarracao;  // ⭐ MUDOU para nullable
+  final String? dica;            // ⭐ MUDOU para nullable
   final bool exibirNarracaoEmCaixa;
 
   const NarradorScreen({
@@ -14,18 +14,12 @@ class NarradorScreen extends StatelessWidget {
     required this.proximaTela,
     required this.imagemFundo,
     String? tituloAppBar,
-    String? corpoNarracao,
-    String? dica,
+    this.corpoNarracao,          // ⭐ Agora é opcional
+    this.dica,                   // ⭐ Agora é opcional
     this.exibirNarracaoEmCaixa = false,
-  }) : tituloAppBar = tituloAppBar ?? 'Narrador',
-       corpoNarracao = corpoNarracao ?? _corpoPadrao,
-       dica = dica ?? _dicaPadrao;
+  }) : tituloAppBar = tituloAppBar ?? 'Narrador';
 
-  static const String _corpoPadrao =
-      'Você acorda no campus...\n\nEstá escuro.\n\nO silêncio domina o lugar.\n\nVocê não sabe como chegou ali...\n\nMas algo não está certo.';
-
-  static const String _dicaPadrao =
-      '💭 Dica:\nExplore o ambiente ao seu redor...';
+  // ⭐ REMOVIDO _corpoPadrao e _dicaPadrao
 
   String _formatarTexto(String texto) {
     const marcador = '__ELLIPSIS__';
@@ -41,12 +35,23 @@ class NarradorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ⭐ Se não houver corpoNarracao, não mostra a tela
+    if (corpoNarracao == null || corpoNarracao!.isEmpty) {
+      // Vai direto para a próxima tela
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => proximaTela),
+        );
+      });
+      return const SizedBox.shrink();
+    }
+
     return Scaffold(
-      // estrutura básica da tela
       appBar: AppBar(
         title: Text(tituloAppBar),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48), // azul escuro
-        foregroundColor: Colors.white, // texto + ícone branco
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Voltar',
@@ -68,13 +73,14 @@ class NarradorScreen extends StatelessWidget {
                 final espacamentoTitulo = telaPequena ? 16.0 : 30.0;
                 final espacamentoDica = telaPequena ? 20.0 : 10.0;
                 final espacamentoBotao = telaPequena ? 26.0 : 10.0;
+                
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       tituloAppBar,
                       style: TextStyle(
-                        color: Color.fromARGB(255, 255, 213, 0),
+                        color: const Color.fromARGB(255, 255, 213, 0),
                         fontSize: tituloFont,
                         fontFamily: 'PressStart2P',
                       ),
@@ -95,7 +101,7 @@ class NarradorScreen extends StatelessWidget {
                             : null,
                       ),
                       child: Text(
-                        _formatarTexto(corpoNarracao),
+                        _formatarTexto(corpoNarracao!),
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           color: Colors.white,
@@ -108,18 +114,18 @@ class NarradorScreen extends StatelessWidget {
 
                     SizedBox(height: espacamentoDica),
 
-                    Text(
-                      dica,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: dicaFont,
+                    if (dica != null && dica!.isNotEmpty)
+                      Text(
+                        dica!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: dicaFont,
+                        ),
                       ),
-                    ),
 
                     SizedBox(height: espacamentoBotao),
 
-                    //Botão para avançar para a próxima tela
                     SizedBox(
                       width: 260,
                       child: ElevatedButton(

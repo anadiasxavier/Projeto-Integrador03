@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../widgets/background.dart';
 import '../game/personagem_screen.dart';
+import '../game/exploration_screen.dart';
+import '../../main.dart';
+import '../../services/firestore_service.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DesafioArenaScreen extends StatefulWidget {
   const DesafioArenaScreen({super.key});
@@ -12,6 +18,7 @@ class DesafioArenaScreen extends StatefulWidget {
 class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
   int perguntaAtual = 0;
   int acertos = 0;
+  final FirestoreService firestore = FirestoreService();
 
   final List<Map<String, Object>> perguntas = [
     {
@@ -25,10 +32,10 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
           'Na franquia The Sims, o que acontece quando um Sim fica muito tempo sem fazer as necessidades?',
       'opcoes': [
         'Ganha habilidades',
-        'Desmaia ou morre',
-        'Muda de casa'
+        'Muda de casa',
+        'Desmaia ou morre'
       ],
-      'correta': 1,
+      'correta': 2,
     },
     {
       'pergunta':
@@ -38,147 +45,165 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
     },
   ];
 
+  // Falas do guardião da arena
+  final List<String> _falasGuardiao = [
+    'Você derrotou todos os adversários...',
+    'Os códigos se renderam ao seu comando.',
+    'A arena agora reconhece seu poder.',
+    'Mas isso é apenas o começo...',
+  ];
+
+  // Falas do personagem
+  final List<String> _falasPersonagem = [
+    'Consegui vencer todos os desafios!',
+    'De repente, algo chama minha atenção...',
+  ];
+
   void responder(int index) {
     if (index == perguntas[perguntaAtual]['correta']) {
-      acertos++; // Contabiliza acertos
+      acertos++;
     }
 
     if (perguntaAtual < perguntas.length - 1) {
-      setState(() => perguntaAtual++); // Avança para a próxima
+      setState(() => perguntaAtual++);
     } else {
-      _finalizar(); // Acabou as perguntas
+      _finalizar();
     }
   }
 
   void _finalizar() {
-    if (acertos == 3) { // Acertou todas
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => _telaFragmentoObtido(),
-        ),
-      );
-    } else { // Errou alguma
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PersonagemScreen(
-            imagemFundo: "assets/arena.png",
-            falasCustom: [
-              'A tela ficou vermelha…',
-              'Isso não parece nada bom…',
-              'RESPOSTA INCORRETA',
-            ],
-            instrucaoToque: 'Tente novamente',
-            substituirAoAvancarFinal: false,
-            proximaTela: const DesafioArenaScreen(),
-          ),
-        ),
-      );
+    if (acertos == 3) {
+      _fluxoAcerto();
+    } else {
+      _fluxoErro();
     }
   }
 
-  // TELA DE RECOMPENSA
-  Widget _telaFragmentoObtido() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fragmento de Chave"),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-      ),
-      body: Background(
-        imagem: "assets/arena.png",
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withOpacity(0.2),
-                  border: Border.all(color: Colors.amber, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.vpn_key,
-                  color: Colors.amber,
-                  size: 80,
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              const Text(
-                "FRAGMENTO DE CHAVE\nOBTIDO!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              Text(
-                "A arena ficou em silêncio.\n"
-                "Os monitores desligaram...\n"
-                "Mas algo ainda está observando.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              GestureDetector(
-                onTap: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.exit_to_app, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
-                      Text(
-                        "VOLTAR AO CAMPUS",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+  void _fluxoAcerto() async {
+    // Primeiro: Falas do Guardião
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PersonagemScreen(
+          imagemFundo: "assets/arena.png",
+          falasCustom: _falasGuardiao,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+          proximaTela: const SizedBox.shrink(),
         ),
       ),
     );
+    
+    // Segundo: Falas do Personagem
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PersonagemScreen(
+          imagemFundo: "assets/arena.png",
+          falasCustom: _falasPersonagem,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+          proximaTela: const SizedBox.shrink(),
+        ),
+      ),
+    );
+    
+    // Terceiro: Tela do Computador
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => _telaComputadorConcluido(),
+      ),
+    );
+    
+    // ⭐ FINALMENTE: Salva e volta para Exploration
+    await _salvarProgressoERetornar();
+  }
+
+  // Tela do computador com a mensagem
+  Widget _telaComputadorConcluido() {
+    return PersonagemScreen(
+      imagemFundo: "assets/arena.png",
+      falasCustom: [
+        'Olhando para a tela do computador...',
+        'Uma mensagem aparece no monitor:',
+        '',
+        '    "DESAFIO CONCLUÍDO!"',
+        '    "SIGA PARA A PRÓXIMA SALA"',
+        '',
+        'Preciso continuar minha jornada...',
+      ],
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+      proximaTela: const SizedBox.shrink(),
+    );
+  }
+
+  void _fluxoErro() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PersonagemScreen(
+          imagemFundo: "assets/arena.png",
+          falasCustom: [
+            'A tela ficou vermelha…',
+            'Isso não parece nada bom…',
+            'VOCÊ FALHOU NO DESAFIO!',
+            'Os jogos nunca perdoam quem erra...',
+            'Tente novamente quando estiver pronto.',
+          ],
+          instrucaoToque: 'Tente novamente',
+          substituirAoAvancarFinal: false,
+          proximaTela: const DesafioArenaScreen(),
+        ),
+      ),
+    );
+  }
+
+  // Função que salva o progresso no Firestore
+  Future<void> _salvarProgressoERetornar() async {
+    try {
+      print('Iniciando salvamento...');
+      
+      // Salva no Firestore
+      await firestore.updatePlayerData(
+        raJogador,
+        {
+          'salasConcluidas': FieldValue.arrayUnion(['Arena']),
+        },
+      );
+      
+      print('Progresso da Arena salvo com sucesso!');
+      
+      // ⭐ VOLTA PARA EXPLORATION SCREEN
+      if (mounted) {
+        print('Voltando para ExplorationScreen...');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+      
+    } catch (e) {
+      print('Erro ao salvar progresso da Arena: $e');
+      
+      // Se deu erro, tenta voltar mesmo assim
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    }
   }
 
   @override
@@ -187,9 +212,13 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Quiz Gamer"),
+        title: const Text("Desafio da Arena"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -204,42 +233,76 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
             padding: const EdgeInsets.all(20),
             constraints: const BoxConstraints(maxWidth: 500),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withOpacity(0.85),
               borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: const Color(0xFFB388FF).withOpacity(0.5),
+                width: 2,
+              ),
             ),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "Pergunta ${perguntaAtual + 1}/3",
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontFamily: 'PressStart2P',
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB388FF).withOpacity(0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFB388FF),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.sports_esports,
+                      color: Color(0xFFB388FF),
+                      size: 40,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB388FF).withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "PERGUNTA ${perguntaAtual + 1}/${perguntas.length}",
+                      style: const TextStyle(
+                        color: Color(0xFFB388FF),
+                        fontSize: 10,
+                        fontFamily: 'PressStart2P',
+                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
 
                   Text(
                     pergunta['pergunta'] as String,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 13,
                       fontFamily: 'PressStart2P',
+                      height: 1.6,
                     ),
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 30),
 
                   ...(pergunta['opcoes'] as List<String>)
                       .asMap()
                       .entries
                       .map(
                         (e) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           child: GestureDetector(
                             onTap: () => responder(e.key),
                             child: Container(
@@ -247,25 +310,60 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
                               padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFB388FF)
-                                    .withOpacity(0.2),
+                                    .withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: const Color(0xFFB388FF),
+                                  width: 1.5,
                                 ),
                               ),
-                              child: Text(
-                                e.value,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'PressStart2P',
-                                  fontSize: 12,
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '${String.fromCharCode(65 + e.key)})',
+                                    style: const TextStyle(
+                                      color: Color(0xFFB388FF),
+                                      fontSize: 12,
+                                      fontFamily: 'PressStart2P',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: Text(
+                                      e.value,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'PressStart2P',
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
                       ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  LinearProgressIndicator(
+                    value: (perguntaAtual + 1) / perguntas.length,
+                    backgroundColor: Colors.white24,
+                    color: const Color(0xFFB388FF),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  
+                  const SizedBox(height: 10),
+                  
+                  Text(
+                    'ACERTOS: $acertos/${perguntas.length}',
+                    style: const TextStyle(
+                      color: Colors.white38,
+                      fontSize: 10,
+                      fontFamily: 'PressStart2P',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -274,4 +372,4 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       ),
     );
   }
-}
+} 

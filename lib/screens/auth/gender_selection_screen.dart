@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/firestore_service.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart' as main_app;
+import '../game/intro_screen.dart';
 
 class GenderSelectionScreen extends StatefulWidget {
   final String ra;
@@ -59,7 +60,7 @@ class _GenderSelectionScreenState
       context,
       MaterialPageRoute(
         builder: (context) =>
-            const ExplorationScreen(),
+            const IntroScreen(),
       ),
     );
   }

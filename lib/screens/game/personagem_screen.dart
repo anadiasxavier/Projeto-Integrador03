@@ -27,12 +27,7 @@ class PersonagemScreen extends StatefulWidget {
 class _PersonagemScreenState extends State<PersonagemScreen> {
   int indice = 0;
 
-  static const List<String> _falasPadrao = [
-    "Onde eu estou...?",
-    "Isso é o campus?",
-    "Está tudo muito estranho...",
-    "Preciso descobrir o que aconteceu...",
-  ];
+  // ⭐ REMOVIDO _falasPadrao
 
   static const Map<String, String> _reactionAssetNames = {
     'confuso': 'Confuso',
@@ -47,9 +42,19 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   bool get _showReactions => widget.exibirReacoes;
 
-  List<String> get _falas => widget.falasCustom ?? _falasPadrao;
+  // ⭐ Se não tiver falasCustom, retorna lista vazia (não mostra nada)
+  List<String> get _falas {
+    if (widget.falasCustom == null || widget.falasCustom!.isEmpty) {
+      // Opção 1: Retorna lista vazia - não mostra nada
+      return [];
+      
+      // Opção 2: Ou mostra uma mensagem discreta (descomente se preferir)
+      // return ['[Aguardando falas...]'];
+    }
+    return widget.falasCustom!;
+  }
 
-  bool get _ultimaFala => indice >= _falas.length - 1;
+  bool get _ultimaFala => _falas.isEmpty || indice >= _falas.length - 1;
 
   String _defaultCharacterImage() {
     return generoJogador == 'feminino'
@@ -58,6 +63,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   }
 
   String _dialogText(int index) {
+    if (_falas.isEmpty) return ''; // Não mostra nada
     if (!_showReactions) return _falas[index];
     return _parseFala(_falas[index]).key;
   }
@@ -75,6 +81,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   }
 
   String _reactionForIndex(int index) {
+    if (_falas.isEmpty) return '';
     final parsed = _parseFala(_falas[index]);
     return parsed.value;
   }
@@ -90,6 +97,19 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   }
 
   void proximaFala() {
+    if (_falas.isEmpty) {
+      // Se não tem falas, vai direto para próxima tela
+      if (widget.proximaTela != null) {
+        final rota = MaterialPageRoute(builder: (context) => widget.proximaTela!);
+        if (widget.substituirAoAvancarFinal) {
+          Navigator.pushReplacement(context, rota);
+        } else {
+          Navigator.push(context, rota);
+        }
+      }
+      return;
+    }
+    
     if (!_ultimaFala) {
       setState(() => indice++);
       return;
@@ -129,7 +149,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final reactionImage = _showReactions
+    final reactionImage = _showReactions && _falas.isNotEmpty
         ? _reactionAssetPath(_reactionForIndex(indice))
         : null;
 
@@ -219,14 +239,15 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                               ),
                             ),
                             const SizedBox(height: 6),
-                            Text(
-                              _dialogText(indice),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontFamily: 'PressStart2P',
+                            if (_falas.isNotEmpty)
+                              Text(
+                                _dialogText(indice),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontFamily: 'PressStart2P',
+                                ),
                               ),
-                            ),
                             if (_textoDicaToque() != null) ...[
                               const SizedBox(height: 8),
                               Row(

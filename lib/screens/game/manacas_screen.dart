@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
-import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_manacas.dart';
 
@@ -41,107 +40,105 @@ class ManacasScreen extends StatelessWidget {
       ),
       body: Background(
         imagem: "assets/manacas.png",
-        child: Stack(
-          children: [
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
 
-                    const Text(
-                      "MANACÁS",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
+                // TÍTULO
+                const Text(
+                  "MANACÁS",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                // DESCRIÇÃO
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: const Text(
+                    "As luzes piscam lentamente.\n"
+                    "O ambiente parece vazio.\n"
+                    "Mas algo observa você no silêncio...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 11,
+                      fontFamily: 'PressStart2P',
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // BOTÃO EXPLORAR
+                GestureDetector(
+                  onTap: () => _iniciarFluxo(context),
+                  child: Container(
+                    width: 300,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.green.withOpacity(0.4),
                       ),
                     ),
-
-                    const SizedBox(height: 15),
-
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 30),
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white12),
-                      ),
-                      child: const Text(
-                        "As luzes piscam lentamente.\n"
-                        "O ambiente parece vazio.\n"
-                        "Mas algo observa você no silêncio...",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 11,
-                          fontFamily: 'PressStart2P',
-                          height: 1.6,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.explore,
+                          color: Colors.green,
+                          size: 28,
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    GestureDetector(
-                      onTap: () => _iniciarFluxo(context),
-                      child: Container(
-                        width: 300,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: Colors.green.withOpacity(0.4),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.explore,
-                              color: Colors.green,
-                              size: 28,
+                            Text(
+                              "EXPLORAR MANACÁS",
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'PressStart2P',
+                              ),
                             ),
-                            SizedBox(width: 15),
-                            Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "EXPLORAR MANACÁS",
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'PressStart2P',
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  "Investigar o ambiente estranho",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
+                            SizedBox(height: 4),
+                            Text(
+                              "Investigar o ambiente estranho",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-
-                    const SizedBox(height: 40),
-                  ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: 40),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -151,45 +148,12 @@ class ManacasScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => NarradorScreen(
-          tituloAppBar: "Entrando no Manacás",
+        builder: (context) => PersonagemScreen(
           imagemFundo: "assets/manacas.png",
-          corpoNarracao:
-              'Você atravessa lentamente o corredor do Manacás.\n\n'
-              'As luzes piscam de forma irregular.\n\n'
-              'As salas estão vazias.\n\n'
-              'O silêncio parece pesado demais.\n\n'
-              'Como se algo estivesse esperando por você...',
-          dica: 'Toque em Continuar.',
-          exibirNarracaoEmCaixa: true,
-          proximaTela: NarradorScreen(
-            tituloAppBar: "Uma Presença...",
-            imagemFundo: "assets/manacas.png",
-            corpoNarracao:
-                'No fim do corredor, uma figura surge lentamente.\n\n'
-                'Ela permanece imóvel por alguns segundos.\n\n'
-                'Os olhos acompanham cada movimento seu.\n\n'
-                'Então... ela começa a se aproximar.',
-            dica: 'Toque em Continuar.',
-            exibirNarracaoEmCaixa: true,
-            proximaTela: PersonagemScreen(
-              imagemFundo: "assets/manacas.png",
-              falasCustom: _falasManacas,
-              instrucaoToque: 'Toque para continuar',
-              substituirAoAvancarFinal: false,
-              proximaTela: NarradorScreen(
-                tituloAppBar: "O Desafio",
-                imagemFundo: "assets/manacas.png",
-                corpoNarracao:
-                    'Sobre a mesa, linhas começam a surgir sozinhas.\n\n'
-                    'Peças aparecem lentamente diante dos seus olhos.\n\n'
-                    'Um jogo da velha toma forma.',
-                dica: 'Toque em Continuar.',
-                exibirNarracaoEmCaixa: true,
-                proximaTela: const DesafioManacasScreen(),
-              ),
-            ),
-          ),
+          falasCustom: _falasManacas,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: false,
+          proximaTela: const DesafioManacasScreen(),
         ),
       ),
     );

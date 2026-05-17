@@ -1,9 +1,12 @@
 // arquivo: desafio_praca.dart
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../widgets/background.dart';
-import '../game/narrador_screen.dart';
 import '../game/personagem_screen.dart';
-import '../game/praca_screen.dart';
+import '../game/exploration_screen.dart';
+import '../../main.dart';
+import '../../services/firestore_service.dart';
 
 class DesafioPracaScreen extends StatefulWidget {
   const DesafioPracaScreen({super.key});
@@ -14,7 +17,6 @@ class DesafioPracaScreen extends StatefulWidget {
 
 class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   // Dicionário para controlar qual lixeira cada item está
-  // null = não está em nenhuma lixeira
   Map<String, String?> _itensNasLixeiras = {};
   
   // Item selecionado da lista
@@ -23,13 +25,24 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   // Contador de tentativas
   int _tentativas = 0;
   
-  // Falas finais após vencer
-  static const List<String> _falasFinais = [
+  final FirestoreService firestore = FirestoreService();
+
+  // Falas do guardião
+  final List<String> _falasGuardiao = [
     '...Você limpou a praça.',
     'O meio ambiente agradece.',
-    'Leve isso como recompensa.',
+    'A natureza está em equilíbrio novamente.',
+    'Mas isso é apenas o começo da sua jornada.',
   ];
-  
+
+  // Falas do personagem
+  final List<String> _falasPersonagem = [
+    'Consegui! Tudo no lugar certo!',
+    'A praça está limpa novamente.',
+    'Um brilho surge entre as árvores...',
+    'É mais um Fragmento de Chave!',
+  ];
+
   // Mapeamento correto dos itens
   final Map<String, String> _classificacaoCorreta = {
     '🍟 Restos de batata': 'organico',
@@ -43,6 +56,25 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   String _mensagem = "Selecione um item e coloque na lixeira correta!";
   Color _mensagemCor = Colors.white70;
   bool _acertou = false;
+
+  // Tela do computador
+  Widget _telaComputadorConcluido() {
+    return PersonagemScreen(
+      imagemFundo: "assets/praca.png",
+      falasCustom: [
+        'Olhando para o totem digital da praça...',
+        'Uma mensagem aparece na tela:',
+        '',
+        '    "DESAFIO CONCLUÍDO!"',
+        '    "SIGA PARA A PRÓXIMA SALA"',
+        '',
+        'A praça está em paz novamente.',
+      ],
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: true,
+      proximaTela: const SizedBox.shrink(),
+    );
+  }
 
   @override
   void initState() {
@@ -112,7 +144,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         .toList();
   }
 
-  void _verificarResolucao() {
+  void _verificarResolucao() async {
     bool acertou = true;
     
     for (var entry in _itensNasLixeiras.entries) {
@@ -128,7 +160,6 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       if (acertou) {
         // VENCEU!
         _acertou = true;
-        _vitoria();
       } else {
         // ERROU - Reseta os itens
         _mensagem = "❌ Não foi dessa vez! Tente novamente...";
@@ -150,146 +181,93 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         });
       }
     });
+    
+    if (acertou) {
+      await _vitoria();
+    }
   }
 
-  void _vitoria() {
-    Navigator.pushReplacement(
+  Future<void> _vitoria() async {
+    // ⭐ FLUXO SEQUENCIAL DE FALAS
+    // Primeiro: Falas do Guardião
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => NarradorScreen(
-          tituloAppBar: "Vitória",
+        builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
-          corpoNarracao:
-              'Você organizou todo o lixo corretamente.\n\n'
-              'A praça está limpa novamente.\n\n'
-              'O ar parece mais puro agora.',
-          dica: 'Toque em Continuar.',
-          exibirNarracaoEmCaixa: true,
-          proximaTela: PersonagemScreen(
-            imagemFundo: "assets/praca.png",
-            falasCustom: _falasFinais,
-            instrucaoToque: 'Toque para continuar',
-            substituirAoAvancarFinal: false,
-            proximaTela: _fragmento(),
-          ),
+          falasCustom: _falasGuardiao,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
         ),
       ),
     );
+
+    // Segundo: Falas do Personagem
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PersonagemScreen(
+          imagemFundo: "assets/praca.png",
+          falasCustom: _falasPersonagem,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
+        ),
+      ),
+    );
+
+    // Terceiro: Tela do Computador
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _telaComputadorConcluido(),
+      ),
+    );
+
+    // Finalmente: Salva e volta para Exploration
+    await _salvarProgressoERetornar();
   }
 
-  Widget _fragmento() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fragmento de Chave"),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-      ),
-      body: Background(
-        imagem: "assets/praca.png",
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Ícone do fragmento com efeito
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withOpacity(0.2),
-                  border: Border.all(
-                    color: Colors.amber,
-                    width: 3,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.vpn_key,
-                  color: Colors.amber,
-                  size: 80,
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Texto principal
-              const Text(
-                "FRAGMENTO DE CHAVE\nOBTIDO!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // Texto descritivo
-              Text(
-                "A praça está limpa novamente.\n"
-                "A natureza agradece seu esforço.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Botão voltar
-              GestureDetector(
-                onTap: () {
-                  Navigator.popUntil(
-                    context,
-                    (route) => route.isFirst,
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.exit_to_app,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        "VOLTAR AO CAMPUS",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+  // Função que salva o progresso no Firestore
+  Future<void> _salvarProgressoERetornar() async {
+    try {
+      print('Salvando progresso da Praça...');
+      
+      await firestore.updatePlayerData(
+        raJogador,
+        {
+          'salasConcluidas': FieldValue.arrayUnion(['Praça']),
+        },
+      );
+      
+      print('Progresso da Praça salvo com sucesso!');
+      
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print('Erro ao salvar progresso da Praça: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: $e'),
+            backgroundColor: Colors.red,
           ),
-        ),
-      ),
-    );
+        );
+        
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    }
   }
 
   @override
@@ -299,6 +277,10 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         title: const Text("Coleta Seletiva na Praça"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           // Contador de tentativas
           Padding(

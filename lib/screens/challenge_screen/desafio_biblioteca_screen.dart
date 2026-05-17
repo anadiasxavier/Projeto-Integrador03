@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../widgets/background.dart';
 import '../game/personagem_screen.dart';
 import '../game/narrador_screen.dart';
+import '../game/exploration_screen.dart';
+
+import '../../main.dart';
+import '../../services/firestore_service.dart';
 
 class DesafioBibliotecaScreen extends StatefulWidget {
   const DesafioBibliotecaScreen({super.key});
@@ -11,11 +17,14 @@ class DesafioBibliotecaScreen extends StatefulWidget {
       _DesafioBibliotecaScreenState();
 }
 
-class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
+class _DesafioBibliotecaScreenState
+    extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
+
   int? _respostaSelecionada;
   int _tentativas = 0;
   late AnimationController _animacaoController;
+  final FirestoreService firestore = FirestoreService();
 
   final String _textoCharada =
       '"Você chega com fome,\n'
@@ -75,39 +84,84 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   }
 
   void _fluxoAcerto() {
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NarradorScreen(
-            tituloAppBar: "Resposta Correta!",
-            imagemFundo: "assets/biblioteca.png",
-            corpoNarracao:
-                'O livro brilha intensamente!\n\n'
-                'As letras douradas dançam nas páginas, '
-                'reconhecendo a resposta correta.\n\n'
-                'O guardião pareceu surpreso... se é que isso é possível '
-                'para alguém sem boca.\n\n'
-                'O ambiente opressivo começa a se dissipar.',
-            dica: 'Toque em Continuar.',
-            exibirNarracaoEmCaixa: true,
-            proximaTela: PersonagemScreen(
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NarradorScreen(
+              tituloAppBar: "Resposta Correta!",
               imagemFundo: "assets/biblioteca.png",
-              falasCustom: _falasGuardiaoFinal,
-              instrucaoToque: 'Toque para continuar',
-              substituirAoAvancarFinal: false,
+              corpoNarracao:
+                  'O livro brilha intensamente!\n\n'
+                  'As letras douradas dançam nas páginas.\n\n'
+                  'O guardião parece surpreso.\n\n'
+                  'O ambiente opressivo começa a desaparecer.',
+              dica: 'Toque em Continuar.',
+              exibirNarracaoEmCaixa: true,
               proximaTela: PersonagemScreen(
                 imagemFundo: "assets/biblioteca.png",
-                falasCustom: _falasPersonagemFinal,
+                falasCustom: _falasGuardiaoFinal,
                 instrucaoToque: 'Toque para continuar',
                 substituirAoAvancarFinal: false,
-                proximaTela: _telaFragmentoObtido(),
+                proximaTela: PersonagemScreen(
+                  imagemFundo: "assets/biblioteca.png",
+                  falasCustom: _falasPersonagemFinal,
+                  instrucaoToque: 'Toque para continuar',
+                  substituirAoAvancarFinal: false,
+                  proximaTela: _voltarParaExploration(), // Chamada direta
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
+      },
+    );
+  }
+
+  // Nova função que salva os dados e volta para ExplorationScreen
+  Widget _voltarParaExploration() {
+    // Executa o salvamento imediatamente
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _salvarProgressoERetornar();
     });
+    
+    // Retorna um widget vazio ou um loading
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Colors.amber,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _salvarProgressoERetornar() async {
+    try {
+      // Salva o progresso no Firestore
+      await firestore.updatePlayerData(
+        raJogador,
+        {
+          'salasConcluidas': FieldValue.arrayUnion(['Biblioteca']),
+          'chaves': FieldValue.arrayUnion(['Manacás', 'Mescla', 'Praça', 'Arena']),
+        },
+      );
+      
+      print('Progresso salvo com sucesso!');
+    } catch (e) {
+      print('Erro ao salvar progresso: $e');
+    }
+    
+    // Verifica se o contexto ainda está montado antes de navegar
+    if (!mounted) return;
+    
+    // Volta diretamente para a ExplorationScreen
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      ExplorationScreen.routeName,
+      (route) => false,
+    );
   }
 
   void _fluxoErro() {
@@ -118,11 +172,18 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-          side: const BorderSide(color: Colors.redAccent, width: 2),
+          side: const BorderSide(
+            color: Colors.redAccent,
+            width: 2,
+          ),
         ),
         title: const Row(
           children: [
-            Icon(Icons.close, color: Colors.redAccent, size: 28),
+            Icon(
+              Icons.close,
+              color: Colors.redAccent,
+              size: 28,
+            ),
             SizedBox(width: 10),
             Text(
               'RESPOSTA INCORRETA',
@@ -139,8 +200,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
           children: [
             SizedBox(height: 10),
             Text(
-              'O livro se fecha momentaneamente.\n'
-              'O guardião permanece imóvel, observando.\n\n'
+              'O livro se fecha momentaneamente.\n\n'
+              'O guardião permanece imóvel.\n\n'
               'Tente novamente...',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -170,101 +231,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _telaFragmentoObtido() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fragmento de Chave"),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-      ),
-      body: Background(
-        imagem: "assets/biblioteca.png",
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withOpacity(0.2),
-                  border: Border.all(color: Colors.amber, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.vpn_key,
-                  color: Colors.amber,
-                  size: 80,
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                "FRAGMENTO DE CHAVE\nOBTIDO!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                "O guardião desapareceu.\n"
-                "A biblioteca está em paz agora.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 40),
-              GestureDetector(
-                onTap: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.exit_to_app, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
-                      Text(
-                        "VOLTAR AO CAMPUS",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -344,9 +310,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                       decoration: BoxDecoration(
                         color: selecionada
                             ? (index == _respostaCorretaIndex
-                                    ? Colors.green
-                                    : Colors.redAccent)
-                                .withOpacity(0.2)
+                                ? Colors.green
+                                : Colors.redAccent).withOpacity(0.2)
                             : Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(

@@ -130,7 +130,7 @@ class BibliotecaScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "EXPLORAR A BIBLIOTECA",
+                                  "BIBLIOTECA",
                                   style: TextStyle(
                                     color: Colors.cyan,
                                     fontSize: 12,

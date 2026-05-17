@@ -1,27 +1,57 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../widgets/background.dart';
-import '../game/narrador_screen.dart';
 import '../game/personagem_screen.dart';
+import '../game/exploration_screen.dart';
+import '../../main.dart';
+import '../../services/firestore_service.dart';
 
 class DesafioManacasScreen extends StatefulWidget {
   const DesafioManacasScreen({super.key});
 
   @override
-  State<DesafioManacasScreen> createState() =>
-      _DesafioManacasScreenState();
+  State<DesafioManacasScreen> createState() => _DesafioManacasScreenState();
 }
 
-class _DesafioManacasScreenState
-    extends State<DesafioManacasScreen> {
-
+class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
   List<String> board = List.filled(9, '');
+  final FirestoreService firestore = FirestoreService();
 
-  static const List<String> _falasFinais = [
+  // Falas do guardião (vitória)
+  final List<String> _falasGuardiao = [
     '...Você observou.',
     'Talvez exista esperança para você.',
-    'Leve isso.',
+    'Mas isso é apenas o começo.',
+    'O silêncio do Manacas te observa.',
   ];
+
+  // Falas do personagem
+  final List<String> _falasPersonagem = [
+    'Consegui vencer o guardião!',
+    'O tabuleiro finalmente parou...',
+    'De repente, algo brilha na escuridão.',
+  ];
+
+  // Tela do computador
+  Widget _telaComputadorConcluido() {
+    return PersonagemScreen(
+      imagemFundo: "assets/manacas.png",
+      falasCustom: [
+        'Olhando para o pedestal...',
+        'Uma mensagem começa a brilhar:',
+        '',
+        '    "DESAFIO CONCLUÍDO!"',
+        '    "SIGA PARA A PRÓXIMA SALA"',
+        '',
+        'Mais um passo nessa jornada...',
+      ],
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: true,
+      proximaTela: const SizedBox.shrink(),
+    );
+  }
 
   void jogar(int index) {
     if (board[index] != '') return;
@@ -63,14 +93,9 @@ class _DesafioManacasScreenState
 
   bool verificar(String p) {
     List<List<int>> wins = [
-      [0,1,2],
-      [3,4,5],
-      [6,7,8],
-      [0,3,6],
-      [1,4,7],
-      [2,5,8],
-      [0,4,8],
-      [2,4,6],
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6],
     ];
 
     for (var w in wins) {
@@ -80,7 +105,6 @@ class _DesafioManacasScreenState
         return true;
       }
     }
-
     return false;
   }
 
@@ -92,18 +116,11 @@ class _DesafioManacasScreenState
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-          side: const BorderSide(
-            color: Colors.redAccent,
-            width: 2,
-          ),
+          side: const BorderSide(color: Colors.redAccent, width: 2),
         ),
         title: const Row(
           children: [
-            Icon(
-              Icons.close,
-              color: Colors.redAccent,
-              size: 28,
-            ),
+            Icon(Icons.close, color: Colors.redAccent, size: 28),
             SizedBox(width: 10),
             Text(
               'VOCÊ FALHOU',
@@ -130,7 +147,6 @@ class _DesafioManacasScreenState
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-
               setState(() {
                 board = List.filled(9, '');
               });
@@ -149,37 +165,100 @@ class _DesafioManacasScreenState
     );
   }
 
-  void _vitoria() {
-    Navigator.pushReplacement(
+  void _vitoria() async {
+    // Fluxo sequencial de falas
+    // Primeiro: Falas do Guardião
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => NarradorScreen(
-          tituloAppBar: "Vitória",
+        builder: (_) => PersonagemScreen(
           imagemFundo: "assets/manacas.png",
-          corpoNarracao:
-              'O tabuleiro para de se mover.\n\n'
-              'O guardião permanece imóvel.\n\n'
-              'Pela primeira vez... o silêncio parece diferente.',
-          dica: 'Toque em Continuar.',
-          exibirNarracaoEmCaixa: true,
-          proximaTela: PersonagemScreen(
-            imagemFundo: "assets/manacas.png",
-            falasCustom: _falasFinais,
-            instrucaoToque: 'Toque para continuar',
-            substituirAoAvancarFinal: false,
-            proximaTela: _fragmento(),
-          ),
+          falasCustom: _falasGuardiao,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
         ),
       ),
     );
+
+    // Segundo: Falas do Personagem
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PersonagemScreen(
+          imagemFundo: "assets/manacas.png",
+          falasCustom: _falasPersonagem,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const SizedBox.shrink(),
+        ),
+      ),
+    );
+
+    // Terceiro: Tela do Computador
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _telaComputadorConcluido(),
+      ),
+    );
+
+    // Finalmente: Salva e volta para Exploration
+    await _salvarProgressoERetornar();
   }
 
-  Widget _fragmento() {
+  // Função que salva o progresso no Firestore
+  Future<void> _salvarProgressoERetornar() async {
+    try {
+      print('Salvando progresso do Manacas...');
+      
+      await firestore.updatePlayerData(
+        raJogador,
+        {
+          'salasConcluidas': FieldValue.arrayUnion(['Manacas']), // ⭐ SEM ACENTO
+        },
+      );
+      
+      print('Progresso do Manacas salvo com sucesso!');
+      
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      print('Erro ao salvar progresso do Manacas: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          ExplorationScreen.routeName,
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fragmento de Chave"),
+        title: const Text("Jogo do Guardião - Manacas"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Background(
         imagem: "assets/manacas.png",
@@ -187,146 +266,68 @@ class _DesafioManacasScreenState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
+              // Ícone do jogo
               Container(
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
                   color: Colors.amber.withOpacity(0.2),
-                  border: Border.all(
-                    color: Colors.amber,
-                    width: 3,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.amber, width: 2),
                 ),
                 child: const Icon(
-                  Icons.vpn_key,
+                  Icons.games,
                   color: Colors.amber,
-                  size: 80,
+                  size: 40,
                 ),
               ),
-
-              const SizedBox(height: 30),
-
-              const Text(
-                "FRAGMENTO DE CHAVE\nOBTIDO!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              Text(
-                "O guardião desaparece lentamente.\n"
-                "O silêncio do Manacás finalmente acaba.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              GestureDetector(
-                onTap: () {
-                  Navigator.popUntil(
-                    context,
-                    (route) => route.isFirst,
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
+              
+              const SizedBox(height: 20),
+              
+              // Tabuleiro
+              SizedBox(
+                width: 300,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: 9,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.exit_to_app,
-                        color: Colors.white,
-                        size: 24,
+                  itemBuilder: (_, i) => GestureDetector(
+                    onTap: () => jogar(i),
+                    child: Container(
+                      margin: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        "VOLTAR AO CAMPUS",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'PressStart2P',
+                      child: Center(
+                        child: Text(
+                          board[i],
+                          style: TextStyle(
+                            color: board[i] == 'X' ? Colors.cyan : Colors.redAccent,
+                            fontSize: 30,
+                            fontFamily: 'PressStart2P',
+                          ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Dica
+              Text(
+                'Faça uma linha para vencer!',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 10,
+                  fontFamily: 'PressStart2P',
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Jogo do Guardião"),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-      ),
-      body: Background(
-        imagem: "assets/manacas.png",
-        child: Center(
-          child: SizedBox(
-            width: 300,
-            child: GridView.builder(
-              shrinkWrap: true,
-              itemCount: 9,
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-              ),
-              itemBuilder: (_, i) => GestureDetector(
-                onTap: () => jogar(i),
-                child: Container(
-                  margin: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: Center(
-                    child: Text(
-                      board[i],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontFamily: 'PressStart2P',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
       ),

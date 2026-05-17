@@ -49,8 +49,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'genero': '',
         'nivel': 1,
         'experiencia': 0,
-      });
 
+        'localAtual': 'Biblioteca',
+
+        'chaves': [],
+
+        'salasConcluidas': [],
+      });
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

@@ -3,6 +3,7 @@ import '../../services/firestore_service.dart';
 import '../game/exploration_screen.dart';
 import 'gender_selection_screen.dart';
 import '../../main.dart' as main_app;
+import '../game/intro_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,6 +40,8 @@ class _LoginScreenState
             playerData['genero'] ??
                 'masculino';
 
+        main_app.raJogador = _ra;
+
         String genero =
             playerData['genero'] ?? '';
 
@@ -55,7 +58,7 @@ class _LoginScreenState
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  const ExplorationScreen(),
+                  const IntroScreen(),
             ),
           );
         }
