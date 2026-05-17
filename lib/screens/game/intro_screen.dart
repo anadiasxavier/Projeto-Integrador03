@@ -4,6 +4,9 @@ import 'package:video_player/video_player.dart';
 import 'exploration_screen.dart';
 import '../../main.dart';
 import '../../services/firestore_service.dart';
+import '../../services/progress_service.dart';
+import '../../services/game_timer_service.dart';
+import '../../widgets/game_timer_warning_dialog.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -17,6 +20,9 @@ class _IntroScreenState extends State<IntroScreen> {
   bool _texto1 = false;
   bool _isLoading = true;
   final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
+  final GameTimerService _timerService = GameTimerService();
+  bool _modalMostrado = false;
 
   @override
   void initState() {
@@ -27,17 +33,30 @@ class _IntroScreenState extends State<IntroScreen> {
   // ⭐ VERIFICA SE O JOGADOR JÁ TEM PROGRESSO
   Future<void> _verificarProgresso() async {
     try {
+      // 1. Verifica cache local primeiro (instantâneo)
+      final temLocal = await _progress.temProgressoLocal(raJogador);
+      if (temLocal) {
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            ExplorationScreen.routeName,
+            (route) => false,
+          );
+        }
+        return;
+      }
+
+      // 2. Fallback: verifica no Firestore
       final dados = await firestore.getPlayerData(raJogador);
       
       if (dados != null) {
         final salasConcluidas = List<String>.from(dados['salasConcluidas'] ?? []);
         final chaves = List<String>.from(dados['chaves'] ?? []);
         
-        // Se tem alguma sala concluída ou alguma chave, já jogou antes
         if (salasConcluidas.isNotEmpty || chaves.isNotEmpty) {
-          print('Jogador já tem progresso: ${salasConcluidas.length} salas concluídas');
+          // Salva localmente para próximas vezes
+          await _progress.salvarLocal(raJogador, chaves, salasConcluidas);
           
-          // ⭐ PULA O VÍDEO E VAI DIRETO PARA EXPLORATION
           if (mounted) {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -66,6 +85,8 @@ class _IntroScreenState extends State<IntroScreen> {
   }
 
   void _iniciarVideo() {
+    _timerService.ensureTimerForPlayer(raJogador);
+    
     _controller = VideoPlayerController.asset(
       'assets/bibli.mp4',
     )
@@ -79,13 +100,24 @@ class _IntroScreenState extends State<IntroScreen> {
 
     _controller.addListener(() {
       if (_controller.value.position >= _controller.value.duration) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
+        _irParaExplorationComModal();
       }
     });
+  }
+  
+  Future<void> _irParaExplorationComModal() async {
+    if (!_modalMostrado && mounted) {
+      _modalMostrado = true;
+      await GameTimerWarningDialog.show(context);
+    }
+    
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        ExplorationScreen.routeName,
+        (route) => false,
+      );
+    }
   }
 
   void _iniciarTextos() async {
@@ -99,6 +131,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   void dispose() {
+    // Não limpa o timer aqui pois ele continua em outras telas
     _controller.dispose();
     super.dispose();
   }

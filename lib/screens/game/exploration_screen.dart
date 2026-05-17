@@ -4,7 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import '../../main.dart';
 import '../../services/firestore_service.dart';
 import '../../services/location_service.dart';
+import '../../services/progress_service.dart';
+import '../../services/game_timer_service.dart';
 import '../../widgets/background.dart';
+import '../../widgets/game_timer_widget.dart';
 
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
@@ -28,13 +31,15 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   List<String> chaves = [];
   List<String> salasConcluidas = [];
   final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
+  final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.024319, "lng": -46.850454},
-    "Manacas": {"lat": -23.024319, "lng": -46.850454},
-    "Mescla": {"lat": -23.024319, "lng": -46.850454},
-    "Praça": {"lat": -23.024319, "lng": -46.850454},
-    "Arena": {"lat": -23.024319, "lng": -46.850454},
+    "Biblioteca": {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Manacas":  {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Mescla":  {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Praça":  {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Arena":  {"lat": -22.9510141666, "lng": -47.07891800000},
   };
 
   @override
@@ -42,6 +47,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     super.initState();
     carregarLocalizacao();
     carregarProgresso();
+    _timerService.ensureTimerForPlayer(raJogador);
   }
 
   void carregarLocalizacao() async {
@@ -58,11 +64,21 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   }
 
   void carregarProgresso() async {
-    final dados = await firestore.getPlayerData(raJogador);
-    if (dados != null) {
+    // 1. Carrega do cache local imediatamente (sem esperar rede)
+    final local = await _progress.carregarLocal(raJogador);
+    if (mounted) {
       setState(() {
-        chaves = List<String>.from(dados['chaves'] ?? []);
-        salasConcluidas = List<String>.from(dados['salasConcluidas'] ?? []);
+        chaves = local['chaves']!;
+        salasConcluidas = local['salasConcluidas']!;
+      });
+    }
+
+    // 2. Sincroniza com Firestore em background e atualiza a UI se houver diferença
+    final remoto = await _progress.sincronizarFirestore(raJogador);
+    if (remoto != null && mounted) {
+      setState(() {
+        chaves = remoto['chaves']!;
+        salasConcluidas = remoto['salasConcluidas']!;
       });
     }
   }
@@ -107,6 +123,42 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         title: const Text("Exploração do Campus"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Center(
+              child: const GameTimerWidget(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.amber, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${salasConcluidas.length}/5 Salas",
+                      style: const TextStyle(
+                        color: Colors.amber,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'PressStart2P',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Background(
         imagem: "assets/puc.png",

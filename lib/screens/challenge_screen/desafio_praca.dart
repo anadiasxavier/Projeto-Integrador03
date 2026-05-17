@@ -1,12 +1,12 @@
 // arquivo: desafio_praca.dart
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/background.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
-import '../../services/firestore_service.dart';
+import '../../services/progress_service.dart';
+import '../../widgets/game_timer_widget.dart';
 
 class DesafioPracaScreen extends StatefulWidget {
   const DesafioPracaScreen({super.key});
@@ -25,7 +25,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   // Contador de tentativas
   int _tentativas = 0;
   
-  final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
 
   // Falas do guardião
   final List<String> _falasGuardiao = [
@@ -229,30 +229,13 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     await _salvarProgressoERetornar();
   }
 
-  // Função que salva o progresso no Firestore
+  // Função que salva o progresso localmente e no Firestore
   Future<void> _salvarProgressoERetornar() async {
     try {
-      print('Salvando progresso da Praça...');
-      
-      await firestore.updatePlayerData(
-        raJogador,
-        {
-          'salasConcluidas': FieldValue.arrayUnion(['Praça']),
-        },
-      );
-      
+      await _progress.marcarSalaConcluida(raJogador, 'Praça');
       print('Progresso da Praça salvo com sucesso!');
-      
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
-      }
     } catch (e) {
       print('Erro ao salvar progresso da Praça: $e');
-      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -260,14 +243,14 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
             backgroundColor: Colors.red,
           ),
         );
-        
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
       }
     }
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      ExplorationScreen.routeName,
+      (route) => false,
+    );
   }
 
   @override
@@ -282,18 +265,10 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // Contador de tentativas
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
-              child: Text(
-                "Tentativa: $_tentativas",
-                style: const TextStyle(
-                  color: Colors.orange,
-                  fontSize: 10,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
+              child: const GameTimerWidget(),
             ),
           ),
         ],

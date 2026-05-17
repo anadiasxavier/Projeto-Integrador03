@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/background.dart';
 import '../game/personagem_screen.dart';
@@ -7,7 +6,8 @@ import '../game/narrador_screen.dart';
 import '../game/exploration_screen.dart';
 
 import '../../main.dart';
-import '../../services/firestore_service.dart';
+import '../../services/progress_service.dart';
+import '../../widgets/game_timer_widget.dart';
 
 class DesafioBibliotecaScreen extends StatefulWidget {
   const DesafioBibliotecaScreen({super.key});
@@ -24,7 +24,7 @@ class _DesafioBibliotecaScreenState
   int? _respostaSelecionada;
   int _tentativas = 0;
   late AnimationController _animacaoController;
-  final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
 
   final String _textoCharada =
       '"Você chega com fome,\n'
@@ -139,24 +139,20 @@ class _DesafioBibliotecaScreenState
 
   Future<void> _salvarProgressoERetornar() async {
     try {
-      // Salva o progresso no Firestore
-      await firestore.updatePlayerData(
+      // Salva localmente e no Firestore via ProgressService
+      await _progress.marcarSalaConcluida(
         raJogador,
-        {
-          'salasConcluidas': FieldValue.arrayUnion(['Biblioteca']),
-          'chaves': FieldValue.arrayUnion(['Manacás', 'Mescla', 'Praça', 'Arena']),
-        },
+        'Biblioteca',
+        novasChaves: ['Manacás', 'Mescla', 'Praça', 'Arena'],
       );
-      
+
       print('Progresso salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso: $e');
     }
-    
-    // Verifica se o contexto ainda está montado antes de navegar
+
     if (!mounted) return;
-    
-    // Volta diretamente para a ExplorationScreen
+
     Navigator.pushNamedAndRemoveUntil(
       context,
       ExplorationScreen.routeName,
@@ -245,8 +241,14 @@ class _DesafioBibliotecaScreenState
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-        ),
-      ),
+        ),        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: const GameTimerWidget(),
+            ),
+          ),
+        ],      ),
       body: Background(
         imagem: "assets/biblioteca.png",
         child: Center(

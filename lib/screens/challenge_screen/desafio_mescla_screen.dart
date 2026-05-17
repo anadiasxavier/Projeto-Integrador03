@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/background.dart';
 import '../../main.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
-import '../../services/firestore_service.dart';
+import '../../services/progress_service.dart';
+import '../../widgets/game_timer_widget.dart';
 
 class MesclaPuzzleScreen extends StatefulWidget {
   const MesclaPuzzleScreen({super.key});
@@ -16,7 +16,7 @@ class MesclaPuzzleScreen extends StatefulWidget {
 
 class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
-  final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
 
   // ⭐ FALAS DO GUARDIÃO COM GÊNERO
   List<String> get _falasGuardiaoFinal => [
@@ -117,30 +117,13 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     await _salvarProgressoERetornar();
   }
 
-  // Função que salva o progresso no Firestore
+  // Função que salva o progresso localmente e no Firestore
   Future<void> _salvarProgressoERetornar() async {
     try {
-      print('Salvando progresso do Mescla...');
-      
-      await firestore.updatePlayerData(
-        raJogador,
-        {
-          'salasConcluidas': FieldValue.arrayUnion(['Mescla']),
-        },
-      );
-      
+      await _progress.marcarSalaConcluida(raJogador, 'Mescla');
       print('Progresso do Mescla salvo com sucesso!');
-      
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
-      }
     } catch (e) {
       print('Erro ao salvar progresso do Mescla: $e');
-      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -148,14 +131,14 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
             backgroundColor: Colors.red,
           ),
         );
-        
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
       }
     }
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      ExplorationScreen.routeName,
+      (route) => false,
+    );
   }
 
   void _selecionarOpcao(int index) async {
@@ -191,6 +174,14 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
           tooltip: 'Voltar uma etapa',
           onPressed: () => Navigator.maybePop(context),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: const GameTimerWidget(),
+            ),
+          ),
+        ],
       ),
       body: Background(
         imagem: 'assets/mescla.png',

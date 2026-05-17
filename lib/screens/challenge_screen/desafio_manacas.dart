@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/background.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
-import '../../services/firestore_service.dart';
+import '../../services/progress_service.dart';
+import '../../widgets/game_timer_widget.dart';
 
 class DesafioManacasScreen extends StatefulWidget {
   const DesafioManacasScreen({super.key});
@@ -17,7 +17,7 @@ class DesafioManacasScreen extends StatefulWidget {
 
 class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
   List<String> board = List.filled(9, '');
-  final FirestoreService firestore = FirestoreService();
+  final ProgressService _progress = ProgressService();
 
   // Falas do guardião (vitória)
   final List<String> _falasGuardiao = [
@@ -207,30 +207,13 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
     await _salvarProgressoERetornar();
   }
 
-  // Função que salva o progresso no Firestore
+  // Função que salva o progresso localmente e no Firestore
   Future<void> _salvarProgressoERetornar() async {
     try {
-      print('Salvando progresso do Manacas...');
-      
-      await firestore.updatePlayerData(
-        raJogador,
-        {
-          'salasConcluidas': FieldValue.arrayUnion(['Manacas']), // ⭐ SEM ACENTO
-        },
-      );
-      
+      await _progress.marcarSalaConcluida(raJogador, 'Manacas');
       print('Progresso do Manacas salvo com sucesso!');
-      
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
-      }
     } catch (e) {
       print('Erro ao salvar progresso do Manacas: $e');
-      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -238,14 +221,14 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
             backgroundColor: Colors.red,
           ),
         );
-        
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          ExplorationScreen.routeName,
-          (route) => false,
-        );
       }
     }
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      ExplorationScreen.routeName,
+      (route) => false,
+    );
   }
 
   @override
@@ -259,6 +242,14 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: const GameTimerWidget(),
+            ),
+          ),
+        ],
       ),
       body: Background(
         imagem: "assets/manacas.png",

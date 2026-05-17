@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/firestore_service.dart';
+import 'register_success_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -56,15 +57,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         'salasConcluidas': [],
       });
+      
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cadastro realizado com sucesso!'),
+      // Navega para tela de sucesso
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegisterSuccessScreen(
+            nomePersonagem: _nome,
+            ra: _ra,
+          ),
         ),
       );
-
-      Navigator.pop(context);
     } catch (error) {
       if (!mounted) return;
 
