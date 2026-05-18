@@ -1,7 +1,8 @@
-// arquivo: desafio_praca.dart
+// lib/screens/challenge_screen/desafio_praca.dart
 import 'package:flutter/material.dart';
 
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
@@ -28,19 +29,30 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   final ProgressService _progress = ProgressService();
 
   // Falas do guardião
-  final List<String> _falasGuardiao = [
-    '...Você limpou a praça.',
-    'O meio ambiente agradece.',
-    'A natureza está em equilíbrio novamente.',
-    'Mas isso é apenas o começo da sua jornada.',
+  static final List<FalaConfig> _falasGuardiao = [
+    FalaConfig.guardiao('...Você limpou a praça.'),
+    FalaConfig.guardiao('O meio ambiente agradece.'),
+    FalaConfig.guardiao('A natureza está em equilíbrio novamente.'),
+    FalaConfig.guardiao('Mas isso é apenas o começo da sua jornada.'),
   ];
 
   // Falas do personagem
-  final List<String> _falasPersonagem = [
-    'Consegui! Tudo no lugar certo!',
-    'A praça está limpa novamente.',
-    'Um brilho surge entre as árvores...',
-    'É mais um Fragmento de Chave!',
+  static final List<FalaConfig> _falasPersonagem = [
+    FalaConfig.personagem('Consegui! Tudo no lugar certo!'),
+    FalaConfig.personagem('A praça está limpa novamente.'),
+    FalaConfig.personagem('Um brilho surge entre as árvores...'),
+    FalaConfig.personagem('É mais um Fragmento de Chave!'),
+  ];
+
+  // Tela do computador
+  static final List<FalaConfig> _falasComputador = [
+    FalaConfig.personagem('Olhando para o totem digital da praça...'),
+    FalaConfig.personagem('Uma mensagem aparece na tela:'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('    "DESAFIO CONCLUÍDO!"'),
+    FalaConfig.personagem('    "SIGA PARA A PRÓXIMA SALA"'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('A praça está em paz novamente.'),
   ];
 
   // Mapeamento correto dos itens
@@ -61,15 +73,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   Widget _telaComputadorConcluido() {
     return PersonagemScreen(
       imagemFundo: "assets/praca.png",
-      falasCustom: [
-        'Olhando para o totem digital da praça...',
-        'Uma mensagem aparece na tela:',
-        '',
-        '    "DESAFIO CONCLUÍDO!"',
-        '    "SIGA PARA A PRÓXIMA SALA"',
-        '',
-        'A praça está em paz novamente.',
-      ],
+      falasConfig: _falasComputador, // 👈 Mudou para falasConfig
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: true,
       proximaTela: const SizedBox.shrink(),
@@ -195,7 +199,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
-          falasCustom: _falasGuardiao,
+          falasConfig: _falasGuardiao, // 👈 Guardião fala
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
@@ -209,7 +213,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
-          falasCustom: _falasPersonagem,
+          falasConfig: _falasPersonagem, // 👈 Personagem responde
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),

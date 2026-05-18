@@ -35,11 +35,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Manacas":  {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Mescla":  {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Praça":  {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Arena":  {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Biblioteca": {"lat": -23.0068, "lng": -46.8342},
+    "Manacas": {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Mescla": {"lat":  -22.9510141666, "lng":  -47.07891800000},
+    "Praça": {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Arena": {"lat": -22.9510141666, "lng": -47.07891800000},
   };
 
   @override
@@ -126,15 +126,16 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: Center(
-              child: const GameTimerWidget(),
-            ),
+            child: Center(child: const GameTimerWidget()),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.amber.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
@@ -142,7 +143,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle, color: Colors.amber, size: 18),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       "${salasConcluidas.length}/5 Salas",
@@ -166,25 +171,17 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const Icon(
-                  Icons.explore,
-                  size: 80,
-                  color: Colors.white,
-                ),
+                const Icon(Icons.explore, size: 80, color: Colors.white),
                 const SizedBox(height: 20),
                 const Text(
                   "Dirija-se até o local "
                   "para iniciar sua aventura.",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   localizacaoTexto,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 30),
 
@@ -318,9 +315,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const ManacasScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const ManacasScreen()),
         );
       },
       child: Opacity(
@@ -386,9 +381,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const MesclaScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const MesclaScreen()),
         );
       },
       child: Opacity(

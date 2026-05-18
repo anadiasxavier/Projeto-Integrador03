@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../../main.dart';
+import '../../models/entidade_dialogo.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_biblioteca_screen.dart';
@@ -7,45 +9,31 @@ import '../challenge_screen/desafio_biblioteca_screen.dart';
 class BibliotecaScreen extends StatelessWidget {
   const BibliotecaScreen({super.key});
 
-  // Etapa 1: Personagem sente a atmosfera opressiva
-  static const List<String> _falasEntrada = [
-    'Que silêncio... não tem ninguém aqui.',
-    'Tá tudo tão organizado, mas algo não parece certo.',
-    'Esse silêncio incomoda... não é normal.',
-    'Sinto como se tivesse alguém me observando.',
-    'Preciso tomar cuidado e explorar com atenção.',
+  // Etapa 1: Guardião aparece e fala
+  static final List<FalaConfig> _falasGuardiaoInicial = [
+    FalaConfig.guardiao('Pare.'),
+    FalaConfig.guardiao('Este lugar não é feito para quem apenas passa.'),
+    FalaConfig.guardiao('Aqui… nada é entregue.'),
+    FalaConfig.guardiao('Tudo precisa ser compreendido.'),
   ];
 
-  // Etapa 2: Guardião aparece e fala
-  static const List<String> _falasGuardiao = [
-    'Você ousou entrar...',
-    '...mesmo sabendo que aqui o silêncio não é vazio...',
-    '...é imposto.',
-    'Observe bem... eu não falo... porque não posso.',
-    'E talvez... você também não deveria.',
+  // Etapa 2: Personagem responde ao guardião
+  List<FalaConfig> get _falasPersonagem => [
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[nervosa]" : "[nervoso]"} Eu só quero sair daqui…'),
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[assustada]" : "[assustado]"} Você vai me impedir?'),
   ];
 
-  // Etapa 3: Personagem reage com medo
-  static const List<String> _falasPersonagemMedo = [
-    'Me sinto paralisada de medo.',
-    'Você também quer me impedir de sair?',
+  // Etapa 3: Guardião explica seu papel
+  static final List<FalaConfig> _falasGuardiaoResposta = [
+    FalaConfig.guardiao('Eu não impeço.'),
+    FalaConfig.guardiao('Eu observo.'),
+    FalaConfig.guardiao('Quem não entende… permanece.'),
+    FalaConfig.guardiao('Quem entende… avança.'),
   ];
 
-  // Etapa 4: Guardião fala sobre o livro
-  static const List<String> _falasGuardiaoLivro = [
-    'Escute... até o silêncio fala aqui.',
-    'Os livros... escolhem quando querem ser abertos.',
-    'Se caiu diante de você... não foi acaso.',
-    'Leia... se tiver coragem de entender.',
-  ];
-
-  // Etapa 5: Personagem lê a charada
-  static const List<String> _falasLendoCharada = [
-    'Um livro caiu bem na minha frente...',
-    'Ele se abriu sozinho...',
-    'Tem algo escrito aqui:',
-    '"Você chega com fome, escolhe sem pensar muito, e vai embora quando termina. Onde isso acontece?"',
-    'Não entendo... Ela quer que eu resolva isso?',
+  // Etapa 4: Guardião ordena
+  static final List<FalaConfig> _falasGuardiaoProve = [
+    FalaConfig.guardiao('Prove.'),
   ];
 
   @override
@@ -165,111 +153,79 @@ class BibliotecaScreen extends StatelessWidget {
   }
 
   void _iniciarFluxoBiblioteca(BuildContext context) {
-    // ETAPA 1: Personagem sente a atmosfera
+    // ETAPA 1: Narração inicial e guardião aparece
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => NarradorScreen(
-          tituloAppBar: "Explorando a Biblioteca",
+          tituloAppBar: "Uma Presença...",
           imagemFundo: "assets/biblioteca.png",
           corpoNarracao:
-              'Você avança cautelosamente pelo corredor principal. '
-              'As estantes metálicas se alinham perfeitamente, '
-              'carregadas de livros intocados.\n\n'
-              'O ar é frio e denso. Cada passo ecoa pelo ambiente vazio.\n\n'
-              'O silêncio não é normal. É pesado, opressivo.\n\n'
-              'Você sente que não está sozinho...',
-          dica: 'Toque em Continuar para seguir explorando.',
+              'Você avança cautelosamente pelo corredor principal.\n\n'
+              'De repente, um som seco quebra o silêncio.\n\n'
+              'Ao fundo, uma figura esguia surge das sombras. '
+              'Veste trajes escuros, e os olhos, fixos em você.\n\n',
+          dica: 'Toque em Continuar para ouvir o guardião.',
           exibirNarracaoEmCaixa: true,
-          proximaTela: PersonagemScreen(
-            imagemFundo: "assets/biblioteca.png",
-            falasCustom: _falasEntrada,
-            instrucaoToque: 'Toque para continuar',
-            substituirAoAvancarFinal: false,
-            proximaTela: _etapaGuardiaoAparece(),
-          ),
+          proximaTela: _etapaDialogoCompleto(),
         ),
       ),
     );
   }
 
-  // ETAPA 2: Guardião aparece
-  Widget _etapaGuardiaoAparece() {
-    return NarradorScreen(
-      tituloAppBar: "Uma Presença...",
-      imagemFundo: "assets/biblioteca.png",
-      corpoNarracao:
-          'De repente, um som seco quebra o silêncio.\n\n'
-          'Um livro cai de uma prateleira distante.\n\n'
-          'Ao fundo, uma figura esguia surge das sombras. '
-          'Veste trajes escuros, sua face está parcialmente oculta.\n\n'
-          'Seus olhos perfuram a escuridão, fixos em você.\n\n'
-          'Sua boca... está costurada com linha escura.',
-      dica: 'Toque em Continuar para ouvir o guardião.',
-      exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/biblioteca.png",
-        falasCustom: _falasGuardiao,
-        instrucaoToque: 'Toque para continuar',
-        substituirAoAvancarFinal: false,
-        proximaTela: _etapaPersonagemComMedo(),
-      ),
-    );
-  }
-
-  // ETAPA 3: Personagem reage com medo
-  Widget _etapaPersonagemComMedo() {
+  // ETAPA 2-4 UNIFICADA: Todo o diálogo em uma única tela
+  Widget _etapaDialogoCompleto() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
-      falasCustom: _falasPersonagemMedo,
+      falasConfig: [
+        ..._falasGuardiaoInicial,
+        ..._falasPersonagem,
+        ..._falasGuardiaoResposta,
+      ],
+      exibirReacoes: true,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
-      proximaTela: _etapaGuardiaoFalaDoLivro(),
+      proximaTela: _etapaLivroCai(),
     );
   }
 
-  // ETAPA 4: Guardião manda ler o livro
-  Widget _etapaGuardiaoFalaDoLivro() {
+  // ETAPA 5: Livro cai
+  Widget _etapaLivroCai() {
     return NarradorScreen(
-      tituloAppBar: "O Guardião",
+      tituloAppBar: "O Livro",
       imagemFundo: "assets/biblioteca.png",
       corpoNarracao:
-          'O guardião permanece imóvel, mas seus olhos se movem '
-          'lentamente em direção ao livro caído.\n\n'
-          'Ele ergue a mão pálida, apontando para as páginas abertas '
-          'no chão, como se esperasse algo de você.',
-      dica: 'Toque em Continuar para ouvir.',
+          'Um livro cai de uma prateleira próxima.\n\n'
+          'Ele aterrissa aos seus pés, fechado.\n\n'
+          'O guardião permanece imóvel, seus olhos '
+          'fixos em você.',
+      dica: 'Toque em Continuar.',
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
-        falasCustom: _falasGuardiaoLivro,
+        falasConfig: _falasGuardiaoProve,
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
-        proximaTela: _etapaLerCharada(),
+        proximaTela: _etapaLivroAbre(),
       ),
     );
   }
 
-  // ETAPA 5: Personagem lê a charada
-  Widget _etapaLerCharada() {
+  // ETAPA 6: Livro se abre sozinho
+  Widget _etapaLivroAbre() {
     return NarradorScreen(
       tituloAppBar: "O Livro Misterioso",
       imagemFundo: "assets/biblioteca.png",
       corpoNarracao:
-          'Um livro antigo está caído no chão, suas páginas abertas.\n\n'
-          'Apesar de ninguém tocá-lo, as páginas viram sozinhas, '
-          'parando em uma página específica.\n\n'
-          'Há um texto escrito em letras douradas que brilham '
-          'fracamente na escuridão...',
-      dica: 'Toque em Continuar para ler o livro.',
+          'O livro se abre sozinho…\n\n'
+          'As páginas viram lentamente, como se '
+          'algo invisível as folheasse.\n\n'
+          'Elas param em uma página específica.\n\n'
+          'Há um texto escrito em letras douradas '
+          'que brilham fracamente na escuridão…',
+      dica: 'Toque em Continuar para ver o enigma.',
       exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/biblioteca.png",
-        falasCustom: _falasLendoCharada,
-        instrucaoToque: 'Toque para continuar',
-        substituirAoAvancarFinal: false,
-        proximaTela: const DesafioBibliotecaScreen(),
-      ),
+      proximaTela: const DesafioBibliotecaScreen(),
     );
   }
 }

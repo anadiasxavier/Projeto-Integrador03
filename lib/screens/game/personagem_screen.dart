@@ -1,12 +1,15 @@
+// lib/screens/game/personagem_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../../main.dart';
+import '../../models/entidade_dialogo.dart';
 
 class PersonagemScreen extends StatefulWidget {
   final Widget? proximaTela;
   final String imagemFundo;
   final String? instrucaoToque;
-  final List<String>? falasCustom;
+  final List<String>? falasCustom; // Mantido para compatibilidade
+  final List<FalaConfig>? falasConfig; // NOVO
   final bool exibirReacoes;
   final bool substituirAoAvancarFinal;
 
@@ -16,6 +19,7 @@ class PersonagemScreen extends StatefulWidget {
     required this.imagemFundo,
     this.instrucaoToque,
     this.falasCustom,
+    this.falasConfig,
     this.exibirReacoes = false,
     this.substituirAoAvancarFinal = true,
   });
@@ -26,8 +30,6 @@ class PersonagemScreen extends StatefulWidget {
 
 class _PersonagemScreenState extends State<PersonagemScreen> {
   int indice = 0;
-
-  // ⭐ REMOVIDO _falasPadrao
 
   static const Map<String, String> _reactionAssetNames = {
     'confuso': 'Confuso',
@@ -42,16 +44,19 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   bool get _showReactions => widget.exibirReacoes;
 
-  // ⭐ Se não tiver falasCustom, retorna lista vazia (não mostra nada)
+  // Retorna as falas (considerando os 2 formatos)
   List<String> get _falas {
-    if (widget.falasCustom == null || widget.falasCustom!.isEmpty) {
-      // Opção 1: Retorna lista vazia - não mostra nada
-      return [];
-      
-      // Opção 2: Ou mostra uma mensagem discreta (descomente se preferir)
-      // return ['[Aguardando falas...]'];
+    // Prioriza o novo formato
+    if (widget.falasConfig != null && widget.falasConfig!.isNotEmpty) {
+      return widget.falasConfig!.map((f) => f.texto).toList();
     }
-    return widget.falasCustom!;
+    
+    // Fallback para formato antigo
+    if (widget.falasCustom != null && widget.falasCustom!.isNotEmpty) {
+      return widget.falasCustom!;
+    }
+    
+    return [];
   }
 
   bool get _ultimaFala => _falas.isEmpty || indice >= _falas.length - 1;
@@ -62,8 +67,62 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         : 'assets/personagem.png';
   }
 
+  // NOVO: Determina qual ícone mostrar
+  String _getIconePath() {
+    if (_falas.isEmpty) return _defaultCharacterImage();
+    
+    if (widget.falasConfig != null && 
+        widget.falasConfig!.isNotEmpty && 
+        indice < widget.falasConfig!.length) {
+      
+      final config = widget.falasConfig![indice];
+      
+      if (config.entidade == TipoEntidade.guardiao) {
+        return 'assets/guardiao.png';
+      }
+    }
+    
+    // Padrão: personagem
+    return _defaultCharacterImage();
+  }
+
+  // NOVO: Determina qual nome mostrar
+  String _getNomeFalante() {
+    if (_falas.isEmpty) return _rotuloPersonagem();
+    
+    if (widget.falasConfig != null && 
+        widget.falasConfig!.isNotEmpty && 
+        indice < widget.falasConfig!.length) {
+      
+      final config = widget.falasConfig![indice];
+      
+      if (config.entidade == TipoEntidade.guardiao) {
+        return 'Guardião';
+      }
+    }
+    
+    // Padrão: nome do personagem
+    return _rotuloPersonagem();
+  }
+
+  // NOVO: Cor do nome baseado em quem fala
+  Color _getCorNome() {
+    if (widget.falasConfig != null && 
+        widget.falasConfig!.isNotEmpty && 
+        indice < widget.falasConfig!.length) {
+      
+      final config = widget.falasConfig![indice];
+      
+      if (config.entidade == TipoEntidade.guardiao) {
+        return Colors.amber; // Dourado para o guardião
+      }
+    }
+    
+    return Colors.cyan; // Ciano para o personagem
+  }
+
   String _dialogText(int index) {
-    if (_falas.isEmpty) return ''; // Não mostra nada
+    if (_falas.isEmpty) return '';
     if (!_showReactions) return _falas[index];
     return _parseFala(_falas[index]).key;
   }
@@ -98,7 +157,6 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   void proximaFala() {
     if (_falas.isEmpty) {
-      // Se não tem falas, vai direto para próxima tela
       if (widget.proximaTela != null) {
         final rota = MaterialPageRoute(builder: (context) => widget.proximaTela!);
         if (widget.substituirAoAvancarFinal) {
@@ -221,9 +279,14 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                       Container(
                         margin: const EdgeInsets.only(right: 10),
                         child: Image.asset(
-                          _defaultCharacterImage(),
+                          _getIconePath(), // 👈 AGORA USA O MÉTODO
                           width: 60,
                           height: 60,
+                          errorBuilder: (context, error, stackTrace) => Image.asset(
+                            _defaultCharacterImage(),
+                            width: 60,
+                            height: 60,
+                          ),
                         ),
                       ),
                       Expanded(
@@ -231,9 +294,9 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _rotuloPersonagem(),
-                              style: const TextStyle(
-                                color: Colors.red,
+                              _getNomeFalante(), // 👈 AGORA USA O MÉTODO
+                              style: TextStyle(
+                                color: _getCorNome(), // 👈 AGORA USA O MÉTODO
                                 fontSize: 12,
                                 fontFamily: 'PressStart2P',
                               ),

@@ -1,6 +1,8 @@
+// lib/screens/challenge_screen/desafio_mescla_screen.dart
 import 'package:flutter/material.dart';
 
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import '../../main.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
@@ -18,37 +20,40 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
   final ProgressService _progress = ProgressService();
 
-  // ⭐ FALAS DO GUARDIÃO COM GÊNERO
-  List<String> get _falasGuardiaoFinal => [
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} ...PROCESSO CONCLUÍDO.',
-    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Você não respondeu para mim...',
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} respondeu para o sistema.',
-    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Siga o fluxo.',
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Onde as máquinas jogam sozinhas...',
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} há outra peça esperando.',
+  // ⭐ FALAS DO GUARDIÃO DO MESCLA
+  static final List<FalaConfig> _falasGuardiaoFinal = [
+    FalaConfig.guardiao('PROCESSO CONCLUÍDO.'),
+    FalaConfig.guardiao('Você não respondeu para mim...'),
+    FalaConfig.guardiao('Respondeu para o sistema.'),
+    FalaConfig.guardiao('Siga o fluxo.'),
+    FalaConfig.guardiao('Onde as máquinas jogam sozinhas...'),
+    FalaConfig.guardiao('Há outra peça esperando.'),
   ];
 
-  // ⭐ FALAS DO PERSONAGEM COM GÊNERO
-  List<String> get _falasPersonagemFinal => [
-    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou... acho que agora ele me deixou passar...',
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Vejo algo brilhar próximo aos equipamentos.',
-    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento... de chave!',
-    '${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Preciso continuar minha jornada.',
+  // ⭐ FALAS DO PERSONAGEM (COM REAÇÕES)
+  List<FalaConfig> get _falasPersonagemFinal => [
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou... acho que agora ele me deixou passar...'),
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Vejo algo brilhar próximo aos equipamentos.'),
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento... de chave!'),
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Preciso continuar minha jornada.'),
   ];
 
-  // Tela do computador (sem gênero, é uma mensagem fixa)
+  // Tela do computador com a mensagem
+  static final List<FalaConfig> _falasComputador = [
+    FalaConfig.personagem('Olhando para a tela do computador...'),
+    FalaConfig.personagem('Uma mensagem começa a piscar no monitor:'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('    "DESAFIO CONCLUÍDO!"'),
+    FalaConfig.personagem('    "SIGA PARA A PRÓXIMA SALA"'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('O sistema parece ter se estabilizado...'),
+  ];
+
+  // Tela do computador (Widget separado)
   Widget _telaComputadorConcluido() {
     return PersonagemScreen(
       imagemFundo: "assets/mescla.png",
-      falasCustom: [
-        'Olhando para a tela do computador...',
-        'Uma mensagem começa a piscar no monitor:',
-        '',
-        '    "DESAFIO CONCLUÍDO!"',
-        '    "SIGA PARA A PRÓXIMA SALA"',
-        '',
-        'O sistema parece ter se estabilizado...',
-      ],
+      falasConfig: _falasComputador, // 👈 Mudou para falasConfig
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: true,
       proximaTela: const SizedBox.shrink(),
@@ -81,8 +86,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
-          falasCustom: _falasGuardiaoFinal, // ⭐ Com gênero
-          exibirReacoes: true,
+          falasConfig: _falasGuardiaoFinal, // 👈 Guardião fala
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
@@ -90,14 +94,14 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
       ),
     );
 
-    // Segundo: Falas do Personagem
+    // Segundo: Falas do Personagem (com reações)
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
-          falasCustom: _falasPersonagemFinal, // ⭐ Com gênero
-          exibirReacoes: true,
+          falasConfig: _falasPersonagemFinal, // 👈 Personagem responde
+          exibirReacoes: true, // 👈 Mostra reações
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),

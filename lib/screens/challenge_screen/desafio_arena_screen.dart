@@ -1,6 +1,8 @@
+// lib/screens/challenge_screen/desafio_arena_screen.dart
 import 'package:flutter/material.dart';
 
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
@@ -46,17 +48,37 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
   ];
 
   // Falas do guardião da arena
-  final List<String> _falasGuardiao = [
-    'Você derrotou todos os adversários...',
-    'Os códigos se renderam ao seu comando.',
-    'A arena agora reconhece seu poder.',
-    'Mas isso é apenas o começo...',
+  static final List<FalaConfig> _falasGuardiao = [
+    FalaConfig.guardiao('Você derrotou todos os adversários...'),
+    FalaConfig.guardiao('Os códigos se renderam ao seu comando.'),
+    FalaConfig.guardiao('A arena agora reconhece seu poder.'),
+    FalaConfig.guardiao('Mas isso é apenas o começo...'),
   ];
 
   // Falas do personagem
-  final List<String> _falasPersonagem = [
-    'Consegui vencer todos os desafios!',
-    'De repente, algo chama minha atenção...',
+  static final List<FalaConfig> _falasPersonagem = [
+    FalaConfig.personagem('Consegui vencer todos os desafios!'),
+    FalaConfig.personagem('De repente, algo chama minha atenção...'),
+  ];
+
+  // Falas da tela do computador
+  static final List<FalaConfig> _falasComputador = [
+    FalaConfig.personagem('Olhando para a tela do computador...'),
+    FalaConfig.personagem('Uma mensagem aparece no monitor:'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('    "DESAFIO CONCLUÍDO!"'),
+    FalaConfig.personagem('    "SIGA PARA A PRÓXIMA SALA"'),
+    FalaConfig.personagem(''),
+    FalaConfig.personagem('Preciso continuar minha jornada...'),
+  ];
+
+  // Falas de erro
+  static final List<FalaConfig> _falasErro = [
+    FalaConfig.personagem('A tela ficou vermelha…'),
+    FalaConfig.personagem('Isso não parece nada bom…'),
+    FalaConfig.guardiao('VOCÊ FALHOU NO DESAFIO!'),
+    FalaConfig.guardiao('Os jogos nunca perdoam quem erra...'),
+    FalaConfig.guardiao('Tente novamente quando estiver pronto.'),
   ];
 
   void responder(int index) {
@@ -86,9 +108,9 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       MaterialPageRoute(
         builder: (context) => PersonagemScreen(
           imagemFundo: "assets/arena.png",
-          falasCustom: _falasGuardiao,
+          falasConfig: _falasGuardiao, // 👈 Mudou para falasConfig
           instrucaoToque: 'Toque para continuar',
-          substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+          substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
         ),
       ),
@@ -100,9 +122,10 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       MaterialPageRoute(
         builder: (context) => PersonagemScreen(
           imagemFundo: "assets/arena.png",
-          falasCustom: _falasPersonagem,
+          falasConfig: _falasPersonagem, // 👈 Mudou para falasConfig
+          exibirReacoes: true, // 👈 Adicionei reações
           instrucaoToque: 'Toque para continuar',
-          substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+          substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
         ),
       ),
@@ -116,7 +139,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       ),
     );
     
-    // ⭐ FINALMENTE: Salva e volta para Exploration
+    // Salva e volta para Exploration
     await _salvarProgressoERetornar();
   }
 
@@ -124,17 +147,9 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
   Widget _telaComputadorConcluido() {
     return PersonagemScreen(
       imagemFundo: "assets/arena.png",
-      falasCustom: [
-        'Olhando para a tela do computador...',
-        'Uma mensagem aparece no monitor:',
-        '',
-        '    "DESAFIO CONCLUÍDO!"',
-        '    "SIGA PARA A PRÓXIMA SALA"',
-        '',
-        'Preciso continuar minha jornada...',
-      ],
+      falasConfig: _falasComputador, // 👈 Mudou para falasConfig
       instrucaoToque: 'Toque para continuar',
-      substituirAoAvancarFinal: true, // ⭐ MUDEI PARA true
+      substituirAoAvancarFinal: true,
       proximaTela: const SizedBox.shrink(),
     );
   }
@@ -145,13 +160,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/arena.png",
-          falasCustom: [
-            'A tela ficou vermelha…',
-            'Isso não parece nada bom…',
-            'VOCÊ FALHOU NO DESAFIO!',
-            'Os jogos nunca perdoam quem erra...',
-            'Tente novamente quando estiver pronto.',
-          ],
+          falasConfig: _falasErro, // 👈 Mudou para falasConfig
           instrucaoToque: 'Tente novamente',
           substituirAoAvancarFinal: false,
           proximaTela: const DesafioArenaScreen(),
@@ -358,4 +367,4 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       ),
     );
   }
-} 
+}

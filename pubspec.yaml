@@ -38,7 +38,9 @@ flutter:
     - assets/manacas.png
     - assets/reactions/
     - assets/bibli.mp4
-    - assets/audio/arena.mp3  
+    - assets/audio/arena.mp3
+    - assets/guardia_biblioteca.png
+    - assets/guardiao.png
 
   fonts:
     - family: PressStart2P

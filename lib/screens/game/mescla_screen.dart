@@ -1,16 +1,18 @@
+// lib/screens/mescla/mescla_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_mescla_screen.dart';
 
 class MesclaScreen extends StatelessWidget {
   const MesclaScreen({super.key});
 
-  // Falas do Mescla (opcional)
-  static const List<String> _falasMescla = [
-    'As telas piscam ao redor...',
-    'Algo parece fora do lugar.',
-    'Preciso investigar o que está acontecendo.',
+  // Falas do personagem explorando o Mescla
+  static final List<FalaConfig> _falasMescla = [
+    FalaConfig.personagem('As telas piscam ao redor...'),
+    FalaConfig.personagem('Algo parece fora do lugar.'),
+    FalaConfig.personagem('Preciso investigar o que está acontecendo.'),
   ];
 
   @override
@@ -137,7 +139,7 @@ class MesclaScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
-          falasCustom: _falasMescla,
+          falasConfig: _falasMescla, // 👈 Mudou para falasConfig
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: false,
           proximaTela: const MesclaPuzzleScreen(),

@@ -1,5 +1,7 @@
+// lib/screens/arena/arena_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_arena_screen.dart';
@@ -7,22 +9,22 @@ import '../challenge_screen/desafio_arena_screen.dart';
 class ArenaScreen extends StatelessWidget {
   const ArenaScreen({super.key});
 
-  // Falas iniciais
-  static const List<String> _falasEntrada = [
-    'A Arena Gamer… tem luz piscando por baixo da porta…',
-    'E dá pra ouvir som de jogo… cliques rápidos…',
-    'Parece que tem algo rodando lá dentro…',
-    '…tem alguém aí?',
-    'Uma tela… acendeu sozinha',
-    'Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.',
-    'Parece que tem um desafio aqui…',
+  // Falas iniciais do personagem
+  static final List<FalaConfig> _falasEntrada = [
+    FalaConfig.personagem('A Arena Gamer… tem luz piscando por baixo da porta…'),
+    FalaConfig.personagem('E dá pra ouvir som de jogo… cliques rápidos…'),
+    FalaConfig.personagem('Parece que tem algo rodando lá dentro…'),
+    FalaConfig.personagem('…tem alguém aí?'),
+    FalaConfig.personagem('Uma tela… acendeu sozinha'),
+    FalaConfig.personagem('Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.'),
+    FalaConfig.personagem('Parece que tem um desafio aqui…'),
   ];
 
-  // Falas do guardião (para usar depois)
-  static const List<String> _falasGuardiaoArena = [
-    'Demorou… Você joga ou só reage?',
-    'Todo mundo quer sair… mas sair não é o objetivo.',
-    'Você passou… por enquanto.',
+  // Falas do guardião da arena
+  static final List<FalaConfig> _falasGuardiaoArena = [
+    FalaConfig.guardiao('Demorou… Você joga ou só reage?'),
+    FalaConfig.guardiao('Todo mundo quer sair… mas sair não é o objetivo.'),
+    FalaConfig.guardiao('Você passou… por enquanto.'),
   ];
 
   @override
@@ -154,7 +156,7 @@ class ArenaScreen extends StatelessWidget {
 
           proximaTela: PersonagemScreen(
             imagemFundo: "assets/arena.png",
-            falasCustom: _falasEntrada,
+            falasConfig: _falasEntrada, // 👈 Mudou para falasConfig
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: false,
             proximaTela: const DesafioArenaScreen(),
@@ -176,7 +178,7 @@ class ArenaScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/arena.png",
-        falasCustom: _falasGuardiaoArena,
+        falasConfig: _falasGuardiaoArena, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: null,

@@ -1,5 +1,7 @@
+// lib/screens/praca/praca_alimentacao_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
+import '../../models/entidade_dialogo.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_praca.dart';
@@ -8,69 +10,69 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   const PracaAlimentacaoScreen({super.key});
 
   // Etapa 1: Personagem sente o cheiro e observa o ambiente
-  static const List<String> _falasChegada = [
-    'Tô chegando na praça de alimentação...',
-    '...mas esse cheiro... não é comida...',
-    'Tá azedo, velho... quase podre...',
-    'As luzes tão piscando, as mesas sujas...',
-    'E essas bandejas espalhadas... tem algo muito errado aqui...',
+  static final List<FalaConfig> _falasChegada = [
+    FalaConfig.personagem('Tô chegando na praça de alimentação...'),
+    FalaConfig.personagem('...mas esse cheiro... não é comida...'),
+    FalaConfig.personagem('Tá azedo, velho... quase podre...'),
+    FalaConfig.personagem('As luzes tão piscando, as mesas sujas...'),
+    FalaConfig.personagem('E essas bandejas espalhadas... tem algo muito errado aqui...'),
   ];
 
   // Etapa 2: Personagem reage à sujeira
-  static const List<String> _falasNojo = [
-    'Que lugar nojento...',
-    'Parece que ninguém limpa isso há dias...',
+  static final List<FalaConfig> _falasNojo = [
+    FalaConfig.personagem('Que lugar nojento...'),
+    FalaConfig.personagem('Parece que ninguém limpa isso há dias...'),
   ];
 
   // Etapa 3: Personagem ouve sons e se assusta
-  static const List<String> _falasSons = [
-    'Eu ouvi algo sendo arrastado...',
-    'Aquela cadeira se mexeu sozinha...',
-    '...e a bandeja caiu...',
-    'Mas não tem ninguém aqui...',
-    'Tem alguma coisa comigo...',
+  static final List<FalaConfig> _falasSons = [
+    FalaConfig.personagem('Eu ouvi algo sendo arrastado...'),
+    FalaConfig.personagem('Aquela cadeira se mexeu sozinha...'),
+    FalaConfig.personagem('...e a bandeja caiu...'),
+    FalaConfig.personagem('Mas não tem ninguém aqui...'),
+    FalaConfig.personagem('Tem alguma coisa comigo...'),
   ];
 
   // Etapa 4: Personagem pergunta quem está ali
-  static const List<String> _falasQuemTaAi = [
-    'Quem tá aí?!',
+  static final List<FalaConfig> _falasQuemTaAi = [
+    FalaConfig.personagem('Quem tá aí?!'),
   ];
 
   // Etapa 5: Guardião responde enigmaticamente
-  static const List<String> _falasGuardiao1 = [
-    'Restos...',
-    'Decisões...',
-    'Escolhas malfeitas...',
+  static final List<FalaConfig> _falasGuardiao1 = [
+    FalaConfig.guardiao('Restos...'),
+    FalaConfig.guardiao('Decisões...'),
+    FalaConfig.guardiao('Escolhas malfeitas...'),
   ];
 
   // Etapa 6: Personagem observa as marcas
-  static const List<String> _falasMarcas = [
-    'Essas marcas... tão aparecendo sozinhas...',
-    'Como se algo estivesse sendo arrastado...',
-    'Acho que esse lugar não quer me prender...',
-    'Ele quer que eu entenda alguma coisa...',
+  static final List<FalaConfig> _falasMarcas = [
+    FalaConfig.personagem('Essas marcas... tão aparecendo sozinhas...'),
+    FalaConfig.personagem('Como se algo estivesse sendo arrastado...'),
+    FalaConfig.personagem('Acho que esse lugar não quer me prender...'),
+    FalaConfig.personagem('Ele quer que eu entenda alguma coisa...'),
   ];
 
   // Etapa 7: Personagem vê o painel se formando
-  static const List<String> _falasPainel = [
-    'Aquela mesa... tá tremendo...',
-    'As bandejas tão se mexendo sozinhas...',
-    'Tão se encaixando...',
-    'Isso virou um painel...',
-    'E esses restos... parecem peças de um quebra-cabeça...',
+  static final List<FalaConfig> _falasPainel = [
+    FalaConfig.personagem('Aquela mesa... tá tremendo...'),
+    FalaConfig.personagem('As bandejas tão se mexendo sozinhas...'),
+    FalaConfig.personagem('Tão se encaixando...'),
+    FalaConfig.personagem('Isso virou um painel...'),
+    FalaConfig.personagem('E esses restos... parecem peças de um quebra-cabeça...'),
   ];
 
   // Etapa 8: Guardião explica o desafio
-  static const List<String> _falasGuardiaoDesafio = [
-    'Tudo tem um lugar...',
-    '...mesmo quando você ignora.',
+  static final List<FalaConfig> _falasGuardiaoDesafio = [
+    FalaConfig.guardiao('Tudo tem um lugar...'),
+    FalaConfig.guardiao('...mesmo quando você ignora.'),
   ];
 
   // Etapa 9: Personagem encontra o fragmento
-  static const List<String> _falasRecompensa = [
-    'O que é isso...?',
-    'Tem algo brilhando ali... na mesa.',
-    'Eu... acho que isso não estava aqui antes...',
+  static final List<FalaConfig> _falasRecompensa = [
+    FalaConfig.personagem('O que é isso...?'),
+    FalaConfig.personagem('Tem algo brilhando ali... na mesa.'),
+    FalaConfig.personagem('Eu... acho que isso não estava aqui antes...'),
   ];
 
   @override
@@ -207,7 +209,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
           exibirNarracaoEmCaixa: true,
           proximaTela: PersonagemScreen(
             imagemFundo: "assets/praca.png",
-            falasCustom: _falasChegada,
+            falasConfig: _falasChegada, // 👈 Mudou para falasConfig
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: false,
             proximaTela: _etapaNojo(),
@@ -221,7 +223,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   Widget _etapaNojo() {
     return PersonagemScreen(
       imagemFundo: "assets/praca.png",
-      falasCustom: _falasNojo,
+      falasConfig: _falasNojo, // 👈 Mudou para falasConfig
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
       proximaTela: _etapaSons(),
@@ -243,7 +245,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasSons,
+        falasConfig: _falasSons, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaPergunta(),
@@ -265,7 +267,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasQuemTaAi,
+        falasConfig: _falasQuemTaAi, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaGuardiaoResponde(),
@@ -288,7 +290,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasGuardiao1,
+        falasConfig: _falasGuardiao1, // 👈 AGORA USA FalaConfig.guardiao()
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaMarcas(),
@@ -311,7 +313,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasMarcas,
+        falasConfig: _falasMarcas, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaPainel(),
@@ -335,7 +337,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasPainel,
+        falasConfig: _falasPainel, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaInstrucaoDesafio(),
@@ -358,7 +360,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasGuardiaoDesafio,
+        falasConfig: _falasGuardiaoDesafio, // 👈 AGORA USA FalaConfig.guardiao()
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: const DesafioPracaScreen(),
@@ -380,11 +382,9 @@ class PracaAlimentacaoScreen extends StatelessWidget {
       exibirNarracaoEmCaixa: true,
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/praca.png",
-        falasCustom: _falasRecompensa,
+        falasConfig: _falasRecompensa, // 👈 Mudou para falasConfig
         instrucaoToque: 'Toque para coletar o fragmento',
         substituirAoAvancarFinal: true,
-        // proximaTela deve ser definida conforme a progressão do jogo
-        // Exemplo: proximaTela: MapaScreen() ou ProximaFaseScreen()
       ),
     );
   }
@@ -400,7 +400,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
           'A voz do guardião ecoa com desaprovação...',
       dica: 'Toque em Continuar para tentar novamente.',
       exibirNarracaoEmCaixa: true,
-      proximaTela: const DesafioPracaScreen(), // Retorna ao desafio
+      proximaTela: const DesafioPracaScreen(),
     );
   }
 }

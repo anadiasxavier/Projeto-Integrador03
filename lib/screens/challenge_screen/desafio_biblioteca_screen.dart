@@ -1,11 +1,11 @@
+// lib/screens/challenge_screen/desafio_biblioteca_screen.dart
 import 'package:flutter/material.dart';
-
 import '../../widgets/background.dart';
+import '../../main.dart';
+import '../../models/entidade_dialogo.dart';
 import '../game/personagem_screen.dart';
 import '../game/narrador_screen.dart';
 import '../game/exploration_screen.dart';
-
-import '../../main.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
 
@@ -17,8 +17,7 @@ class DesafioBibliotecaScreen extends StatefulWidget {
       _DesafioBibliotecaScreenState();
 }
 
-class _DesafioBibliotecaScreenState
-    extends State<DesafioBibliotecaScreen>
+class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
 
   int? _respostaSelecionada;
@@ -27,10 +26,10 @@ class _DesafioBibliotecaScreenState
   final ProgressService _progress = ProgressService();
 
   final String _textoCharada =
-      '"Você chega com fome,\n'
+      'Você chega com fome,\n'
       'escolhe sem pensar muito,\n'
       'e vai embora quando termina.\n\n'
-      'Onde isso acontece?"';
+      'Onde isso acontece?';
 
   final List<String> _alternativas = [
     'Sala de aula',
@@ -40,18 +39,24 @@ class _DesafioBibliotecaScreenState
 
   final int _respostaCorretaIndex = 1;
 
-  static const List<String> _falasGuardiaoFinal = [
-    'Por um breve instante... você compreendeu.',
-    'E quando o medo se cala... eu deixo de existir.',
-    'Mas não se engane... isso não é o fim...',
-    '...apenas o que você conseguiu enxergar.',
+  // Falas quando ERRA
+  static final List<FalaConfig> _falasGuardiaoErro = [
+    FalaConfig.guardiao('Você respondeu… sem entender.'),
+    FalaConfig.guardiao('Tente novamente.'),
   ];
 
-  static const List<String> _falasPersonagemFinal = [
-    'Eu... acertei?',
-    'Dentro do livro surge um brilho.',
-    'Nele... há uma chave.',
-    'Consegui! Um Fragmento de Chave!',
+  // Falas quando ACERTA
+  static final List<FalaConfig> _falasGuardiaoAcerto = [
+    FalaConfig.guardiao('Agora sim…'),
+    FalaConfig.guardiao('Você observou.'),
+    FalaConfig.guardiao('Você compreendeu.'),
+    FalaConfig.guardiao('Pode seguir.'),
+  ];
+
+  // Falas do personagem ao acertar
+  List<FalaConfig> get _falasPersonagemAcerto => [
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[aliviada]" : "[aliviado]"} Então… era isso…'),
+    FalaConfig.personagem('${generoJogador == "feminino" ? "[curiosa]" : "[curioso]"} Tem algo aqui.'),
   ];
 
   @override
@@ -94,29 +99,268 @@ class _DesafioBibliotecaScreenState
               tituloAppBar: "Resposta Correta!",
               imagemFundo: "assets/biblioteca.png",
               corpoNarracao:
-                  'O livro brilha intensamente!\n\n'
-                  'As letras douradas dançam nas páginas.\n\n'
-                  'O guardião parece surpreso.\n\n'
-                  'O ambiente opressivo começa a desaparecer.',
+                  'Um brilho suave emana das páginas.\n\n'
+                  'As letras douradas brilham com mais intensidade.\n\n'
+                  'O guardião parece diferente agora…\n\n',
               dica: 'Toque em Continuar.',
               exibirNarracaoEmCaixa: true,
               proximaTela: PersonagemScreen(
                 imagemFundo: "assets/biblioteca.png",
-                falasCustom: _falasGuardiaoFinal,
+                falasConfig: _falasGuardiaoAcerto,
                 instrucaoToque: 'Toque para continuar',
                 substituirAoAvancarFinal: false,
-                proximaTela: PersonagemScreen(
-                  imagemFundo: "assets/biblioteca.png",
-                  falasCustom: _falasPersonagemFinal,
-                  instrucaoToque: 'Toque para continuar',
-                  substituirAoAvancarFinal: false,
-                  proximaTela: _voltarParaExploration(), // Chamada direta
-                ),
+                proximaTela: _etapaGuardiaoDesaparece(),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  // Guardião começa a desaparecer
+  Widget _etapaGuardiaoDesaparece() {
+    return NarradorScreen(
+      tituloAppBar: "O Guardião",
+      imagemFundo: "assets/biblioteca.png",
+      corpoNarracao:
+          'O guardião começa a desaparecer…\n\n'
+          'Sua forma se torna translúcida, como névoa '
+          'se dissipando na escuridão.\n\n'
+          'Pela primeira vez, o ambiente parece '
+          'menos opressivo.',
+      dica: 'Toque em Continuar.',
+      exibirNarracaoEmCaixa: true,
+      proximaTela: PersonagemScreen(
+        imagemFundo: "assets/biblioteca.png",
+        falasConfig: _falasPersonagemAcerto,
+        exibirReacoes: true,
+        instrucaoToque: 'Toque para continuar',
+        substituirAoAvancarFinal: false,
+        proximaTela: _etapaEncontraItem(),
+      ),
+    );
+  }
+
+  // Item aparece - Agora com fala do personagem e depois tela de recompensa
+  Widget _etapaEncontraItem() {
+    return NarradorScreen(
+      tituloAppBar: "Item Encontrado!",
+      imagemFundo: "assets/biblioteca.png",
+      corpoNarracao:
+          'Dentro do livro, onde antes só havia texto,\n'
+          'agora repousa um objeto pequeno e brilhante.\n\n'
+          'Ele pulsa com uma luz suave, como se '
+          'estivesse vivo.\n\n'
+          'Você encontrou: Fragmento de Chave! 🗝️',
+      dica: 'Toque em Continuar para pegar o fragmento.',
+      exibirNarracaoEmCaixa: true,
+      proximaTela: _etapaPersonagemPegaFragmento(),
+    );
+  }
+
+  // 👇 NOVA ETAPA: Personagem comenta sobre o fragmento
+  Widget _etapaPersonagemPegaFragmento() {
+    return PersonagemScreen(
+      imagemFundo: "assets/biblioteca.png",
+      falasConfig: [
+        FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui! Um Fragmento de Chave!'),
+        FalaConfig.personagem('${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Isso vai me ajudar a sair daqui.'),
+        FalaConfig.personagem('${generoJogador == "feminino" ? "[curiosa]" : "[curioso]"} Preciso continuar explorando...'),
+      ],
+      exibirReacoes: true,
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: false,
+      proximaTela: _telaRecompensa(),
+    );
+  }
+
+  // 👇 NOVA ETAPA: Tela de recompensa visual
+  Widget _telaRecompensa() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Fragmento de Chave"),
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Background(
+        imagem: "assets/biblioteca.png",
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                
+                // Ícone animado da chave
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 1500),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Opacity(
+                        opacity: value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.amber.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.vpn_key,
+                      color: Colors.amber,
+                      size: 80,
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 30),
+                
+                // Texto principal
+                const Text(
+                  "PARABÉNS!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.amber,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    shadows: [
+                      Shadow(
+                        color: Colors.amber,
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Descrição
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.amber.withOpacity(0.4),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text(
+                        "🗝️",
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Você conseguiu um",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "FRAGMENTO DE CHAVE",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        "Este fragmento é parte de algo maior.\n"
+                        "Continue explorando para encontrar\n"
+                        "os outros fragmentos e descobrir\n"
+                        "os segredos deste lugar.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontFamily: 'PressStart2P',
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 30),
+                
+                // Botão de continuar
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => _voltarParaExploration(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 280,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
+                        SizedBox(width: 10),
+                        Text(
+                          "CONTINUAR JORNADA",
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'PressStart2P',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -127,7 +371,7 @@ class _DesafioBibliotecaScreenState
       _salvarProgressoERetornar();
     });
     
-    // Retorna um widget vazio ou um loading
+    // Retorna um widget de loading
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(
@@ -161,10 +405,11 @@ class _DesafioBibliotecaScreenState
   }
 
   void _fluxoErro() {
+    // Primeiro, mostra o diálogo do guardião
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -196,9 +441,9 @@ class _DesafioBibliotecaScreenState
           children: [
             SizedBox(height: 10),
             Text(
-              'O livro se fecha momentaneamente.\n\n'
+              'O livro se fecha com força.\n\n'
               'O guardião permanece imóvel.\n\n'
-              'Tente novamente...',
+              'Ele parece decepcionado…',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white70,
@@ -212,13 +457,12 @@ class _DesafioBibliotecaScreenState
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                _respostaSelecionada = null;
-              });
+              Navigator.pop(dialogContext);
+              // Depois de fechar o diálogo, mostra a fala do guardião
+              _mostrarFalasGuardiaoErro();
             },
             child: const Text(
-              'TENTAR NOVAMENTE',
+              'CONTINUAR',
               style: TextStyle(
                 color: Colors.cyan,
                 fontSize: 12,
@@ -231,6 +475,28 @@ class _DesafioBibliotecaScreenState
     );
   }
 
+  void _mostrarFalasGuardiaoErro() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PersonagemScreen(
+          imagemFundo: "assets/biblioteca.png",
+          falasConfig: _falasGuardiaoErro,
+          instrucaoToque: 'Toque para tentar novamente',
+          substituirAoAvancarFinal: false,
+          proximaTela: null, // Volta para a tela de desafio
+        ),
+      ),
+    ).then((_) {
+      // Quando voltar da PersonagemScreen, reseta a seleção
+      if (mounted) {
+        setState(() {
+          _respostaSelecionada = null;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,14 +507,16 @@ class _DesafioBibliotecaScreenState
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-        ),        actions: [
+        ),
+        actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
-              child: const GameTimerWidget(),
+              child: GameTimerWidget(),
             ),
           ),
-        ],      ),
+        ],
+      ),
       body: Background(
         imagem: "assets/biblioteca.png",
         child: Center(
