@@ -1,4 +1,3 @@
-// lib/models/entidade_dialogo.dart
 enum TipoEntidade {
   personagem,
   guardiao,

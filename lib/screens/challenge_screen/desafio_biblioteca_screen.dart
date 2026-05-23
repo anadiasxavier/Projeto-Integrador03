@@ -8,7 +8,220 @@ import '../game/narrador_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
+import '../../widgets/dialogo_com_guardiao.dart';
+import '../../models/guardioes_config.dart';
 
+// CLASSE PRIVADA PARA A TELA DE RECOMPENSA
+class _RecompensaScreen extends StatefulWidget {
+  final String nomeSala;
+  final String imagemFundo;
+
+  const _RecompensaScreen({
+    required this.nomeSala,
+    required this.imagemFundo,
+  });
+
+  @override
+  State<_RecompensaScreen> createState() => _RecompensaScreenState();
+}
+
+class _RecompensaScreenState extends State<_RecompensaScreen> {
+  final ProgressService _progress = ProgressService();
+
+  void _salvarProgressoEVoltarExploration() async {
+    try {
+      await _progress.marcarSalaConcluida(
+        raJogador,
+        widget.nomeSala,
+        novasChaves: ['Manacás', 'Mescla', 'Praça', 'Arena'],
+      );
+      print('Progresso salvo com sucesso!');
+    } catch (e) {
+      print('Erro ao salvar progresso: $e');
+    }
+
+    if (!mounted) return;
+    
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const ExplorationScreen()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Fragmento de Chave"),
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
+      ),
+      body: Background(
+        imagem: widget.imagemFundo,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 1500),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Opacity(
+                        opacity: value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.amber.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.vpn_key,
+                      color: Colors.amber,
+                      size: 80,
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 30),
+                
+                const Text(
+                  "PARABÉNS!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.amber,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    shadows: [
+                      Shadow(
+                        color: Colors.amber,
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.amber.withOpacity(0.4),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text("🗝️", style: TextStyle(fontSize: 40)),
+                      SizedBox(height: 10),
+                      Text(
+                        "Você conseguiu um",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "FRAGMENTO DE CHAVE",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        "Este fragmento é parte de algo maior.\n"
+                        "Continue explorando para encontrar\n"
+                        "os outros fragmentos e descobrir\n"
+                        "os segredos deste lugar.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontFamily: 'PressStart2P',
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 30),
+                
+                GestureDetector(
+                  onTap: _salvarProgressoEVoltarExploration,
+                  child: Container(
+                    width: 280,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
+                        SizedBox(width: 10),
+                        Text(
+                          "CONTINUAR JORNADA",
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'PressStart2P',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// CLASSE PRINCIPAL DO DESAFIO
 class DesafioBibliotecaScreen extends StatefulWidget {
   const DesafioBibliotecaScreen({super.key});
 
@@ -23,7 +236,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   int? _respostaSelecionada;
   int _tentativas = 0;
   late AnimationController _animacaoController;
-  final ProgressService _progress = ProgressService();
 
   final String _textoCharada =
       'Você chega com fome,\n'
@@ -39,13 +251,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
 
   final int _respostaCorretaIndex = 1;
 
-  // Falas quando ERRA
-  static final List<FalaConfig> _falasGuardiaoErro = [
-    FalaConfig.guardiao('Você respondeu… sem entender.'),
-    FalaConfig.guardiao('Tente novamente.'),
-  ];
-
-  // Falas quando ACERTA
   static final List<FalaConfig> _falasGuardiaoAcerto = [
     FalaConfig.guardiao('Agora sim…'),
     FalaConfig.guardiao('Você observou.'),
@@ -53,10 +258,9 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     FalaConfig.guardiao('Pode seguir.'),
   ];
 
-  // Falas do personagem ao acertar
   List<FalaConfig> get _falasPersonagemAcerto => [
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[aliviada]" : "[aliviado]"} Então… era isso…'),
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[curiosa]" : "[curioso]"} Tem algo aqui.'),
+    FalaConfig.personagem('Então… era isso…'),
+    FalaConfig.personagem('Tem algo aqui.'),
   ];
 
   @override
@@ -104,12 +308,18 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   'O guardião parece diferente agora…\n\n',
               dica: 'Toque em Continuar.',
               exibirNarracaoEmCaixa: true,
-              proximaTela: PersonagemScreen(
-                imagemFundo: "assets/biblioteca.png",
-                falasConfig: _falasGuardiaoAcerto,
-                instrucaoToque: 'Toque para continuar',
-                substituirAoAvancarFinal: false,
-                proximaTela: _etapaGuardiaoDesaparece(),
+              proximaTela: DialogoComGuardiao(
+                imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
+                opacidade: 0.8,
+                alturaPercentual: 0.7,
+                alinhamento: Alignment.bottomRight,
+                personagemScreen: PersonagemScreen(
+                  imagemFundo: "assets/biblioteca.png",
+                  falasConfig: _falasGuardiaoAcerto,
+                  instrucaoToque: 'Toque para continuar',
+                  substituirAoAvancarFinal: false,
+                  proximaTela: _etapaGuardiaoDesaparece(),
+                ),
               ),
             ),
           ),
@@ -118,7 +328,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     );
   }
 
-  // Guardião começa a desaparecer
   Widget _etapaGuardiaoDesaparece() {
     return NarradorScreen(
       tituloAppBar: "O Guardião",
@@ -134,7 +343,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
         falasConfig: _falasPersonagemAcerto,
-        exibirReacoes: true,
+        exibirReacoes: false,
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaEncontraItem(),
@@ -142,7 +351,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     );
   }
 
-  // Item aparece - Agora com fala do personagem e depois tela de recompensa
   Widget _etapaEncontraItem() {
     return NarradorScreen(
       tituloAppBar: "Item Encontrado!",
@@ -159,253 +367,25 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     );
   }
 
-  // 👇 NOVA ETAPA: Personagem comenta sobre o fragmento
   Widget _etapaPersonagemPegaFragmento() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
       falasConfig: [
-        FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui! Um Fragmento de Chave!'),
-        FalaConfig.personagem('${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Isso vai me ajudar a sair daqui.'),
-        FalaConfig.personagem('${generoJogador == "feminino" ? "[curiosa]" : "[curioso]"} Preciso continuar explorando...'),
+        FalaConfig.personagem('Uma... chave?'),
+        FalaConfig.personagem('Talvez isso me ajude a sair daqui.'),
+        FalaConfig.personagem('Preciso continuar explorando...'),
       ],
-      exibirReacoes: true,
+      exibirReacoes: false,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
-      proximaTela: _telaRecompensa(),
-    );
-  }
-
-  // 👇 NOVA ETAPA: Tela de recompensa visual
-  Widget _telaRecompensa() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fragmento de Chave"),
-        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+      proximaTela: const _RecompensaScreen(
+        nomeSala: 'Biblioteca',
+        imagemFundo: 'assets/biblioteca.png',
       ),
-      body: Background(
-        imagem: "assets/biblioteca.png",
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 30),
-                
-                // Ícone animado da chave
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: const Duration(milliseconds: 1500),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Opacity(
-                        opacity: value,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(30),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.amber.withOpacity(0.5),
-                        width: 3,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(0.3),
-                          blurRadius: 30,
-                          spreadRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.vpn_key,
-                      color: Colors.amber,
-                      size: 80,
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 30),
-                
-                // Texto principal
-                const Text(
-                  "PARABÉNS!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PressStart2P',
-                    shadows: [
-                      Shadow(
-                        color: Colors.amber,
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Descrição
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: Colors.amber.withOpacity(0.4),
-                      width: 2,
-                    ),
-                  ),
-                  child: const Column(
-                    children: [
-                      Text(
-                        "🗝️",
-                        style: TextStyle(fontSize: 40),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Você conseguiu um",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        "FRAGMENTO DE CHAVE",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.amber,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      Text(
-                        "Este fragmento é parte de algo maior.\n"
-                        "Continue explorando para encontrar\n"
-                        "os outros fragmentos e descobrir\n"
-                        "os segredos deste lugar.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                          fontFamily: 'PressStart2P',
-                          height: 1.6,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 30),
-                
-                // Botão de continuar
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => _voltarParaExploration(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 280,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: Colors.amber.withOpacity(0.5),
-                        width: 2,
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
-                        SizedBox(width: 10),
-                        Text(
-                          "CONTINUAR JORNADA",
-                          style: TextStyle(
-                            color: Colors.amber,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'PressStart2P',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Nova função que salva os dados e volta para ExplorationScreen
-  Widget _voltarParaExploration() {
-    // Executa o salvamento imediatamente
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _salvarProgressoERetornar();
-    });
-    
-    // Retorna um widget de loading
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.amber,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _salvarProgressoERetornar() async {
-    try {
-      // Salva localmente e no Firestore via ProgressService
-      await _progress.marcarSalaConcluida(
-        raJogador,
-        'Biblioteca',
-        novasChaves: ['Manacás', 'Mescla', 'Praça', 'Arena'],
-      );
-
-      print('Progresso salvo com sucesso!');
-    } catch (e) {
-      print('Erro ao salvar progresso: $e');
-    }
-
-    if (!mounted) return;
-
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      ExplorationScreen.routeName,
-      (route) => false,
     );
   }
 
   void _fluxoErro() {
-    // Primeiro, mostra o diálogo do guardião
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -413,18 +393,11 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-          side: const BorderSide(
-            color: Colors.redAccent,
-            width: 2,
-          ),
+          side: const BorderSide(color: Colors.redAccent, width: 2),
         ),
         title: const Row(
           children: [
-            Icon(
-              Icons.close,
-              color: Colors.redAccent,
-              size: 28,
-            ),
+            Icon(Icons.close, color: Colors.redAccent, size: 28),
             SizedBox(width: 10),
             Text(
               'RESPOSTA INCORRETA',
@@ -458,11 +431,15 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              // Depois de fechar o diálogo, mostra a fala do guardião
-              _mostrarFalasGuardiaoErro();
+              // Reseta a seleção para permitir nova tentativa
+              if (mounted) {
+                setState(() {
+                  _respostaSelecionada = null;
+                });
+              }
             },
             child: const Text(
-              'CONTINUAR',
+              'TENTAR NOVAMENTE',
               style: TextStyle(
                 color: Colors.cyan,
                 fontSize: 12,
@@ -473,28 +450,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
         ],
       ),
     );
-  }
-
-  void _mostrarFalasGuardiaoErro() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PersonagemScreen(
-          imagemFundo: "assets/biblioteca.png",
-          falasConfig: _falasGuardiaoErro,
-          instrucaoToque: 'Toque para tentar novamente',
-          substituirAoAvancarFinal: false,
-          proximaTela: null, // Volta para a tela de desafio
-        ),
-      ),
-    ).then((_) {
-      // Quando voltar da PersonagemScreen, reseta a seleção
-      if (mounted) {
-        setState(() {
-          _respostaSelecionada = null;
-        });
-      }
-    });
   }
 
   @override
@@ -511,9 +466,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: GameTimerWidget(),
-            ),
+            child: Center(child: GameTimerWidget()),
           ),
         ],
       ),

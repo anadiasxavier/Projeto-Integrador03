@@ -5,6 +5,8 @@ import '../../models/entidade_dialogo.dart';
 import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_biblioteca_screen.dart';
+import '../../widgets/dialogo_com_guardiao.dart';
+import '../../models/guardioes_config.dart';
 
 class BibliotecaScreen extends StatelessWidget {
   const BibliotecaScreen({super.key});
@@ -19,8 +21,8 @@ class BibliotecaScreen extends StatelessWidget {
 
   // Etapa 2: Personagem responde ao guardião
   List<FalaConfig> get _falasPersonagem => [
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[nervosa]" : "[nervoso]"} Eu só quero sair daqui…'),
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[assustada]" : "[assustado]"} Você vai me impedir?'),
+    FalaConfig.personagem('Eu só quero sair daqui…'),
+    FalaConfig.personagem('Você vai me impedir?'),
   ];
 
   // Etapa 3: Guardião explica seu papel
@@ -153,7 +155,6 @@ class BibliotecaScreen extends StatelessWidget {
   }
 
   void _iniciarFluxoBiblioteca(BuildContext context) {
-    // ETAPA 1: Narração inicial e guardião aparece
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -167,25 +168,57 @@ class BibliotecaScreen extends StatelessWidget {
               'Veste trajes escuros, e os olhos, fixos em você.\n\n',
           dica: 'Toque em Continuar para ouvir o guardião.',
           exibirNarracaoEmCaixa: true,
-          proximaTela: _etapaDialogoCompleto(),
+          proximaTela: _etapaGuardiaoFalaInicial(),
         ),
       ),
     );
   }
 
-  // ETAPA 2-4 UNIFICADA: Todo o diálogo em uma única tela
-  Widget _etapaDialogoCompleto() {
+  // ETAPA 2: Guardião fala inicialmente (COM imagem do guardião)
+  Widget _etapaGuardiaoFalaInicial() {
+    return DialogoComGuardiao(
+      imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
+      opacidade: 0.8,
+      alturaPercentual: 0.7,
+      alinhamento: Alignment.bottomRight,
+      personagemScreen: PersonagemScreen(
+        imagemFundo: "assets/biblioteca.png",
+        falasConfig: _falasGuardiaoInicial,
+        exibirReacoes: false,
+        instrucaoToque: 'Toque para continuar',
+        substituirAoAvancarFinal: false,
+        proximaTela: _etapaPersonagemResponde(),
+      ),
+    );
+  }
+
+  // ETAPA 3: Personagem responde (SEM guardião)
+  Widget _etapaPersonagemResponde() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
-      falasConfig: [
-        ..._falasGuardiaoInicial,
-        ..._falasPersonagem,
-        ..._falasGuardiaoResposta,
-      ],
-      exibirReacoes: true,
+      falasConfig: _falasPersonagem,
+      exibirReacoes: false,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
-      proximaTela: _etapaLivroCai(),
+      proximaTela: _etapaGuardiaoResponde(),
+    );
+  }
+
+  // ETAPA 4: Guardião responde ao personagem (COM imagem do guardião)
+  Widget _etapaGuardiaoResponde() {
+    return DialogoComGuardiao(
+      imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
+      opacidade: 0.8,
+      alturaPercentual: 0.7,
+      alinhamento: Alignment.bottomRight,
+      personagemScreen: PersonagemScreen(
+        imagemFundo: "assets/biblioteca.png",
+        falasConfig: _falasGuardiaoResposta,
+        exibirReacoes: false,
+        instrucaoToque: 'Toque para continuar',
+        substituirAoAvancarFinal: false,
+        proximaTela: _etapaLivroCai(),
+      ),
     );
   }
 
@@ -201,12 +234,18 @@ class BibliotecaScreen extends StatelessWidget {
           'fixos em você.',
       dica: 'Toque em Continuar.',
       exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/biblioteca.png",
-        falasConfig: _falasGuardiaoProve,
-        instrucaoToque: 'Toque para continuar',
-        substituirAoAvancarFinal: false,
-        proximaTela: _etapaLivroAbre(),
+      proximaTela: DialogoComGuardiao(
+        imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
+        opacidade: 0.7,
+        alturaPercentual: 0.5,
+        alinhamento: Alignment.bottomRight,
+        personagemScreen: PersonagemScreen(
+          imagemFundo: "assets/biblioteca.png",
+          falasConfig: _falasGuardiaoProve,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: false,
+          proximaTela: _etapaLivroAbre(),
+        ),
       ),
     );
   }

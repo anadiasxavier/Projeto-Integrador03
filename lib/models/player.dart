@@ -9,7 +9,7 @@ class Player {
   int nivel;
   int experiencia;
 
-  // O construtor é o que permite criar um jogador novo. O required significa que todos os três campos são obrigatórios — não dá pra criar um Player sem informar nome, nível e experiência.
+  // O construtor é o que permite criar um jogador novo. O required significa que todos os três campos são obrigatórios —> não dá pra criar um Player sem informar nome, nível e experiência.
 
   Player({
     required this.nome,
