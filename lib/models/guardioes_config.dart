@@ -8,7 +8,7 @@ class GuardioesConfig {
     'biblioteca': GuardiaoEstilo(
       imagem: guardiaoBiblioteca,
       opacidade: 0.7,
-      alturaPercentual: 0.5,
+      alturaPercentual: 0.8,
     ) // ... outros guardiões
   };
 }
@@ -21,6 +21,6 @@ class GuardiaoEstilo {
   const GuardiaoEstilo({
     required this.imagem,
     this.opacidade = 0.7,
-    this.alturaPercentual = 0.5,
+    this.alturaPercentual = 0.8,
   });
 }

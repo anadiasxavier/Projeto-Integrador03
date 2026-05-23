@@ -35,7 +35,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.0068, "lng": -46.8342},
+    "Biblioteca": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Manacas": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Mescla": {"lat":  -22.9510141666, "lng":  -47.07891800000},
     "Praça": {"lat": -22.9510141666, "lng": -47.07891800000},
