@@ -37,10 +37,9 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   static const Map<String, Map<String, double>> locais = {
     "Biblioteca": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Manacas": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Mescla": {"lat":  -22.9510141666, "lng":  -47.07891800000},
+    "Mescla": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Praça": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Arena": {"lat": -22.9510141666, "lng": -47.07891800000},
-
   };
 
   @override
@@ -101,15 +100,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
     return distancia <= 10;
   }
-
-  List<String> get _falasMesclaRelatorio => [
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} '
-        'O Mescla não deveria estar vazio assim.',
-    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} '
-        'As telas continuam funcionando.',
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} '
-        'Nada parece sob controle.',
-  ];
 
   static const List<String> _falasEntradaBiblioteca = [
     'Que silêncio...',

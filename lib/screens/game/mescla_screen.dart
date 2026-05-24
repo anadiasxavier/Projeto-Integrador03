@@ -1,5 +1,6 @@
 // lib/screens/mescla/mescla_screen.dart
 import 'package:flutter/material.dart';
+import 'package:rpg_campus_puc/main.dart';
 import '../../widgets/background.dart';
 import '../../models/entidade_dialogo.dart';
 import 'personagem_screen.dart';
@@ -10,9 +11,38 @@ class MesclaScreen extends StatelessWidget {
 
   // Falas do personagem explorando o Mescla
   static final List<FalaConfig> _falasMescla = [
-    FalaConfig.personagem('As telas piscam ao redor...'),
-    FalaConfig.personagem('Algo parece fora do lugar.'),
-    FalaConfig.personagem('Preciso investigar o que está acontecendo.'),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} O Mescla não deveria estar vazio, mas pelo menos está funcionando',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Essas telas não param... códigos passando, gráficos mudando',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} E mesmo assim nada parece que tudo está prestes a sair do controle',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Essa máquina ligou sozinha e parou do nada!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} As luzes estão piscando estranho igual aos outros lugares',
+    ),
+    // 'Isso não parece normal',
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse ambiente inteiro está instável',
+    ),
+    // FALAS DO GUARDIÃO DO MESCLA
+    FalaConfig.guardiao(
+      '[guardiao_mescla_neutro] Neste lugar existem regras... lógica... padrões que mantêm tudo em equilíbrio',
+    ),
+    FalaConfig.guardiao(
+      '[guardiao_mescla_expressao] Mas até mesmo sistemas guiados pela razão podem falhar sem aviso',
+    ),
+    FalaConfig.guardiao(
+      '[guardiao_mescla_neutro] Descubra minha essência e impeça que os erros se espalhem pelo caminho',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Então esse é o Guardião do Mescla... preciso concluir o desafio antes que tudo piore',
+    ),
   ];
 
   @override
@@ -84,18 +114,12 @@ class MesclaScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.cyan.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: Colors.cyan.withOpacity(0.4),
-                      ),
+                      border: Border.all(color: Colors.cyan.withOpacity(0.4)),
                     ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.computer,
-                          color: Colors.cyan,
-                          size: 28,
-                        ),
+                        Icon(Icons.computer, color: Colors.cyan, size: 28),
                         SizedBox(width: 15),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,6 +164,7 @@ class MesclaScreen extends StatelessWidget {
         builder: (context) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
           falasConfig: _falasMescla, // 👈 Mudou para falasConfig
+          exibirReacoes: true,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: false,
           proximaTela: const MesclaPuzzleScreen(),

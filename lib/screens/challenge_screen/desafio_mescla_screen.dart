@@ -19,46 +19,23 @@ class MesclaPuzzleScreen extends StatefulWidget {
 class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
   final ProgressService _progress = ProgressService();
-
-  // ⭐ FALAS DO GUARDIÃO DO MESCLA
-  static final List<FalaConfig> _falasGuardiaoFinal = [
-    FalaConfig.guardiao('PROCESSO CONCLUÍDO.'),
-    FalaConfig.guardiao('Você não respondeu para mim...'),
-    FalaConfig.guardiao('Respondeu para o sistema.'),
-    FalaConfig.guardiao('Siga o fluxo.'),
-    FalaConfig.guardiao('Onde as máquinas jogam sozinhas...'),
-    FalaConfig.guardiao('Há outra peça esperando.'),
-  ];
+  int? _selectedIndex;
 
   // ⭐ FALAS DO PERSONAGEM (COM REAÇÕES)
   List<FalaConfig> get _falasPersonagemFinal => [
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou... acho que agora ele me deixou passar...'),
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Vejo algo brilhar próximo aos equipamentos.'),
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento... de chave!'),
-    FalaConfig.personagem('${generoJogador == "feminino" ? "[determinada]" : "[determinado]"} Preciso continuar minha jornada.'),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Espera... tem algo brilhando perto das máquinas',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} É um fragmento de chave!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Com isso, talvez eu consiga acessar o próximo ambiente!',
+    ),
   ];
-
-  // Tela do computador com a mensagem
-  static final List<FalaConfig> _falasComputador = [
-    FalaConfig.personagem('Olhando para a tela do computador...'),
-    FalaConfig.personagem('Uma mensagem começa a piscar no monitor:'),
-    FalaConfig.personagem(''),
-    FalaConfig.personagem('    "DESAFIO CONCLUÍDO!"'),
-    FalaConfig.personagem('    "SIGA PARA A PRÓXIMA SALA"'),
-    FalaConfig.personagem(''),
-    FalaConfig.personagem('O sistema parece ter se estabilizado...'),
-  ];
-
-  // Tela do computador (Widget separado)
-  Widget _telaComputadorConcluido() {
-    return PersonagemScreen(
-      imagemFundo: "assets/mescla.png",
-      falasConfig: _falasComputador, // 👈 Mudou para falasConfig
-      instrucaoToque: 'Toque para continuar',
-      substituirAoAvancarFinal: true,
-      proximaTela: const SizedBox.shrink(),
-    );
-  }
 
   static const List<String> _linhasSistema = <String>[
     'PROCESSO INICIADO...',
@@ -76,49 +53,23 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     'Máquina',
     'Algoritmo',
     'Energia',
+    'Programa',
   ];
 
   void _fluxoAcerto() async {
-    // ⭐ FLUXO SEQUENCIAL DE FALAS
-    // Primeiro: Falas do Guardião (Sistema)
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
-          falasConfig: _falasGuardiaoFinal, // 👈 Guardião fala
+          falasConfig: _falasPersonagemFinal,
+          exibirReacoes: true,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
-          proximaTela: const SizedBox.shrink(),
+          proximaTela: _telaFragmentoObtido(),
         ),
       ),
     );
-
-    // Segundo: Falas do Personagem (com reações)
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PersonagemScreen(
-          imagemFundo: "assets/mescla.png",
-          falasConfig: _falasPersonagemFinal, // 👈 Personagem responde
-          exibirReacoes: true, // 👈 Mostra reações
-          instrucaoToque: 'Toque para continuar',
-          substituirAoAvancarFinal: true,
-          proximaTela: const SizedBox.shrink(),
-        ),
-      ),
-    );
-
-    // Terceiro: Tela do Computador
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _telaComputadorConcluido(),
-      ),
-    );
-
-    // Finalmente: Salva e volta para Exploration
-    await _salvarProgressoERetornar();
   }
 
   // Função que salva o progresso localmente e no Firestore
@@ -146,7 +97,9 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   }
 
   void _selecionarOpcao(int index) async {
-    if (_travado) return;
+    if (_travado || _selectedIndex != null) return;
+
+    setState(() => _selectedIndex = index);
 
     final bool ok = index == 1; // "Algoritmo"
     if (!ok) {
@@ -159,11 +112,107 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
       setState(() => _travado = true);
       await Future<void>.delayed(const Duration(seconds: 3));
       if (!mounted) return;
-      setState(() => _travado = false);
+      setState(() {
+        _travado = false;
+        _selectedIndex = null;
+      });
       return;
     }
 
+    // Mostra feedback visual antes de prosseguir
+    await Future<void>.delayed(const Duration(milliseconds: 450));
+    if (!mounted) return;
     _fluxoAcerto();
+  }
+
+  Widget _telaFragmentoObtido() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Fragmento de Chave'),
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
+      ),
+      body: Background(
+        imagem: 'assets/mescla.png',
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.amber.withValues(alpha: 0.2),
+                  border: Border.all(color: Colors.amber, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(alpha: 0.3),
+                      blurRadius: 30,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'FRAGMENTO DE CHAVE OBTIDO!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'PressStart2P',
+                ),
+              ),
+              const SizedBox(height: 15),
+              Text(
+                'As telas voltam a piscar.\n'
+                'O Mescla parece... instável de novo.\n'
+                'Mas agora você tem uma peça a mais para sair daqui',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontFamily: 'PressStart2P',
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 40),
+              GestureDetector(
+                onTap: _salvarProgressoERetornar,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.exit_to_app, color: Colors.white, size: 24),
+                      SizedBox(width: 10),
+                      Text(
+                        'VOLTAR AO CAMPUS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -181,9 +230,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: const GameTimerWidget(),
-            ),
+            child: Center(child: const GameTimerWidget()),
           ),
         ],
       ),
@@ -216,9 +263,9 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                       size: 40,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   const Text(
                     'PUZZLE',
                     textAlign: TextAlign.center,
@@ -261,7 +308,9 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: ElevatedButton(
-                        onPressed: _travado ? null : () => _selecionarOpcao(i),
+                        onPressed: (_travado || _selectedIndex != null)
+                            ? null
+                            : () => _selecionarOpcao(i),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black.withValues(alpha: 0.25),
                           foregroundColor: Colors.white,
@@ -269,8 +318,14 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(
-                              color: i == 1 ? Colors.green.withOpacity(0.5) : Colors.white.withValues(alpha: 0.2),
-                              width: i == 1 ? 2 : 1,
+                              color: _selectedIndex == null
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : (_selectedIndex == i
+                                        ? (i == 1
+                                              ? Colors.green.withOpacity(0.7)
+                                              : Colors.red.withOpacity(0.7))
+                                        : Colors.white.withValues(alpha: 0.08)),
+                              width: _selectedIndex == i ? 2 : 1,
                             ),
                           ),
                         ),

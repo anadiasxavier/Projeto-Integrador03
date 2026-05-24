@@ -19,7 +19,7 @@ class PersonagemScreen extends StatefulWidget {
     required this.imagemFundo,
     this.instrucaoToque,
     this.falasCustom,
-    this.falasConfig,
+    this.falasConfig, //NOVO
     this.exibirReacoes = false,
     this.substituirAoAvancarFinal = true,
   });
@@ -39,7 +39,11 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     'surpreso': 'Surpreso',
     'surpresa': 'Surpresa',
     'feliz': 'Feliz',
+    'felizM': 'Masculino_Feliz',
     'triste': 'Triste',
+    'tristeM': 'Masculino_Triste',
+    'guardiao_mescla_neutro': 'Guardiao_Mescla_Neutro',
+    'guardiao_mescla_expressao': 'Guardiao_Mescla_Expressao',
   };
 
   bool get _showReactions => widget.exibirReacoes;
@@ -50,12 +54,12 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     if (widget.falasConfig != null && widget.falasConfig!.isNotEmpty) {
       return widget.falasConfig!.map((f) => f.texto).toList();
     }
-    
+
     // Fallback para formato antigo
     if (widget.falasCustom != null && widget.falasCustom!.isNotEmpty) {
       return widget.falasCustom!;
     }
-    
+
     return [];
   }
 
@@ -70,18 +74,17 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   // NOVO: Determina qual ícone mostrar
   String _getIconePath() {
     if (_falas.isEmpty) return _defaultCharacterImage();
-    
-    if (widget.falasConfig != null && 
-        widget.falasConfig!.isNotEmpty && 
+
+    if (widget.falasConfig != null &&
+        widget.falasConfig!.isNotEmpty &&
         indice < widget.falasConfig!.length) {
-      
       final config = widget.falasConfig![indice];
-      
+
       if (config.entidade == TipoEntidade.guardiao) {
         return 'assets/guardiao.png';
       }
     }
-    
+
     // Padrão: personagem
     return _defaultCharacterImage();
   }
@@ -89,35 +92,33 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   // NOVO: Determina qual nome mostrar
   String _getNomeFalante() {
     if (_falas.isEmpty) return _rotuloPersonagem();
-    
-    if (widget.falasConfig != null && 
-        widget.falasConfig!.isNotEmpty && 
+
+    if (widget.falasConfig != null &&
+        widget.falasConfig!.isNotEmpty &&
         indice < widget.falasConfig!.length) {
-      
       final config = widget.falasConfig![indice];
-      
+
       if (config.entidade == TipoEntidade.guardiao) {
         return 'Guardião';
       }
     }
-    
+
     // Padrão: nome do personagem
     return _rotuloPersonagem();
   }
 
   // NOVO: Cor do nome baseado em quem fala
   Color _getCorNome() {
-    if (widget.falasConfig != null && 
-        widget.falasConfig!.isNotEmpty && 
+    if (widget.falasConfig != null &&
+        widget.falasConfig!.isNotEmpty &&
         indice < widget.falasConfig!.length) {
-      
       final config = widget.falasConfig![indice];
-      
+
       if (config.entidade == TipoEntidade.guardiao) {
         return Colors.amber; // Dourado para o guardião
       }
     }
-    
+
     return Colors.cyan; // Ciano para o personagem
   }
 
@@ -151,6 +152,10 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     }
 
     final assetName = _reactionAssetNames[reaction]!;
+    if (reaction.startsWith('guardiao_')) {
+      return 'assets/reactions/$assetName.png';
+    }
+
     final prefix = generoJogador == 'feminino' ? 'Feminino' : 'Masculino';
     return 'assets/reactions/${prefix}_$assetName.png';
   }
@@ -158,7 +163,9 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   void proximaFala() {
     if (_falas.isEmpty) {
       if (widget.proximaTela != null) {
-        final rota = MaterialPageRoute(builder: (context) => widget.proximaTela!);
+        final rota = MaterialPageRoute(
+          builder: (context) => widget.proximaTela!,
+        );
         if (widget.substituirAoAvancarFinal) {
           Navigator.pushReplacement(context, rota);
         } else {
@@ -167,7 +174,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
       }
       return;
     }
-    
+
     if (!_ultimaFala) {
       setState(() => indice++);
       return;
@@ -237,7 +244,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
           children: [
             if (reactionImage != null)
               Positioned(
-                bottom: 130,
+                bottom: 95, // altura do personagem
                 left: -95,
                 child: Transform.rotate(
                   angle: -0.04,
@@ -279,14 +286,15 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                       Container(
                         margin: const EdgeInsets.only(right: 10),
                         child: Image.asset(
-                          _getIconePath(), // 👈 AGORA USA O MÉTODO
+                          _getIconePath(), // AGORA USA O MÉTODO
                           width: 60,
                           height: 60,
-                          errorBuilder: (context, error, stackTrace) => Image.asset(
-                            _defaultCharacterImage(),
-                            width: 60,
-                            height: 60,
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                                _defaultCharacterImage(),
+                                width: 60,
+                                height: 60,
+                              ),
                         ),
                       ),
                       Expanded(
