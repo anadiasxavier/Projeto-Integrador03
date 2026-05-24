@@ -40,6 +40,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     "Mescla": {"lat":  -22.9510141666, "lng":  -47.07891800000},
     "Praça": {"lat": -22.9510141666, "lng": -47.07891800000},
     "Arena": {"lat": -22.9510141666, "lng": -47.07891800000},
+
   };
 
   @override
