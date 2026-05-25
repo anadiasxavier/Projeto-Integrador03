@@ -20,12 +20,13 @@ class DesafioManacasScreen extends StatefulWidget {
 class _DesafioManacasScreenState
     extends State<DesafioManacasScreen> {
 
-  List<String> board = List.filled(9, '');
-
   final ProgressService _progress =
       ProgressService();
 
-  final List<FalaConfig> _falasGuardiao = [
+  List<String> board =
+      List.filled(9,'');
+
+  final _falasGuardiao=[
 
     FalaConfig.guardiao(
       '...Você observou.',
@@ -44,7 +45,7 @@ class _DesafioManacasScreenState
     ),
   ];
 
-  final List<FalaConfig> _falasPersonagem = [
+  final _falasPersonagem=[
 
     FalaConfig.personagem(
       'Consegui vencer o guardião!',
@@ -59,58 +60,389 @@ class _DesafioManacasScreenState
     ),
   ];
 
-  Widget _telaComputadorConcluido() {
+  Widget _espaco(double h)=>
+      SizedBox(height:h);
+
+  Widget _dialogo(
+      List<FalaConfig> falas){
 
     return PersonagemScreen(
-      imagemFundo: "assets/manacas.png",
 
-      falasConfig: [
+      imagemFundo:
+          "assets/manacas.png",
 
-        FalaConfig.personagem(
-          'Olhando para o pedestal...',
-        ),
-
-        FalaConfig.personagem(
-          'Uma mensagem começa a brilhar:',
-        ),
-
-        FalaConfig.personagem(
-          'DESAFIO CONCLUÍDO!',
-        ),
-
-        FalaConfig.personagem(
-          'SIGA PARA A PRÓXIMA SALA',
-        ),
-
-        FalaConfig.personagem(
-          'Mais um passo nessa jornada...',
-        ),
-      ],
+      falasConfig:
+          falas,
 
       instrucaoToque:
           'Toque para continuar',
 
-      substituirAoAvancarFinal: true,
+      substituirAoAvancarFinal:
+          true,
 
       proximaTela:
           const SizedBox.shrink(),
     );
   }
 
-  void jogar(int index) {
+  Text _texto(
+    String txt,{
+    Color cor=
+        Colors.white,
+    double size=11,
+    FontWeight peso=
+        FontWeight.normal,
+  }){
 
-    if (board[index] != '')
+    return Text(
+
+      txt,
+
+      textAlign:
+          TextAlign.center,
+
+      style:TextStyle(
+
+        color:cor,
+
+        fontSize:size,
+
+        fontWeight:peso,
+
+        fontFamily:
+            'PressStart2P',
+
+        height:1.7,
+      ),
+    );
+  }
+
+  Widget _telaComputadorConcluido(){
+
+    return Scaffold(
+
+      appBar: AppBar(
+
+        title:
+            const Text(
+                "Fragmento de Chave"),
+
+        backgroundColor:
+            const Color.fromARGB(
+                255,0,19,48),
+
+        foregroundColor:
+            Colors.white,
+      ),
+
+      body: Background(
+
+        imagem:
+            "assets/manacas.png",
+
+        child: Center(
+
+          child:
+              SingleChildScrollView(
+
+            child: Column(
+
+              children:[
+
+                _espaco(30),
+
+                TweenAnimationBuilder<double>(
+
+                  tween:Tween(
+                    begin:0,
+                    end:1,
+                  ),
+
+                  duration:
+                      const Duration(
+                    milliseconds:
+                        1500,
+                  ),
+
+                  builder:
+                  (_,value,child){
+
+                    return Transform.scale(
+
+                      scale:value,
+
+                      child:Opacity(
+
+                        opacity:value,
+
+                        child:child,
+                      ),
+                    );
+                  },
+
+                  child:
+                      Container(
+
+                    padding:
+                        const EdgeInsets
+                            .all(30),
+
+                    decoration:
+                        BoxDecoration(
+
+                      color:
+                          Colors.green
+                              .withOpacity(
+                                  .15),
+
+                      shape:
+                          BoxShape.circle,
+
+                      border:
+                          Border.all(
+
+                        color:
+                            Colors.green
+                                .withOpacity(
+                                    .5),
+
+                        width:3,
+                      ),
+
+                      boxShadow:[
+
+                        BoxShadow(
+
+                          color:
+                              Colors.green
+                                  .withOpacity(
+                                      .35),
+
+                          blurRadius:30,
+
+                          spreadRadius:
+                              10,
+                        )
+                      ],
+                    ),
+
+                    child:
+                        const Icon(
+
+                      Icons.vpn_key,
+
+                      color:
+                          Colors.green,
+
+                      size:80,
+                    ),
+                  ),
+                ),
+
+                _espaco(30),
+
+                _texto(
+
+                  "FRAGMENTO ENCONTRADO",
+
+                  cor:
+                      Colors.green,
+
+                  size:20,
+
+                  peso:
+                      FontWeight.bold,
+                ),
+
+                _espaco(20),
+
+                Container(
+
+                  margin:
+                      const EdgeInsets.symmetric(
+                    horizontal:30,
+                  ),
+
+                  padding:
+                      const EdgeInsets.all(
+                          20),
+
+                  decoration:
+                      BoxDecoration(
+
+                    color:
+                        Colors.black
+                            .withOpacity(
+                                .75),
+
+                    borderRadius:
+                        BorderRadius.circular(
+                            15),
+
+                    border:
+                        Border.all(
+
+                      color:
+                          Colors.green
+                              .withOpacity(
+                                  .4),
+                    ),
+                  ),
+
+                  child:
+                      Column(
+
+                    children:[
+
+                      const Text(
+                        "🌙",
+                        style:
+                            TextStyle(
+                          fontSize:40,
+                        ),
+                      ),
+
+                      _espaco(12),
+
+                      _texto(
+                        "Você conseguiu um",
+                      ),
+
+                      _espaco(10),
+
+                      _texto(
+
+                        "FRAGMENTO DE CHAVE",
+
+                        cor:
+                            Colors.green,
+
+                        size:14,
+
+                        peso:
+                            FontWeight.bold,
+                      ),
+
+                      _espaco(15),
+
+                      _texto(
+
+                        "O silêncio do Manacás parece diferente.\n\n"
+                        "Algo observava você...\n"
+                        "mas agora desapareceu.\n\n"
+                        "Continue explorando para encontrar\n"
+                        "os outros fragmentos.",
+
+                        cor:
+                            Colors.white70,
+                      ),
+                    ],
+                  ),
+                ),
+
+                _espaco(30),
+
+                GestureDetector(
+
+                  onTap:
+                      _salvarProgressoERetornar,
+
+                  child:
+                      Container(
+
+                    width:280,
+
+                    padding:
+                        const EdgeInsets.symmetric(
+                      vertical:15,
+                    ),
+
+                    decoration:
+                        BoxDecoration(
+
+                      color:
+                          Colors.green
+                              .withOpacity(
+                                  .2),
+
+                      borderRadius:
+                          BorderRadius.circular(
+                              15),
+
+                      border:
+                          Border.all(
+
+                        color:
+                            Colors.green
+                                .withOpacity(
+                                    .5),
+                      ),
+                    ),
+
+                    child:
+                        const Row(
+
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+
+                      children:[
+
+                        Icon(
+                          Icons.arrow_forward,
+                          color:
+                              Colors.green,
+                        ),
+
+                        SizedBox(
+                            width:10),
+
+                        Text(
+
+                          "CONTINUAR",
+
+                          style:
+                              TextStyle(
+
+                            color:
+                                Colors.green,
+
+                            fontSize:12,
+
+                            fontWeight:
+                                FontWeight.bold,
+
+                            fontFamily:
+                                'PressStart2P',
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+
+                _espaco(40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void jogar(int index){
+
+    if(board[index]!="")
       return;
 
     setState(() =>
-        board[index] = 'X');
+        board[index]="X");
 
-    if (verificar('X')) {
+    if(verificar("X")){
       _vitoria();
       return;
     }
 
-    if (!board.contains('')) {
+    if(!board.contains("")){
       _erro();
       return;
     }
@@ -118,35 +450,36 @@ class _DesafioManacasScreenState
     _jogadaGuardiao();
   }
 
-  void _jogadaGuardiao() {
+  void _jogadaGuardiao(){
 
-    List<int> livres = [];
+    final livres=[];
 
-    for (int i = 0; i < 9; i++) {
+    for(int i=0;i<9;i++){
 
-      if (board[i] == '') {
+      if(board[i]==''){
         livres.add(i);
       }
     }
 
-    int escolha =
-        livres[Random().nextInt(
-            livres.length)];
+    int escolha=
+        livres[
+          Random().nextInt(
+            livres.length,
+          )
+        ];
 
     setState(() {
-
-      board[escolha] = 'O';
-
+      board[escolha]="O";
     });
 
-    if (verificar('O')) {
+    if(verificar("O")){
       _erro();
     }
   }
 
-  bool verificar(String p) {
+  bool verificar(String p){
 
-    List<List<int>> wins = [
+    final wins=[
 
       [0,1,2],
       [3,4,5],
@@ -158,220 +491,114 @@ class _DesafioManacasScreenState
 
       [0,4,8],
       [2,4,6],
-
     ];
 
-    for (var w in wins) {
+    return wins.any(
+      (w)=>
 
-      if (board[w[0]] == p &&
-          board[w[1]] == p &&
-          board[w[2]] == p) {
-
-        return true;
-      }
-    }
-
-    return false;
+      board[w[0]]==p &&
+      board[w[1]]==p &&
+      board[w[2]]==p
+    );
   }
 
-  void _erro() {
+  void _erro(){
 
     showDialog(
 
-      context: context,
+      context:context,
 
-      barrierDismissible: false,
+      barrierDismissible:false,
 
-      builder: (context) => AlertDialog(
+      builder:(_)=>AlertDialog(
 
         backgroundColor:
             const Color.fromARGB(
                 255,0,19,48),
 
-        shape:
-            RoundedRectangleBorder(
-
-          borderRadius:
-              BorderRadius.circular(15),
-
-          side:
-              const BorderSide(
-                color:
-                    Colors.redAccent,
-                width:2,
-              ),
-        ),
-
-        title: const Row(
-
-          children: [
-
-            Icon(
-              Icons.close,
-              color:
-                  Colors.redAccent,
-              size:28,
+        title:
+            const Text(
+              "VOCÊ FALHOU",
             ),
 
-            SizedBox(width:10),
+        content:
+            const Text(
 
-            Text(
-              'VOCÊ FALHOU',
-
-              style: TextStyle(
-                color:
-                    Colors.redAccent,
-                fontSize:12,
-                fontFamily:
-                    'PressStart2P',
-              ),
-            ),
-          ],
-        ),
-
-        content: const Text(
-
-          'O guardião observa em silêncio.\n\n'
-          'O tabuleiro reinicia diante de você.',
+          "O guardião observa em silêncio.\n\n"
+          "O tabuleiro reinicia.",
 
           textAlign:
               TextAlign.center,
-
-          style: TextStyle(
-            color:
-                Colors.white70,
-            fontSize:11,
-            fontFamily:
-                'PressStart2P',
-            height:1.6,
-          ),
         ),
 
-        actions: [
+        actions:[
 
           TextButton(
 
-            onPressed: () {
+            onPressed:(){
 
-              Navigator.pop(context);
+              Navigator.pop(
+                  context);
 
               setState(() {
 
-                board =
+                board=
                     List.filled(
                         9,'');
-
               });
-
             },
 
-            child: const Text(
-
-              'TENTAR NOVAMENTE',
-
-              style: TextStyle(
-                color:
-                    Colors.green,
-                fontFamily:
-                    'PressStart2P',
-                fontSize:10,
-              ),
-            ),
+            child:
+                const Text(
+                    "TENTAR"),
           )
         ],
       ),
     );
   }
 
-  void _vitoria() async {
+  void _vitoria() async{
 
     await Navigator.push(
       context,
-
       MaterialPageRoute(
-
-        builder: (_) =>
-            PersonagemScreen(
-
-          imagemFundo:
-              "assets/manacas.png",
-
-          falasConfig:
+        builder:(_)=>
+            _dialogo(
               _falasGuardiao,
-
-          instrucaoToque:
-              'Toque para continuar',
-
-          substituirAoAvancarFinal:
-              true,
-
-          proximaTela:
-              const SizedBox.shrink(),
-        ),
+            ),
       ),
     );
 
     await Navigator.push(
       context,
-
       MaterialPageRoute(
-
-        builder: (_) =>
-            PersonagemScreen(
-
-          imagemFundo:
-              "assets/manacas.png",
-
-          falasConfig:
+        builder:(_)=>
+            _dialogo(
               _falasPersonagem,
-
-          instrucaoToque:
-              'Toque para continuar',
-
-          substituirAoAvancarFinal:
-              true,
-
-          proximaTela:
-              const SizedBox.shrink(),
-        ),
+            ),
       ),
     );
 
     await Navigator.push(
       context,
-
       MaterialPageRoute(
-        builder: (_) =>
+        builder:(_)=>
             _telaComputadorConcluido(),
       ),
     );
-
-    await _salvarProgressoERetornar();
   }
 
   Future<void>
-      _salvarProgressoERetornar()
-      async {
+  _salvarProgressoERetornar()
+  async{
 
-    try {
+    await _progress
+        .marcarSalaConcluida(
+      raJogador,
+      'Manacas',
+    );
 
-      await _progress
-          .marcarSalaConcluida(
-              raJogador,
-              'Manacas');
-
-      print(
-        'Progresso salvo!',
-      );
-
-    } catch (e) {
-
-      print(e);
-
-    }
-
-    if (!mounted)
-      return;
+    if(!mounted)return;
 
     Navigator
         .pushNamedAndRemoveUntil(
@@ -387,38 +614,25 @@ class _DesafioManacasScreenState
 
   @override
   Widget build(
-      BuildContext context) {
+      BuildContext context){
 
     return Scaffold(
 
       appBar: AppBar(
 
-        title: const Text(
+        title:
+            const Text(
           "Jogo do Guardião - Manacas",
         ),
 
         backgroundColor:
             const Color.fromARGB(
-                255,
-                0,
-                19,
-                48),
+                255,0,19,48),
 
         foregroundColor:
             Colors.white,
 
-        leading:
-            IconButton(
-
-          icon: const Icon(
-              Icons.arrow_back),
-
-          onPressed: () =>
-              Navigator.pop(
-                  context),
-        ),
-
-        actions: [
+        actions:[
 
           Padding(
 
@@ -426,11 +640,13 @@ class _DesafioManacasScreenState
                 const EdgeInsets.only(
                     right:16),
 
-            child: Center(
+            child:
+                const Center(
+
               child:
-                  const GameTimerWidget(),
+                  GameTimerWidget(),
             ),
-          ),
+          )
         ],
       ),
 
@@ -446,37 +662,16 @@ class _DesafioManacasScreenState
             mainAxisAlignment:
                 MainAxisAlignment.center,
 
-            children: [
+            children:[
 
-              Container(
-                padding:
-                    const EdgeInsets.all(15),
-
-                decoration:
-                    BoxDecoration(
-
-                  color:
-                      Colors.amber.withOpacity(0.2),
-
-                  shape:
-                      BoxShape.circle,
-
-                  border:
-                      Border.all(
-                    color:
-                        Colors.amber,
-                    width: 2,
-                  ),
-                ),
-
-                child: const Icon(
-                  Icons.games,
-                  color: Colors.amber,
-                  size: 40,
-                ),
+              const Icon(
+                Icons.games,
+                color:
+                    Colors.amber,
+                size:50,
               ),
 
-              const SizedBox(height:20),
+              _espaco(20),
 
               SizedBox(
 
@@ -490,44 +685,51 @@ class _DesafioManacasScreenState
                   itemCount:9,
 
                   gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:3,
                   ),
 
                   itemBuilder:
-                      (_,i)=>GestureDetector(
+                      (_,i)=>
+                          GestureDetector(
 
-                    onTap:()=>
-                        jogar(i),
+                    onTap:
+                        ()=>jogar(i),
 
                     child:
                         Container(
 
                       margin:
-                          const EdgeInsets.all(5),
+                          const EdgeInsets.all(
+                              5),
 
                       decoration:
                           BoxDecoration(
 
                         color:
-                            Colors.black.withOpacity(0.6),
+                            Colors.black
+                                .withOpacity(
+                                    .6),
 
                         border:
                             Border.all(
 
                           color:
-                              Colors.amber.withOpacity(0.5),
-
-                          width:2,
+                              Colors.amber
+                                  .withOpacity(
+                                      .5),
                         ),
 
                         borderRadius:
-                            BorderRadius.circular(8),
+                            BorderRadius.circular(
+                                8),
                       ),
 
-                      child:Center(
+                      child:
+                          Center(
 
-                        child:Text(
+                        child:
+                            Text(
 
                           board[i],
 
@@ -535,14 +737,14 @@ class _DesafioManacasScreenState
                               TextStyle(
 
                             color:
-                                board[i]=='X'
+                            board[i]=="X"
                                 ?Colors.cyan
                                 :Colors.redAccent,
 
                             fontSize:30,
 
                             fontFamily:
-                                'PressStart2P',
+                            'PressStart2P',
                           ),
                         ),
                       ),
@@ -551,14 +753,24 @@ class _DesafioManacasScreenState
                 ),
               ),
 
-              const SizedBox(height:20),
+              _espaco(20),
 
               Text(
+
                 'Faça uma linha para vencer!',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+
+                style:
+                    TextStyle(
+
+                  color:
+                      Colors.white
+                          .withOpacity(
+                              .5),
+
                   fontSize:10,
-                  fontFamily:'PressStart2P',
+
+                  fontFamily:
+                      'PressStart2P',
                 ),
               ),
             ],
