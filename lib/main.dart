@@ -13,7 +13,10 @@ String raJogador = '';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Inicializa o Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }
@@ -25,11 +28,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       routes: {
-        ExplorationScreen.routeName: (context) => const ExplorationScreen(),
+        ExplorationScreen.routeName: (context) =>
+            const ExplorationScreen(),
       },
-
       home: const StartScreen(),
     );
   }

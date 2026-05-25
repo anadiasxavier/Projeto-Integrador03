@@ -242,7 +242,8 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         imagem: widget.imagemFundo,
         child: Stack(
           children: [
-            if (reactionImage != null)
+           if (reactionImage != null &&
+            widget.imagemFundo != "assets/arena.png")
               Positioned(
                 bottom: 95, // altura do personagem
                 left: -95,

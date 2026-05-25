@@ -89,15 +89,17 @@ class RegisterSuccessScreen extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   // Detalhes do cadastro
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.2),
+                  SizedBox(
+                    width: 320, 
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                        ),
                       ),
-                    ),
                     child: Column(
                       children: [
                         const Text(
@@ -141,15 +143,15 @@ class RegisterSuccessScreen extends StatelessWidget {
                               style: const TextStyle(
                                 color: Colors.amber,
                                 fontSize: 11,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
+                      ),
+                const SizedBox(height: 40),
 
                   // Botão para fazer login
                   SizedBox(

@@ -30,7 +30,7 @@ class _IntroScreenState extends State<IntroScreen> {
     _verificarProgresso();
   }
 
-  // ⭐ VERIFICA SE O JOGADOR JÁ TEM PROGRESSO
+  // Verifica se o jogador tem progresso salvo (local ou Firestore) e decide se mostra o vídeo ou vai direto para a exploração
   Future<void> _verificarProgresso() async {
     try {
       // 1. Verifica cache local primeiro (instantâneo)
@@ -68,7 +68,7 @@ class _IntroScreenState extends State<IntroScreen> {
         }
       }
       
-      // ⭐ JOGADOR NOVO - MOSTRA O VÍDEO
+      // Se não tem progresso, mostra o vídeo
       if (mounted) {
         setState(() => _isLoading = false);
         _iniciarVideo();
@@ -83,7 +83,7 @@ class _IntroScreenState extends State<IntroScreen> {
       }
     }
   }
-
+ // Inicia o vídeo e os textos narrativos, além de configurar o listener para quando o vídeo terminar
   void _iniciarVideo() {
     _timerService.ensureTimerForPlayer(raJogador);
     
@@ -98,6 +98,7 @@ class _IntroScreenState extends State<IntroScreen> {
         }
       });
 
+// Configura o listener para detectar quando o vídeo termina e navegar para a tela de exploração, mostrando o modal de aviso do timer se ainda não tiver mostrado
     _controller.addListener(() {
       if (_controller.value.position >= _controller.value.duration) {
         _irParaExplorationComModal();
@@ -105,6 +106,7 @@ class _IntroScreenState extends State<IntroScreen> {
     });
   }
   
+  // Quando o vídeo termina, mostra o modal de aviso do timer (se ainda não tiver mostrado) e depois navega para a tela de exploração
   Future<void> _irParaExplorationComModal() async {
     if (!_modalMostrado && mounted) {
       _modalMostrado = true;
@@ -119,7 +121,7 @@ class _IntroScreenState extends State<IntroScreen> {
       );
     }
   }
-
+ 
   void _iniciarTextos() async {
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
@@ -151,7 +153,8 @@ class _IntroScreenState extends State<IntroScreen> {
           texto,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: Colors.white,
+            fontFamily: 'PressStart2P',
+            color: Colors.amber,
             fontSize: 16,
             height: 1.5,
           ),
@@ -160,52 +163,67 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // ⭐ MOSTRA LOADING ENQUANTO VERIFICA O PROGRESSO
-    if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Colors.amber,
-          ),
-        ),
-      );
-    }
-
-    // ⭐ JOGADOR NOVO - MOSTRA O VÍDEO
-    return Scaffold(
+ @override
+Widget build(BuildContext context) {
+  if (_isLoading) {
+    return const Scaffold(
       backgroundColor: Colors.black,
-      body: _controller.value.isInitialized
-          ? Stack(
-              children: [
-                SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: VideoPlayer(_controller),
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Colors.amber,
+        ),
+      ),
+    );
+  }
+
+  return Scaffold(
+    backgroundColor: Colors.black,
+    body: _controller.value.isInitialized
+        ? Stack(
+            children: [
+              SizedBox.expand(
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                bottom: 60,
+                left: 20,
+                right: 20,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        19,
+                        48,
+                      ).withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber, width: 1
+                      ),
+                    ),
+                    child: textoNarrador(
+                      "Você acorda sozinho na biblioteca\n\n"
+                      "Sua cabeça dói\n\n"
+                      "Você sente uma atmosfera estranha...",
+                      _texto1,
                     ),
                   ),
                 ),
-                Positioned(
-                  bottom: 60,
-                  left: 0,
-                  right: 0,
-                  child: textoNarrador(
-                    "Você acorda sozinho na biblioteca\n\n"
-                    "Sua cabeça dói\n\n"
-                    "Você sente uma atmosfera estranha...",
-                    _texto1,
-                  ),
-                ),
-              ],
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
-            ),
-    );
-  }
+              ),
+            ],
+          )
+        : const Center(
+            child: CircularProgressIndicator(),
+          ),
+  );
+}
 }

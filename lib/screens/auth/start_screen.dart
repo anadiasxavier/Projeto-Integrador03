@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'login_screen.dart';
+import '../../services/audio_service.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
@@ -41,14 +42,18 @@ class StartScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        },
+                      onTap: () async {
+                        await AudioService.instance.playBackgroundMusic(
+                          'audio/arena.mp3',
+                        );
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
                         child: SizedBox(
                           width: buttonWidth,
                           child: Container(
@@ -110,7 +115,11 @@ class StartScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          await AudioService.instance.playBackgroundMusic(
+                            'audio/arena.mp3',
+                          );
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(

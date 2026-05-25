@@ -16,10 +16,7 @@ class _RecompensaScreen extends StatefulWidget {
   final String nomeSala;
   final String imagemFundo;
 
-  const _RecompensaScreen({
-    required this.nomeSala,
-    required this.imagemFundo,
-  });
+  const _RecompensaScreen({required this.nomeSala, required this.imagemFundo});
 
   @override
   State<_RecompensaScreen> createState() => _RecompensaScreenState();
@@ -41,7 +38,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
     }
 
     if (!mounted) return;
-    
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const ExplorationScreen()),
@@ -65,17 +62,14 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 30),
-                
+
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 1500),
                   builder: (context, value, child) {
                     return Transform.scale(
                       scale: value,
-                      child: Opacity(
-                        opacity: value,
-                        child: child,
-                      ),
+                      child: Opacity(opacity: value, child: child),
                     );
                   },
                   child: Container(
@@ -102,9 +96,9 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 30),
-                
+
                 const Text(
                   "PARABÉNS!",
                   textAlign: TextAlign.center,
@@ -113,17 +107,12 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'PressStart2P',
-                    shadows: [
-                      Shadow(
-                        color: Colors.amber,
-                        blurRadius: 10,
-                      ),
-                    ],
+                    shadows: [Shadow(color: Colors.amber, blurRadius: 10)],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 30),
                   padding: const EdgeInsets.all(20),
@@ -176,9 +165,9 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 30),
-                
+
                 GestureDetector(
                   onTap: _salvarProgressoEVoltarExploration,
                   child: Container(
@@ -195,7 +184,11 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.amber,
+                          size: 24,
+                        ),
                         SizedBox(width: 10),
                         Text(
                           "CONTINUAR JORNADA",
@@ -210,7 +203,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 40),
               ],
             ),
@@ -232,7 +225,6 @@ class DesafioBibliotecaScreen extends StatefulWidget {
 
 class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
-
   int? _respostaSelecionada;
   int _tentativas = 0;
   late AnimationController _animacaoController;
@@ -293,39 +285,36 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   }
 
   void _fluxoAcerto() {
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NarradorScreen(
-              tituloAppBar: "Resposta Correta!",
-              imagemFundo: "assets/biblioteca.png",
-              corpoNarracao:
-                  'Um brilho suave emana das páginas.\n\n'
-                  'As letras douradas brilham com mais intensidade.\n\n'
-                  'O guardião parece diferente agora…\n\n',
-              dica: 'Toque em Continuar.',
-              exibirNarracaoEmCaixa: true,
-              proximaTela: DialogoComGuardiao(
-                imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
-                opacidade: 0.8,
-                alturaPercentual: 0.7,
-                alinhamento: Alignment.bottomRight,
-                personagemScreen: PersonagemScreen(
-                  imagemFundo: "assets/biblioteca.png",
-                  falasConfig: _falasGuardiaoAcerto,
-                  instrucaoToque: 'Toque para continuar',
-                  substituirAoAvancarFinal: false,
-                  proximaTela: _etapaGuardiaoDesaparece(),
-                ),
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NarradorScreen(
+            tituloAppBar: "Resposta Correta!",
+            imagemFundo: "assets/biblioteca.png",
+            corpoNarracao:
+                'Um brilho suave emana das páginas.\n\n'
+                'As letras douradas brilham com mais intensidade.\n\n'
+                'O guardião parece diferente agora…\n\n',
+            dica: 'Toque em Continuar.',
+            exibirNarracaoEmCaixa: true,
+            proximaTela: DialogoComGuardiao(
+              imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
+              opacidade: 0.8,
+              alturaPercentual: 0.7,
+              alinhamento: Alignment.bottomRight,
+              personagemScreen: PersonagemScreen(
+                imagemFundo: "assets/biblioteca.png",
+                falasConfig: _falasGuardiaoAcerto,
+                instrucaoToque: 'Toque para continuar',
+                substituirAoAvancarFinal: false,
+                proximaTela: _etapaGuardiaoDesaparece(),
               ),
             ),
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 
   Widget _etapaGuardiaoDesaparece() {
@@ -501,9 +490,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.75),
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: Colors.amber.withOpacity(0.3),
-                    ),
+                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
                   ),
                   child: Text(
                     _textoCharada,
@@ -533,15 +520,16 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                       decoration: BoxDecoration(
                         color: selecionada
                             ? (index == _respostaCorretaIndex
-                                ? Colors.green
-                                : Colors.redAccent).withOpacity(0.2)
+                                      ? Colors.green
+                                      : Colors.redAccent)
+                                  .withOpacity(0.2)
                             : Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selecionada
                               ? (index == _respostaCorretaIndex
-                                  ? Colors.green
-                                  : Colors.redAccent)
+                                    ? Colors.green
+                                    : Colors.redAccent)
                               : Colors.white24,
                           width: 2,
                         ),
@@ -549,12 +537,16 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                       child: Row(
                         children: [
                           Text(
-                            '${index == 0 ? 'A' : index == 1 ? 'B' : 'C'})',
+                            '${index == 0
+                                ? 'A'
+                                : index == 1
+                                ? 'B'
+                                : 'C'})',
                             style: TextStyle(
                               color: selecionada
                                   ? (index == _respostaCorretaIndex
-                                      ? Colors.green
-                                      : Colors.redAccent)
+                                        ? Colors.green
+                                        : Colors.redAccent)
                                   : Colors.white54,
                               fontSize: 14,
                               fontFamily: 'PressStart2P',
@@ -567,8 +559,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                               style: TextStyle(
                                 color: selecionada
                                     ? (index == _respostaCorretaIndex
-                                        ? Colors.green
-                                        : Colors.redAccent)
+                                          ? Colors.green
+                                          : Colors.redAccent)
                                     : Colors.white,
                                 fontSize: 12,
                                 fontFamily: 'PressStart2P',

@@ -35,12 +35,23 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Manacas": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Mescla": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Praça": {"lat": -22.9510141666, "lng": -47.07891800000},
-    "Arena": {"lat": -22.9510141666, "lng": -47.07891800000},
+    "Biblioteca": {"lat": -23.024319, "lng": -46.850454},
+    "Manacas": {"lat": -23.024319, "lng": -46.850454},
+    "Mescla": {"lat": -23.024319, "lng": -46.850454},
+    "Praça": {"lat": -23.024319, "lng": -46.850454},
+    "Arena": {"lat": -23.024319, "lng": -46.850454},
   };
+
+    // COORDENADAS REAIS (PUC)
+  // static const Map<String, Map<String, double>> locais = {
+  //"Biblioteca": {"lat": -22.8338, "lng": -47.051930},
+  //"Manacás": {"lat": -22.8323, "lng": -47.05144},
+  //"Mescla": {"lat": -22.83416204909936, "lng": -47.05235984253339},
+  //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+  // "Praça": {"lat": -22.8341, "lng": -47.0523566},
+  // "Praça": {"lat": -22.94804, "lng": -47.05876294},
+  //"Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
+
 
   @override
   void initState() {
@@ -83,7 +94,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     }
   }
 
-  // ⭐ REMOVIDA A VERIFICAÇÃO DE CHAVE - APENAS VERIFICA SE JÁ CONCLUIU
+  // 3. Verifica se o jogador já concluiu a sala
   bool salaEstaConcluida(String sala) {
     return salasConcluidas.contains(sala);
   }
@@ -200,7 +211,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // ⭐ BOTÃO DA BIBLIOTECA
+// botao da biblioteca segue um padrão diferente pois tem uma narrativa de introdução, mas a lógica de verificação de proximidade e conclusão é a mesma dos outros botões
   Widget _buildBotaoBiblioteca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Biblioteca");
 
@@ -275,7 +286,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // ⭐ BOTÃO DO MANACÁS
+// botao manacas
   Widget _buildBotaoManacas(BuildContext context) {
     bool concluida = salasConcluidas.contains("Manacas");
 
@@ -341,7 +352,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // ⭐ BOTÃO DA MESCLA
+  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
   Widget _buildBotaoMescla(BuildContext context) {
     bool concluida = salasConcluidas.contains("Mescla");
 
@@ -407,7 +418,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // ⭐ BOTÃO DA PRAÇA
+  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
   Widget _buildBotaoPraca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Praça");
 
@@ -478,7 +489,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // ⭐ BOTÃO DA ARENA
+  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
   Widget _buildBotaoArena(BuildContext context) {
     bool concluida = salasConcluidas.contains("Arena");
 
