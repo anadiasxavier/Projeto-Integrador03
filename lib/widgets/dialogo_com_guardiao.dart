@@ -1,3 +1,4 @@
+// lib/widgets/dialogo_com_guardiao.dart
 import 'package:flutter/material.dart';
 
 class DialogoComGuardiao extends StatelessWidget {
@@ -11,8 +12,8 @@ class DialogoComGuardiao extends StatelessWidget {
     super.key,
     required this.personagemScreen,
     this.imagemGuardiao = 'assets/guardia_biblioteca.png',
-    this.opacidade = 0.7,
-    this.alturaPercentual = 0.5,
+    this.opacidade = 0.6,
+    this.alturaPercentual = 0.7,
     this.alinhamento = Alignment.bottomRight,
   });
 
@@ -28,7 +29,10 @@ class DialogoComGuardiao extends StatelessWidget {
           child: Align(
             alignment: alinhamento,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 20, right: 20),
+              padding: const EdgeInsets.only(
+                bottom: 150, // Guardião mais para cima ou para baixo 
+                right: 20,
+              ),
               child: Opacity(
                 opacity: opacidade,
                 child: Image.asset(
@@ -36,7 +40,6 @@ class DialogoComGuardiao extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * alturaPercentual,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
-                    // Fallback caso a imagem não exista
                     return Container(
                       width: 200,
                       height: 300,

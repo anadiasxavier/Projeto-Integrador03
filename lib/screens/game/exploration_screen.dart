@@ -8,6 +8,7 @@ import '../../services/progress_service.dart';
 import '../../services/game_timer_service.dart';
 import '../../widgets/background.dart';
 import '../../widgets/game_timer_widget.dart';
+import '../../models/entidade_dialogo.dart'; // 👈 Adicionar este import
 
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
@@ -35,12 +36,25 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
-    "Manacas": {"lat": -22.8323, "lng": -47.05144},
-    "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
-    "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
-    "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
+    "Biblioteca": {"lat": -23.0081, "lng": -46.8423},
+    "Manacas": {"lat": -23.0081, "lng": -46.8423},
+    "Mescla": {"lat": -23.0081, "lng": -46.8423},
+    "Praça": {"lat": -23.0081, "lng": -46.8423},
+    "Arena": {"lat": -23.0081, "lng": -46.8423},
   };
+
+  // ⭐ FALAS DE ENTRADA DA BIBLIOTECA COM REAÇÕES DO PERSONAGEM
+  List<FalaConfig> get _falasEntradaBiblioteca => [
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Que silêncio...',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Algo não parece certo...',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso explorar com cuidado...',
+    ),
+  ];
 
   @override
   void initState() {
@@ -100,12 +114,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
     return distancia <= 10;
   }
-
-  static const List<String> _falasEntradaBiblioteca = [
-    'Que silêncio...',
-    'Algo não parece certo...',
-    'Preciso explorar com cuidado...',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +208,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-// botao da biblioteca segue um padrão diferente pois tem uma narrativa de introdução, mas a lógica de verificação de proximidade e conclusão é a mesma dos outros botões
+  // Botão da biblioteca - COM REAÇÕES DO PERSONAGEM
   Widget _buildBotaoBiblioteca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Biblioteca");
 
@@ -236,8 +244,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
               imagemFundo: "assets/biblioteca.png",
               proximaTela: PersonagemScreen(
                 imagemFundo: "assets/biblioteca.png",
+                falasConfig: _falasEntradaBiblioteca, // 👈 Usando falasConfig
+                exibirReacoes: true, // 👈 Reações ativadas!
+                instrucaoToque: 'Toque para continuar',
+                substituirAoAvancarFinal: false,
                 proximaTela: const BibliotecaScreen(),
-                falasCustom: _falasEntradaBiblioteca,
               ),
             ),
           ),
@@ -275,7 +286,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-// botao manacas
+  // botao manacas
   Widget _buildBotaoManacas(BuildContext context) {
     bool concluida = salasConcluidas.contains("Manacas");
 
@@ -341,7 +352,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
+  // botão Mescla
   Widget _buildBotaoMescla(BuildContext context) {
     bool concluida = salasConcluidas.contains("Mescla");
 
@@ -407,7 +418,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
+  // botão Praça
   Widget _buildBotaoPraca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Praça");
 
@@ -478,7 +489,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     );
   }
 
-  // botãos restantes seguem o mesmo padrão, apenas mudando ícone, texto e tela de destino
+  // botão Arena
   Widget _buildBotaoArena(BuildContext context) {
     bool concluida = salasConcluidas.contains("Arena");
 

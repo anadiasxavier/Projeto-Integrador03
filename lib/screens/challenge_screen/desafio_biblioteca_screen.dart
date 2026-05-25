@@ -1,4 +1,3 @@
-// lib/screens/challenge_screen/desafio_biblioteca_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../../main.dart';
@@ -9,7 +8,6 @@ import '../game/exploration_screen.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
 import '../../widgets/dialogo_com_guardiao.dart';
-import '../../models/guardioes_config.dart';
 
 // CLASSE PRIVADA PARA A TELA DE RECOMPENSA
 class _RecompensaScreen extends StatefulWidget {
@@ -62,7 +60,6 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 30),
-
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 1500),
@@ -96,9 +93,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 const Text(
                   "PARABÉNS!",
                   textAlign: TextAlign.center,
@@ -110,9 +105,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     shadows: [Shadow(color: Colors.amber, blurRadius: 10)],
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 30),
                   padding: const EdgeInsets.all(20),
@@ -165,9 +158,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 GestureDetector(
                   onTap: _salvarProgressoEVoltarExploration,
                   child: Container(
@@ -184,11 +175,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.amber,
-                          size: 24,
-                        ),
+                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
                         SizedBox(width: 10),
                         Text(
                           "CONTINUAR JORNADA",
@@ -203,7 +190,6 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
               ],
             ),
@@ -225,6 +211,9 @@ class DesafioBibliotecaScreen extends StatefulWidget {
 
 class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
+  
+  static const String _imagemGuardiao = 'assets/guardia_biblioteca.png';
+  
   int? _respostaSelecionada;
   int _tentativas = 0;
   late AnimationController _animacaoController;
@@ -251,8 +240,24 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   ];
 
   List<FalaConfig> get _falasPersonagemAcerto => [
-    FalaConfig.personagem('Então… era isso…'),
-    FalaConfig.personagem('Tem algo aqui.'),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Então… era isso…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Tem algo aqui.',
+    ),
+  ];
+
+  List<FalaConfig> get _falasPersonagemPegaFragmento => [
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Uma... chave?',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Talvez isso me ajude a sair daqui.',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Preciso continuar explorando...',
+    ),
   ];
 
   @override
@@ -299,13 +304,11 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
             dica: 'Toque em Continuar.',
             exibirNarracaoEmCaixa: true,
             proximaTela: DialogoComGuardiao(
-              imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
-              opacidade: 0.8,
-              alturaPercentual: 0.7,
-              alinhamento: Alignment.bottomRight,
+              imagemGuardiao: _imagemGuardiao,
               personagemScreen: PersonagemScreen(
                 imagemFundo: "assets/biblioteca.png",
                 falasConfig: _falasGuardiaoAcerto,
+                exibirReacoes: false,
                 instrucaoToque: 'Toque para continuar',
                 substituirAoAvancarFinal: false,
                 proximaTela: _etapaGuardiaoDesaparece(),
@@ -332,7 +335,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
       proximaTela: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
         falasConfig: _falasPersonagemAcerto,
-        exibirReacoes: false,
+        exibirReacoes: true,
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapaEncontraItem(),
@@ -359,12 +362,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   Widget _etapaPersonagemPegaFragmento() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
-      falasConfig: [
-        FalaConfig.personagem('Uma... chave?'),
-        FalaConfig.personagem('Talvez isso me ajude a sair daqui.'),
-        FalaConfig.personagem('Preciso continuar explorando...'),
-      ],
-      exibirReacoes: false,
+      falasConfig: _falasPersonagemPegaFragmento,
+      exibirReacoes: true,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
       proximaTela: const _RecompensaScreen(
@@ -420,7 +419,6 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              // Reseta a seleção para permitir nova tentativa
               if (mounted) {
                 setState(() {
                   _respostaSelecionada = null;
@@ -537,11 +535,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                       child: Row(
                         children: [
                           Text(
-                            '${index == 0
-                                ? 'A'
-                                : index == 1
-                                ? 'B'
-                                : 'C'})',
+                            '${index == 0 ? 'A' : index == 1 ? 'B' : 'C'})',
                             style: TextStyle(
                               color: selecionada
                                   ? (index == _respostaCorretaIndex

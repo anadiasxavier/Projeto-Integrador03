@@ -1,3 +1,4 @@
+// lib/screens/biblioteca/biblioteca_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../../main.dart';
@@ -6,10 +7,12 @@ import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import '../challenge_screen/desafio_biblioteca_screen.dart';
 import '../../widgets/dialogo_com_guardiao.dart';
-import '../../models/guardioes_config.dart';
 
 class BibliotecaScreen extends StatelessWidget {
   const BibliotecaScreen({super.key});
+
+  // Imagem guardião
+  static const String _imagemGuardiao = 'assets/guardia_biblioteca.png';
 
   // Etapa 1: Guardião aparece e fala
   static final List<FalaConfig> _falasGuardiaoInicial = [
@@ -19,10 +22,14 @@ class BibliotecaScreen extends StatelessWidget {
     FalaConfig.guardiao('Tudo precisa ser compreendido.'),
   ];
 
-  // Etapa 2: Personagem responde ao guardião
+  // Personagem responde ao guardião com reações
   List<FalaConfig> get _falasPersonagem => [
-    FalaConfig.personagem('Eu só quero sair daqui…'),
-    FalaConfig.personagem('Você vai me impedir?'),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Eu só quero sair daqui…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Você vai me impedir?',
+    ),
   ];
 
   // Etapa 3: Guardião explica seu papel
@@ -60,7 +67,6 @@ class BibliotecaScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-
                     const Text(
                       "BIBLIOTECA CENTRAL",
                       textAlign: TextAlign.center,
@@ -71,9 +77,7 @@ class BibliotecaScreen extends StatelessWidget {
                         fontFamily: 'PressStart2P',
                       ),
                     ),
-
                     const SizedBox(height: 15),
-
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 30),
                       padding: const EdgeInsets.all(15),
@@ -95,10 +99,7 @@ class BibliotecaScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 40),
-
-                    // ÚNICO BOTÃO: Iniciar o fluxo linear da história
                     GestureDetector(
                       onTap: () => _iniciarFluxoBiblioteca(context),
                       child: Container(
@@ -142,7 +143,6 @@ class BibliotecaScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -174,13 +174,9 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // ETAPA 2: Guardião fala inicialmente (COM imagem do guardião)
   Widget _etapaGuardiaoFalaInicial() {
     return DialogoComGuardiao(
-      imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
-      opacidade: 0.8,
-      alturaPercentual: 0.7,
-      alinhamento: Alignment.bottomRight,
+      imagemGuardiao: _imagemGuardiao,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
         falasConfig: _falasGuardiaoInicial,
@@ -192,25 +188,20 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // ETAPA 3: Personagem responde (SEM guardião)
   Widget _etapaPersonagemResponde() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
       falasConfig: _falasPersonagem,
-      exibirReacoes: false,
+      exibirReacoes: true,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: false,
       proximaTela: _etapaGuardiaoResponde(),
     );
   }
 
-  // ETAPA 4: Guardião responde ao personagem (COM imagem do guardião)
   Widget _etapaGuardiaoResponde() {
     return DialogoComGuardiao(
-      imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
-      opacidade: 0.8,
-      alturaPercentual: 0.7,
-      alinhamento: Alignment.bottomRight,
+      imagemGuardiao: _imagemGuardiao,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
         falasConfig: _falasGuardiaoResposta,
@@ -222,7 +213,6 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // ETAPA 5: Livro cai
   Widget _etapaLivroCai() {
     return NarradorScreen(
       tituloAppBar: "O Livro",
@@ -235,13 +225,11 @@ class BibliotecaScreen extends StatelessWidget {
       dica: 'Toque em Continuar.',
       exibirNarracaoEmCaixa: true,
       proximaTela: DialogoComGuardiao(
-        imagemGuardiao: GuardioesConfig.guardiaoBiblioteca,
-        opacidade: 0.7,
-        alturaPercentual: 0.5,
-        alinhamento: Alignment.bottomRight,
+        imagemGuardiao: _imagemGuardiao,
         personagemScreen: PersonagemScreen(
           imagemFundo: "assets/biblioteca.png",
           falasConfig: _falasGuardiaoProve,
+          exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: false,
           proximaTela: _etapaLivroAbre(),
@@ -250,7 +238,6 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // ETAPA 6: Livro se abre sozinho
   Widget _etapaLivroAbre() {
     return NarradorScreen(
       tituloAppBar: "O Livro Misterioso",

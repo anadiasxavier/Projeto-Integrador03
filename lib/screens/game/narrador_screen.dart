@@ -5,8 +5,8 @@ class NarradorScreen extends StatelessWidget {
   final Widget proximaTela;
   final String imagemFundo;
   final String tituloAppBar;
-  final String? corpoNarracao;  // ⭐ MUDOU para nullable
-  final String? dica;            // ⭐ MUDOU para nullable
+  final String? corpoNarracao;  
+  final String? dica;            
   final bool exibirNarracaoEmCaixa;
 
   const NarradorScreen({
@@ -14,12 +14,11 @@ class NarradorScreen extends StatelessWidget {
     required this.proximaTela,
     required this.imagemFundo,
     String? tituloAppBar,
-    this.corpoNarracao,          // ⭐ Agora é opcional
-    this.dica,                   // ⭐ Agora é opcional
+    this.corpoNarracao,          
+    this.dica,                   
     this.exibirNarracaoEmCaixa = false,
   }) : tituloAppBar = tituloAppBar ?? 'Narrador';
 
-  // ⭐ REMOVIDO _corpoPadrao e _dicaPadrao
 
   String _formatarTexto(String texto) {
     const marcador = '__ELLIPSIS__';
