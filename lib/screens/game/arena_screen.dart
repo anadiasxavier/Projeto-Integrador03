@@ -8,6 +8,7 @@ import '../../main.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
 import '../game/narrador_screen.dart';
+import '../../widgets/dialogo_com_guardiao.dart';
 
 // tela de instruções da arena
 class _InstrucoesArenaScreen extends StatelessWidget {
@@ -267,9 +268,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                       SizedBox(height: 15),
                       Text(
                         "Este fragmento é parte de algo maior.\n"
-                        "Continue explorando para encontrar\n"
-                        "os outros fragmentos e descobrir\n"
-                        "os segredos deste lugar.",
+                        "Você está quase descobrindo todos os\n"
+                        "segredos deste lugar.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white70,
@@ -328,6 +328,10 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
 class DesafioArenaScreen extends StatefulWidget {
   const DesafioArenaScreen({super.key});
 
+  static const String _imagemGuardiaoArena =
+      'assets/guardiao/arenaguardiao.png';
+
+
   @override
   State<DesafioArenaScreen> createState() => _DesafioArenaScreenState();
 }
@@ -363,12 +367,15 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
   FalaConfig.guardiao('Vejo determinação nos seus passos... isso é raro.'),
   FalaConfig.guardiao('Mas não pense que sua jornada termina aqui.'),
   ];
-
-  // Falas do personagem
-  static final List<FalaConfig> _falasPersonagem = [
-    FalaConfig.personagem('Consegui vencer todos os desafios!'),
-    FalaConfig.personagem('De repente, algo chama minha atenção...'),
-  ];
+// Falas do personagem com reações
+List<FalaConfig> get _falasPersonagem => [
+  FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui vencer todos os desafios!',
+  ),
+  FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} De repente, algo chama minha atenção...',
+  ),
+];
 
   // Falas de erro
   static final List<FalaConfig> _falasErro = [
@@ -403,17 +410,20 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => PersonagemScreen(
+      builder: (context) => DialogoComGuardiao(
+        imagemGuardiao: DesafioArenaScreen._imagemGuardiaoArena,
+        personagemScreen: PersonagemScreen(
           imagemFundo: "assets/arena.png",
           falasConfig: _falasGuardiao,
-          exibirReacoes: true,
+          exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: _segundaEtapa(),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _segundaEtapa() {
     return PersonagemScreen(
@@ -602,16 +612,29 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
 class ArenaScreen extends StatelessWidget {
   const ArenaScreen({super.key});
 
-  // Falas iniciais do personagem antes do desafio
-  static final List<FalaConfig> _falasEntrada = [
-    FalaConfig.personagem('A Arena Gamer… tem luz piscando por baixo da porta…'),
-    FalaConfig.personagem('E dá pra ouvir som de jogo… cliques rápidos…'),
-    FalaConfig.personagem('Parece que tem algo rodando lá dentro…'),
-    FalaConfig.personagem('…tem alguém aí?'),
-    FalaConfig.personagem('Uma tela… acendeu sozinha'),
-    FalaConfig.personagem('Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.'),
-    FalaConfig.personagem('Tem um tipo de desafio acontecendo aqui dentro…'),
-  ];
+static List<FalaConfig> get _falasEntradaArena => [
+  FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} A Arena Gamer… tem luz piscando por baixo da porta…',
+  ),
+  FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} E dá pra ouvir som de jogo… cliques rápidos…',
+  ),
+  FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Parece que tem algo rodando lá dentro…',
+  ),
+    FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} …tem alguém aí?',
+  ),
+    FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Uma tela… acendeu sozinha...',
+  ),
+      FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.',
+  ),
+        FalaConfig.personagem(
+    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem um tipo de desafio acontecendo aqui dentro….',
+  ),
+];
 
   @override
   Widget build(BuildContext context) {
@@ -733,7 +756,8 @@ class ArenaScreen extends StatelessWidget {
           exibirNarracaoEmCaixa: true,
           proximaTela: PersonagemScreen(
             imagemFundo: "assets/arena.png",
-            falasConfig: _falasEntrada,
+            falasConfig: _falasEntradaArena,
+            exibirReacoes: true,
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: false,
             proximaTela: const _InstrucoesArenaScreen(),

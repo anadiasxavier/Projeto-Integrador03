@@ -21,37 +21,26 @@ class DialogoComGuardiao extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // A tela de diálogo original
         personagemScreen,
-        
-        // Imagem do guardião no fundo
-        Positioned.fill(
-          child: Align(
-            alignment: alinhamento,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                bottom: 150, // Guardião mais para cima ou para baixo 
-                right: 20,
-              ),
+
+        Positioned(
+          bottom: 95,
+          right: -95, // espelhado do personagem
+          child: Transform.rotate(
+            angle: 0.04, // espelhado do personagem
+            child: Container(
+              width: 450,
+              height: 450,
+              padding: const EdgeInsets.all(10),
               child: Opacity(
                 opacity: opacidade,
                 child: Image.asset(
                   imagemGuardiao,
-                  height: MediaQuery.of(context).size.height * alturaPercentual,
+                  width: 210,
+                  height: 210,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 200,
-                      height: 300,
-                      color: Colors.transparent,
-                      child: const Center(
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.white24,
-                          size: 100,
-                        ),
-                      ),
-                    );
+                    return const SizedBox();
                   },
                 ),
               ),

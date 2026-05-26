@@ -72,22 +72,22 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   }
 
   // NOVO: Determina qual ícone mostrar
-  String _getIconePath() {
-    if (_falas.isEmpty) return _defaultCharacterImage();
+String? _getIconePath() {
+  if (_falas.isEmpty) return _defaultCharacterImage();
 
-    if (widget.falasConfig != null &&
-        widget.falasConfig!.isNotEmpty &&
-        indice < widget.falasConfig!.length) {
-      final config = widget.falasConfig![indice];
+  if (widget.falasConfig != null &&
+      widget.falasConfig!.isNotEmpty &&
+      indice < widget.falasConfig!.length) {
+    final config = widget.falasConfig![indice];
 
-      if (config.entidade == TipoEntidade.guardiao) {
-        return 'assets/guardiao.png';
-      }
+    // Guardião NÃO desenha imagem aqui
+    if (config.entidade == TipoEntidade.guardiao) {
+      return null;
     }
-
-    // Padrão: personagem
-    return _defaultCharacterImage();
   }
+
+  return _defaultCharacterImage();
+}
 
   // NOVO: Determina qual nome mostrar
   String _getNomeFalante() {
@@ -218,6 +218,8 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         ? _reactionAssetPath(_reactionForIndex(indice))
         : null;
 
+    final iconePath = reactionImage ?? _getIconePath();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black.withValues(alpha: 0.88),
@@ -251,18 +253,21 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                   width: 450,
                   height: 450,
                   padding: const EdgeInsets.all(10),
-                  child: Image.asset(
-                    reactionImage ?? _getIconePath(),
-                    width: 210,
-                    height: 210,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      _defaultCharacterImage(),
-                      width: 210,
-                      height: 210,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                  child: _getIconePath() != null
+                      ? Image.asset(
+                          reactionImage ?? _getIconePath()!,
+                          width: 210,
+                          height: 210,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                                _defaultCharacterImage(),
+                                width: 210,
+                                height: 210,
+                                fit: BoxFit.contain,
+                              ),
+                        )
+                 : const SizedBox(),
                 ),
               ),
             ),
@@ -282,20 +287,22 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        child: Image.asset(
-                          _getIconePath(), // AGORA USA O MÉTODO
-                          width: 60,
-                          height: 60,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset(
-                                _defaultCharacterImage(),
-                                width: 60,
-                                height: 60,
-                              ),
-                        ),
-                      ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      child: _getIconePath() != null
+                          ? Image.asset(
+                              _getIconePath()!,
+                              width: 60,
+                              height: 60,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Image.asset(
+                                    _defaultCharacterImage(),
+                                    width: 60,
+                                    height: 60,
+                                  ),
+                            )
+                          : const SizedBox(),
+                    ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
