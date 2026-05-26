@@ -295,7 +295,7 @@ class _DesafioManacasScreenState
                     children:[
 
                       const Text(
-                        "🌙",
+                        "🗝️",
                         style:
                             TextStyle(
                           fontSize:40,

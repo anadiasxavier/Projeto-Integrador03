@@ -736,7 +736,6 @@ class ArenaScreen extends StatelessWidget {
             falasConfig: _falasEntrada,
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: false,
-            // AGORA APONTA PARA A TELA DE INSTRUÇÕES
             proximaTela: const _InstrucoesArenaScreen(),
           ),
         ),

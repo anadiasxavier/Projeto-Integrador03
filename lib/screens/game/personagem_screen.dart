@@ -242,32 +242,30 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         imagem: widget.imagemFundo,
         child: Stack(
           children: [
-           if (reactionImage != null &&
-            widget.imagemFundo != "assets/arena.png")
-              Positioned(
-                bottom: 95, // altura do personagem
-                left: -95,
-                child: Transform.rotate(
-                  angle: -0.04,
-                  child: Container(
-                    width: 450,
-                    height: 450,
-                    padding: const EdgeInsets.all(10),
-                    child: Image.asset(
-                      reactionImage,
+            Positioned(
+              bottom: 95,
+              left: -95,
+              child: Transform.rotate(
+                angle: -0.04,
+                child: Container(
+                  width: 450,
+                  height: 450,
+                  padding: const EdgeInsets.all(10),
+                  child: Image.asset(
+                    reactionImage ?? _getIconePath(),
+                    width: 210,
+                    height: 210,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      _defaultCharacterImage(),
                       width: 210,
                       height: 210,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Image.asset(
-                        _defaultCharacterImage(),
-                        width: 210,
-                        height: 210,
-                        fit: BoxFit.contain,
-                      ),
                     ),
                   ),
                 ),
               ),
+            ),
             Positioned(
               bottom: 20,
               left: 20,

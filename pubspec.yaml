@@ -41,7 +41,8 @@ flutter:
     - assets/audio/arena.mp3
     - assets/guardia_biblioteca.png
     - assets/guardiao.png
-
+    - assets/guardiao/arenaguardiao.png
+ 
   fonts:
     - family: PressStart2P
       fonts:
