@@ -73,15 +73,24 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   // NOVO: Determina qual ícone mostrar
 String? _getIconePath() {
-  if (_falas.isEmpty) return _defaultCharacterImage();
+  if (_falas.isEmpty) {
+    return _defaultCharacterImage();
+  }
 
   if (widget.falasConfig != null &&
       widget.falasConfig!.isNotEmpty &&
       indice < widget.falasConfig!.length) {
-    final config = widget.falasConfig![indice];
 
-    // Guardião NÃO desenha imagem aqui
+    final config = widget.falasConfig![indice];
+    final reaction = _reactionForIndex(indice);
+
+    // Só o guardião do Mescla desenha imagem no PersonagemScreen
     if (config.entidade == TipoEntidade.guardiao) {
+      if (reaction.startsWith('guardiao_mescla_')) {
+        return _reactionAssetPath(reaction);
+      }
+
+      // Biblioteca / Arena continuam sem desenhar aqui
       return null;
     }
   }
