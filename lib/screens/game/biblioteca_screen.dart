@@ -39,7 +39,8 @@ class BibliotecaScreen extends StatelessWidget {
   // Etapa 3: Guardião explica seu papel e faz sua resposta
   static final List<FalaConfig> _falasGuardiaoResposta = [
     FalaConfig.guardiao('Eu não impeço ninguém.'),
-    FalaConfig.guardiao('Apenas observo.'),
+    FalaConfig.guardiao('Sou apenas uma guardiã.'),
+    FalaConfig.guardiao('Eu... observo.'),
     FalaConfig.guardiao('Quem não compreende… permanece comigo.'),
     FalaConfig.guardiao('Quem compreende… avança.'),
   ];
