@@ -8,7 +8,7 @@ import '../../services/progress_service.dart';
 import '../../services/game_timer_service.dart';
 import '../../widgets/background.dart';
 import '../../widgets/game_timer_widget.dart';
-import '../../models/entidade_dialogo.dart'; // 👈 Adicionar este import
+import '../../models/entidade_dialogo.dart'; 
 
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
@@ -36,11 +36,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.024319, "lng": -46.850454},
-    "Manacas": {"lat": -23.024319, "lng": -46.850454},
-    "Mescla": {"lat": -23.024319, "lng": -46.850454},
-    "Praça": {"lat": -23.024319, "lng": -46.850454},
-    "Arena": {"lat": -23.024319, "lng": -46.850454},
+    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
   };
 
   // COORDENADAS REAIS (PUC)

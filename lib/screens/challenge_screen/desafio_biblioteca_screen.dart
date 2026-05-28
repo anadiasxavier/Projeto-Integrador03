@@ -9,12 +9,16 @@ import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
 import '../../widgets/dialogo_com_guardiao.dart';
 
-// CLASSE PRIVADA PARA A TELA DE RECOMPENSA
+// Tela de recompensa
+// Tela exibida após o jogador completar o desafio com sucesso
 class _RecompensaScreen extends StatefulWidget {
   final String nomeSala;
   final String imagemFundo;
 
-  const _RecompensaScreen({required this.nomeSala, required this.imagemFundo});
+  const _RecompensaScreen({
+    required this.nomeSala,
+    required this.imagemFundo,
+  });
 
   @override
   State<_RecompensaScreen> createState() => _RecompensaScreenState();
@@ -23,6 +27,7 @@ class _RecompensaScreen extends StatefulWidget {
 class _RecompensaScreenState extends State<_RecompensaScreen> {
   final ProgressService _progress = ProgressService();
 
+  // Salva o progresso do jogador e retorna para a tela de exploração
   void _salvarProgressoEVoltarExploration() async {
     try {
       await _progress.marcarSalaConcluida(
@@ -60,6 +65,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 30),
+
+                // Animação do fragmento de chave
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 1500),
@@ -94,6 +101,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
+                // Título de parabéns
                 const Text(
                   "PARABÉNS!",
                   textAlign: TextAlign.center,
@@ -106,6 +115,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Descrição do fragmento conquistado
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 30),
                   padding: const EdgeInsets.all(20),
@@ -145,8 +156,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                       Text(
                         "Este fragmento é parte de algo maior.\n"
                         "Continue explorando para encontrar\n"
-                        "os outros fragmentos e descobrir\n"
-                        "os segredos deste lugar.",
+                        "Os outros fragmentos e descobrir\n"
+                        "Os segredos deste lugar.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white70,
@@ -159,6 +170,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
+                // Botão para continuar jornada
                 GestureDetector(
                   onTap: _salvarProgressoEVoltarExploration,
                   child: Container(
@@ -175,7 +188,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_forward, color: Colors.amber, size: 24),
+                        Icon(Icons.arrow_forward,
+                            color: Colors.amber, size: 24),
                         SizedBox(width: 10),
                         Text(
                           "CONTINUAR JORNADA",
@@ -200,7 +214,8 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
   }
 }
 
-// CLASSE PRINCIPAL DO DESAFIO
+// Classe principal do desafio
+// Tela do desafio da biblioteca onde o jogador responde a charada
 class DesafioBibliotecaScreen extends StatefulWidget {
   const DesafioBibliotecaScreen({super.key});
 
@@ -211,34 +226,37 @@ class DesafioBibliotecaScreen extends StatefulWidget {
 
 class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
-  
+  // Constantes
   static const String _imagemGuardiao = 'assets/guardia_biblioteca.png';
-  
-  int? _respostaSelecionada;
-  int _tentativas = 0;
-  late AnimationController _animacaoController;
 
+  // Dados do desafio
+  // Texto da charada apresentada ao jogador
   final String _textoCharada =
       'Você chega com fome,\n'
       'escolhe sem pensar muito,\n'
       'e vai embora quando termina.\n\n'
       'Onde isso acontece?';
 
+  // Alternativas da charada
   final List<String> _alternativas = [
     'Sala de aula',
     'Praça de alimentação',
     'Laboratório',
   ];
 
+  // Índice da resposta correta
   final int _respostaCorretaIndex = 1;
 
+  // Diálogo do fluxo de acerto
+  // Etapa 1 (Acerto): Guardião reconhece que o jogador compreendeu
   static final List<FalaConfig> _falasGuardiaoAcerto = [
     FalaConfig.guardiao('Agora sim…'),
-    FalaConfig.guardiao('Você observou.'),
+    FalaConfig.guardiao('Você não apenas olhou.'),
     FalaConfig.guardiao('Você compreendeu.'),
-    FalaConfig.guardiao('Pode seguir.'),
+    FalaConfig.guardiao('Pode seguir seu caminho.'),
   ];
 
+  // Etapa 2 (Acerto): Personagem reage ao reconhecimento do guardião
   List<FalaConfig> get _falasPersonagemAcerto => [
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Então… era isso…',
@@ -248,6 +266,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     ),
   ];
 
+  // Etapa 3 (Acerto): Personagem encontra e reage ao fragmento de chave
   List<FalaConfig> get _falasPersonagemPegaFragmento => [
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Uma... chave?',
@@ -260,6 +279,12 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     ),
   ];
 
+  // Variáveis de estado
+  int? _respostaSelecionada;
+  int _tentativas = 0;
+  late AnimationController _animacaoController;
+
+  // Ciclo de vida
   @override
   void initState() {
     super.initState();
@@ -276,6 +301,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     super.dispose();
   }
 
+  // Lógica do desafio
+  // Verifica se a resposta selecionada está correta
   void _verificarResposta(int index) {
     setState(() {
       _respostaSelecionada = index;
@@ -289,6 +316,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     });
   }
 
+  // Fluxo executado quando o jogador acerta a charada
   void _fluxoAcerto() {
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pushReplacement(
@@ -300,7 +328,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
             corpoNarracao:
                 'Um brilho suave emana das páginas.\n\n'
                 'As letras douradas brilham com mais intensidade.\n\n'
-                'O guardião parece diferente agora…\n\n',
+                'A figura parece diferente agora…\n\n',
             dica: 'Toque em Continuar.',
             exibirNarracaoEmCaixa: true,
             proximaTela: DialogoComGuardiao(
@@ -311,7 +339,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                 exibirReacoes: false,
                 instrucaoToque: 'Toque para continuar',
                 substituirAoAvancarFinal: false,
-                proximaTela: _etapaGuardiaoDesaparece(),
+                proximaTela: _etapaAcerto1_GuardiaoDesaparece(),
               ),
             ),
           ),
@@ -320,59 +348,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     });
   }
 
-  Widget _etapaGuardiaoDesaparece() {
-    return NarradorScreen(
-      tituloAppBar: "O Guardião",
-      imagemFundo: "assets/biblioteca.png",
-      corpoNarracao:
-          'O guardião começa a desaparecer…\n\n'
-          'Sua forma se torna translúcida, como névoa '
-          'se dissipando na escuridão.\n\n'
-          'Pela primeira vez, o ambiente parece '
-          'menos opressivo.',
-      dica: 'Toque em Continuar.',
-      exibirNarracaoEmCaixa: true,
-      proximaTela: PersonagemScreen(
-        imagemFundo: "assets/biblioteca.png",
-        falasConfig: _falasPersonagemAcerto,
-        exibirReacoes: true,
-        instrucaoToque: 'Toque para continuar',
-        substituirAoAvancarFinal: false,
-        proximaTela: _etapaEncontraItem(),
-      ),
-    );
-  }
-
-  Widget _etapaEncontraItem() {
-    return NarradorScreen(
-      tituloAppBar: "Item Encontrado!",
-      imagemFundo: "assets/biblioteca.png",
-      corpoNarracao:
-          'Dentro do livro, onde antes só havia texto,\n'
-          'agora repousa um objeto pequeno e brilhante.\n\n'
-          'Ele pulsa com uma luz suave, como se '
-          'estivesse vivo.\n\n'
-          'Você encontrou: Fragmento de Chave! 🗝️',
-      dica: 'Toque em Continuar para pegar o fragmento.',
-      exibirNarracaoEmCaixa: true,
-      proximaTela: _etapaPersonagemPegaFragmento(),
-    );
-  }
-
-  Widget _etapaPersonagemPegaFragmento() {
-    return PersonagemScreen(
-      imagemFundo: "assets/biblioteca.png",
-      falasConfig: _falasPersonagemPegaFragmento,
-      exibirReacoes: true,
-      instrucaoToque: 'Toque para continuar',
-      substituirAoAvancarFinal: false,
-      proximaTela: const _RecompensaScreen(
-        nomeSala: 'Biblioteca',
-        imagemFundo: 'assets/biblioteca.png',
-      ),
-    );
-  }
-
+  /// Fluxo executado quando o jogador erra a charada
   void _fluxoErro() {
     showDialog(
       context: context,
@@ -403,8 +379,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
             SizedBox(height: 10),
             Text(
               'O livro se fecha com força.\n\n'
-              'O guardião permanece imóvel.\n\n'
-              'Ele parece decepcionado…',
+              'A guardiã permanece imóvel.\n\n'
+              'Ela parece decepcionada…',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white70,
@@ -439,6 +415,64 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     );
   }
 
+  // Etapas do fluxo de acerto
+  /// Etapa 1 (Acerto): Guardião desaparece após reconhecer o jogador
+  Widget _etapaAcerto1_GuardiaoDesaparece() {
+    return NarradorScreen(
+      tituloAppBar: "O Guardião",
+      imagemFundo: "assets/biblioteca.png",
+      corpoNarracao:
+          'A guardiã começa a desaparecer…\n\n'
+          'Sua forma se torna translúcida, como névoa '
+          'Se dissipando na escuridão.\n\n'
+          'Pela primeira vez, o ambiente parece '
+          'menos opressivo.',
+      dica: 'Toque em Continuar.',
+      exibirNarracaoEmCaixa: true,
+      proximaTela: PersonagemScreen(
+        imagemFundo: "assets/biblioteca.png",
+        falasConfig: _falasPersonagemAcerto,
+        exibirReacoes: true,
+        instrucaoToque: 'Toque para continuar',
+        substituirAoAvancarFinal: false,
+        proximaTela: _etapaAcerto2_EncontraItem(),
+      ),
+    );
+  }
+
+  /// Etapa 2 (Acerto): Fragmento de chave é encontrado no livro
+  Widget _etapaAcerto2_EncontraItem() {
+    return NarradorScreen(
+      tituloAppBar: "Item Encontrado!",
+      imagemFundo: "assets/biblioteca.png",
+      corpoNarracao:
+          'Dentro do livro, onde antes só havia texto,\n'
+          'Agora repousa um objeto pequeno e brilhante.\n\n'
+          'Ele pulsa com uma luz suave, como se '
+          'Estivesse vivo.\n\n'
+          'Você encontrou: Fragmento de Chave!',
+      dica: 'Toque em Continuar para pegar o fragmento.',
+      exibirNarracaoEmCaixa: true,
+      proximaTela: _etapaAcerto3_PersonagemPegaFragmento(),
+    );
+  }
+
+  /// Etapa 3 (Acerto): Personagem reage ao encontrar o fragmento
+  Widget _etapaAcerto3_PersonagemPegaFragmento() {
+    return PersonagemScreen(
+      imagemFundo: "assets/biblioteca.png",
+      falasConfig: _falasPersonagemPegaFragmento,
+      exibirReacoes: true,
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: false,
+      proximaTela: const _RecompensaScreen(
+        nomeSala: 'Biblioteca',
+        imagemFundo: 'assets/biblioteca.png',
+      ),
+    );
+  }
+
+  // Build Principal
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -464,6 +498,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Ícone do livro misterioso
                 Container(
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.all(20),
@@ -482,6 +517,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   ),
                 ),
                 const SizedBox(height: 10),
+
+                // Texto da charada
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   padding: const EdgeInsets.all(20),
@@ -502,6 +539,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   ),
                 ),
                 const SizedBox(height: 30),
+
+                // Alternativas da charada
                 ..._alternativas.asMap().entries.map((entry) {
                   final index = entry.key;
                   final alternativa = entry.value;
@@ -518,16 +557,16 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                       decoration: BoxDecoration(
                         color: selecionada
                             ? (index == _respostaCorretaIndex
-                                      ? Colors.green
-                                      : Colors.redAccent)
-                                  .withOpacity(0.2)
+                                    ? Colors.green
+                                    : Colors.redAccent)
+                                .withOpacity(0.2)
                             : Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selecionada
                               ? (index == _respostaCorretaIndex
-                                    ? Colors.green
-                                    : Colors.redAccent)
+                                  ? Colors.green
+                                  : Colors.redAccent)
                               : Colors.white24,
                           width: 2,
                         ),
@@ -539,8 +578,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                             style: TextStyle(
                               color: selecionada
                                   ? (index == _respostaCorretaIndex
-                                        ? Colors.green
-                                        : Colors.redAccent)
+                                      ? Colors.green
+                                      : Colors.redAccent)
                                   : Colors.white54,
                               fontSize: 14,
                               fontFamily: 'PressStart2P',
@@ -553,8 +592,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                               style: TextStyle(
                                 color: selecionada
                                     ? (index == _respostaCorretaIndex
-                                          ? Colors.green
-                                          : Colors.redAccent)
+                                        ? Colors.green
+                                        : Colors.redAccent)
                                     : Colors.white,
                                 fontSize: 12,
                                 fontFamily: 'PressStart2P',
@@ -577,6 +616,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                   );
                 }),
                 const SizedBox(height: 20),
+
+                // Contador de tentativas
                 if (_tentativas > 0)
                   Text(
                     'Tentativas: $_tentativas',
