@@ -23,6 +23,7 @@ class _IntroScreenState extends State<IntroScreen> {
   final ProgressService _progress = ProgressService();
   final GameTimerService _timerService = GameTimerService();
   bool _modalMostrado = false;
+  bool _transicaoEmAndamento = false;
 
   @override
   void initState() {
@@ -48,15 +49,17 @@ class _IntroScreenState extends State<IntroScreen> {
 
       // 2. Fallback: verifica no Firestore
       final dados = await firestore.getPlayerData(raJogador);
-      
+
       if (dados != null) {
-        final salasConcluidas = List<String>.from(dados['salasConcluidas'] ?? []);
+        final salasConcluidas = List<String>.from(
+          dados['salasConcluidas'] ?? [],
+        );
         final chaves = List<String>.from(dados['chaves'] ?? []);
-        
+
         if (salasConcluidas.isNotEmpty || chaves.isNotEmpty) {
           // Salva localmente para próximas vezes
           await _progress.salvarLocal(raJogador, chaves, salasConcluidas);
-          
+
           if (mounted) {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -67,13 +70,12 @@ class _IntroScreenState extends State<IntroScreen> {
           return;
         }
       }
-      
+
       // Se não tem progresso, mostra o vídeo
       if (mounted) {
         setState(() => _isLoading = false);
         _iniciarVideo();
       }
-      
     } catch (e) {
       print('Erro ao verificar progresso: $e');
       // Em caso de erro, mostra o vídeo mesmo assim
@@ -83,13 +85,12 @@ class _IntroScreenState extends State<IntroScreen> {
       }
     }
   }
- // Inicia o vídeo e os textos narrativos, além de configurar o listener para quando o vídeo terminar
+
+  // Inicia o vídeo e os textos narrativos, além de configurar o listener para quando o vídeo terminar
   void _iniciarVideo() {
     _timerService.ensureTimerForPlayer(raJogador);
-    
-    _controller = VideoPlayerController.asset(
-      'assets/bibli.mp4',
-    )
+
+    _controller = VideoPlayerController.asset('assets/bibli.mp4')
       ..initialize().then((_) {
         if (mounted) {
           setState(() {});
@@ -98,21 +99,31 @@ class _IntroScreenState extends State<IntroScreen> {
         }
       });
 
-// Configura o listener para detectar quando o vídeo termina e navegar para a tela de exploração, mostrando o modal de aviso do timer se ainda não tiver mostrado
-    _controller.addListener(() {
-      if (_controller.value.position >= _controller.value.duration) {
-        _irParaExplorationComModal();
-      }
-    });
+    // Evita múltiplos disparos no fim do vídeo (especialmente no Android).
+    _controller.addListener(_onVideoTick);
   }
-  
+
+  void _onVideoTick() {
+    if (!mounted || _transicaoEmAndamento) return;
+    if (!_controller.value.isInitialized) return;
+
+    final valor = _controller.value;
+    if (valor.duration > Duration.zero && valor.position >= valor.duration) {
+      _controller.pause();
+      _irParaExplorationComModal();
+    }
+  }
+
   // Quando o vídeo termina, mostra o modal de aviso do timer (se ainda não tiver mostrado) e depois navega para a tela de exploração
   Future<void> _irParaExplorationComModal() async {
+    if (_transicaoEmAndamento) return;
+    _transicaoEmAndamento = true;
+
     if (!_modalMostrado && mounted) {
       _modalMostrado = true;
       await GameTimerWarningDialog.show(context);
     }
-    
+
     if (mounted) {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -121,7 +132,7 @@ class _IntroScreenState extends State<IntroScreen> {
       );
     }
   }
- 
+
   void _iniciarTextos() async {
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
@@ -134,6 +145,7 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   void dispose() {
     // Não limpa o timer aqui pois ele continua em outras telas
+    _controller.removeListener(_onVideoTick);
     _controller.dispose();
     super.dispose();
   }
@@ -163,67 +175,60 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
- @override
-Widget build(BuildContext context) {
-  if (_isLoading) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.amber,
-        ),
-      ),
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator(color: Colors.amber)),
+      );
+    }
 
-  return Scaffold(
-    backgroundColor: Colors.black,
-    body: _controller.value.isInitialized
-        ? Stack(
-            children: [
-              SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: _controller.value.isInitialized
+          ? Stack(
+              children: [
+                SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: VideoPlayer(_controller),
+                    ),
                   ),
                 ),
-              ),
 
-              Positioned(
-                bottom: 60,
-                left: 20,
-                right: 20,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(
-                        255,
-                        0,
-                        19,
-                        48,
-                      ).withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.amber, width: 1
+                Positioned(
+                  bottom: 60,
+                  left: 20,
+                  right: 20,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(
+                          255,
+                          0,
+                          19,
+                          48,
+                        ).withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.amber, width: 1),
+                      ),
+                      child: textoNarrador(
+                        "Você acorda sozinho na biblioteca\n\n"
+                        "Sua cabeça dói\n\n"
+                        "Você sente uma atmosfera estranha...",
+                        _texto1,
                       ),
                     ),
-                    child: textoNarrador(
-                      "Você acorda sozinho na biblioteca\n\n"
-                      "Sua cabeça dói\n\n"
-                      "Você sente uma atmosfera estranha...",
-                      _texto1,
-                    ),
                   ),
                 ),
-              ),
-            ],
-          )
-        : const Center(
-            child: CircularProgressIndicator(),
-          ),
-  );
-}
+              ],
+            )
+          : const Center(child: CircularProgressIndicator()),
+    );
+  }
 }

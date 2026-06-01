@@ -19,40 +19,38 @@ class DesafioPracaScreen extends StatefulWidget {
 class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   // Dicionário para controlar qual lixeira cada item está
   Map<String, String?> _itensNasLixeiras = {};
-  
+
   // Item selecionado da lista
   String? _itemSelecionado;
-  
+
   // Contador de tentativas
   int _tentativas = 0;
-  
+
   final ProgressService _progress = ProgressService();
 
   // Falas do guardião
   static final List<FalaConfig> _falasGuardiao = [
     FalaConfig.guardiao('...Você limpou a praça.'),
     FalaConfig.guardiao('O meio ambiente agradece.'),
-    FalaConfig.guardiao('A natureza está em equilíbrio novamente.'),
     FalaConfig.guardiao('Mas isso é apenas o começo da sua jornada.'),
   ];
 
   // Falas do personagem
-  static final List<FalaConfig> _falasPersonagem = [
-    FalaConfig.personagem('Consegui! Tudo no lugar certo!'),
-    FalaConfig.personagem('A praça está limpa novamente.'),
-    FalaConfig.personagem('Um brilho surge entre as árvores...'),
-    FalaConfig.personagem('É mais um Fragmento de Chave!'),
+  List<FalaConfig> get _falasPersonagem => [
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui! Tudo no lugar certo!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Um brilho surge entre as árvores... é mais um Fragmento de Chave!',
+    ),
   ];
 
   // Tela do computador
-  static final List<FalaConfig> _falasComputador = [
+  List<FalaConfig> get _falasComputador => [
     FalaConfig.personagem('Olhando para o totem digital da praça...'),
     FalaConfig.personagem('Uma mensagem aparece na tela:'),
-    FalaConfig.personagem(''),
-    FalaConfig.personagem('    "DESAFIO CONCLUÍDO!"'),
-    FalaConfig.personagem('    "SIGA PARA A PRÓXIMA SALA"'),
-    FalaConfig.personagem(''),
-    FalaConfig.personagem('A praça está em paz novamente.'),
+    FalaConfig.personagem('"DESAFIO CONCLUÍDO!"'),
+    FalaConfig.personagem('"SIGA PARA A PRÓXIMA SALA"'),
   ];
 
   // Mapeamento correto dos itens
@@ -64,7 +62,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     '📦 Embalagem de papel': 'reciclavel',
     '🍎 Maçã mordida': 'organico',
   };
-  
+
   String _mensagem = "Selecione um item e coloque na lixeira correta!";
   Color _mensagemCor = Colors.white70;
   bool _acertou = false;
@@ -73,7 +71,8 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   Widget _telaComputadorConcluido() {
     return PersonagemScreen(
       imagemFundo: "assets/praca.png",
-      falasConfig: _falasComputador, // 👈 Mudou para falasConfig
+      falasConfig: _falasComputador,
+      exibirReacoes: true,
       instrucaoToque: 'Toque para continuar',
       substituirAoAvancarFinal: true,
       proximaTela: const SizedBox.shrink(),
@@ -91,7 +90,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
 
   void _selecionarItem(String item) {
     if (_acertou) return;
-    
+
     setState(() {
       if (_itensNasLixeiras[item] != null) {
         _itensNasLixeiras[item] = null;
@@ -104,7 +103,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
 
   void _colocarNaLixeira(String tipoLixeira) {
     if (_acertou) return;
-    
+
     if (_itemSelecionado == null) {
       setState(() {
         _mensagem = "Selecione um item primeiro!";
@@ -116,7 +115,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     setState(() {
       _itensNasLixeiras[_itemSelecionado!] = tipoLixeira;
       _itemSelecionado = null;
-      
+
       if (tipoLixeira == 'organico') {
         _mensagem = "Item colocado no orgânico! 🌱";
       } else {
@@ -128,7 +127,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
 
   void _removerDaLixeira(String item) {
     if (_acertou) return;
-    
+
     setState(() {
       _itensNasLixeiras[item] = null;
       _itemSelecionado = null;
@@ -150,7 +149,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
 
   void _verificarResolucao() async {
     bool acertou = true;
-    
+
     for (var entry in _itensNasLixeiras.entries) {
       if (entry.value != _classificacaoCorreta[entry.key]) {
         acertou = false;
@@ -160,7 +159,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
 
     setState(() {
       _tentativas++;
-      
+
       if (acertou) {
         // VENCEU!
         _acertou = true;
@@ -168,13 +167,13 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         // ERROU - Reseta os itens
         _mensagem = "❌ Não foi dessa vez! Tente novamente...";
         _mensagemCor = Colors.red;
-        
+
         _itensNasLixeiras = {};
         for (String item in _classificacaoCorreta.keys) {
           _itensNasLixeiras[item] = null;
         }
         _itemSelecionado = null;
-        
+
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted && !_acertou) {
             setState(() {
@@ -185,7 +184,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         });
       }
     });
-    
+
     if (acertou) {
       await _vitoria();
     }
@@ -199,7 +198,8 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
-          falasConfig: _falasGuardiao, // 👈 Guardião fala
+          falasConfig: _falasGuardiao,
+          exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
@@ -213,7 +213,8 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
-          falasConfig: _falasPersonagem, // 👈 Personagem responde
+          falasConfig: _falasPersonagem,
+          exibirReacoes: true,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: const SizedBox.shrink(),
@@ -224,9 +225,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     // Terceiro: Tela do Computador
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => _telaComputadorConcluido(),
-      ),
+      MaterialPageRoute(builder: (_) => _telaComputadorConcluido()),
     );
 
     // Finalmente: Salva e volta para Exploration
@@ -271,9 +270,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: const GameTimerWidget(),
-            ),
+            child: Center(child: const GameTimerWidget()),
           ),
         ],
       ),
@@ -284,7 +281,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              
+
               // Mensagem
               Container(
                 width: double.infinity,
@@ -293,7 +290,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _acertou 
+                    color: _acertou
                         ? Colors.green.withValues(alpha: 0.5)
                         : Colors.orange.withValues(alpha: 0.3),
                   ),
@@ -309,9 +306,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 15),
-              
+
               // Área das lixeiras
               Expanded(
                 flex: 3,
@@ -343,9 +340,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 15),
-              
+
               // Título dos itens
               const Text(
                 "ITENS ENCONTRADOS NA PRAÇA:",
@@ -355,9 +352,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   fontFamily: 'PressStart2P',
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Lista de itens para classificar
               Expanded(
                 flex: 2,
@@ -373,23 +370,25 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                     String item = _classificacaoCorreta.keys.elementAt(index);
                     bool estaEmUso = _itensNasLixeiras[item] != null;
                     bool estaSelecionado = _itemSelecionado == item;
-                    
+
                     return GestureDetector(
-                      onTap: (estaEmUso || _acertou) ? null : () => _selecionarItem(item),
+                      onTap: (estaEmUso || _acertou)
+                          ? null
+                          : () => _selecionarItem(item),
                       child: Container(
                         decoration: BoxDecoration(
                           color: estaSelecionado
                               ? Colors.cyan.withValues(alpha: 0.3)
                               : estaEmUso
-                                  ? Colors.grey.withValues(alpha: 0.2)
-                                  : Colors.cyan.withValues(alpha: 0.1),
+                              ? Colors.grey.withValues(alpha: 0.2)
+                              : Colors.cyan.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: estaSelecionado
                                 ? Colors.cyan
                                 : estaEmUso
-                                    ? Colors.grey
-                                    : Colors.cyan.withValues(alpha: 0.3),
+                                ? Colors.grey
+                                : Colors.cyan.withValues(alpha: 0.3),
                             width: estaSelecionado ? 2 : 1,
                           ),
                         ),
@@ -411,7 +410,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                                   item.substring(item.indexOf(' ') + 1),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: estaEmUso ? Colors.grey : Colors.white,
+                                    color: estaEmUso
+                                        ? Colors.grey
+                                        : Colors.white,
                                     fontSize: 8,
                                     fontFamily: 'PressStart2P',
                                     decoration: estaEmUso
@@ -428,13 +429,13 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 15),
-              
+
               // Botão verificar
               GestureDetector(
-                onTap: (_todosItensClassificados() && !_acertou) 
-                    ? _verificarResolucao 
+                onTap: (_todosItensClassificados() && !_acertou)
+                    ? _verificarResolucao
                     : null,
                 child: Container(
                   width: double.infinity,
@@ -455,19 +456,17 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          _acertou 
-                              ? Icons.check_circle 
-                              : Icons.recycling, 
-                          color: Colors.white, 
-                          size: 20
+                          _acertou ? Icons.check_circle : Icons.recycling,
+                          color: Colors.white,
+                          size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           _acertou
                               ? "CLASSIFICAÇÃO CORRETA!"
                               : _todosItensClassificados()
-                                  ? "VERIFICAR CLASSIFICAÇÃO"
-                                  : "CLASSIFIQUE TODOS OS ITENS",
+                              ? "VERIFICAR CLASSIFICAÇÃO"
+                              : "CLASSIFIQUE TODOS OS ITENS",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -480,7 +479,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 15),
             ],
           ),
@@ -497,10 +496,11 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     List<String> itens,
     String descricao,
   ) {
-    bool isSelected = _itemSelecionado != null && 
-                      _itensNasLixeiras[_itemSelecionado!] == null &&
-                      !_acertou;
-    
+    bool isSelected =
+        _itemSelecionado != null &&
+        _itensNasLixeiras[_itemSelecionado!] == null &&
+        !_acertou;
+
     return GestureDetector(
       onTap: isSelected ? () => _colocarNaLixeira(tipoLixeira) : null,
       child: Container(
@@ -511,21 +511,20 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
             color: isSelected ? cor : cor.withValues(alpha: 0.3),
             width: isSelected ? 3 : 1,
           ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: cor.withValues(alpha: 0.3),
-              blurRadius: 10,
-              spreadRadius: 2,
-            )
-          ] : [],
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: cor.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [],
         ),
         child: Column(
           children: [
             const SizedBox(height: 8),
-            Text(
-              icone,
-              style: const TextStyle(fontSize: 32),
-            ),
+            Text(icone, style: const TextStyle(fontSize: 32)),
             Text(
               titulo,
               style: TextStyle(
@@ -547,15 +546,15 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             Container(
               height: 1,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               color: cor.withValues(alpha: 0.3),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             Expanded(
               child: itens.isEmpty
                   ? Center(
@@ -586,7 +585,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                       itemCount: itens.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
-                          onTap: _acertou ? null : () => _removerDaLixeira(itens[index]),
+                          onTap: _acertou
+                              ? null
+                              : () => _removerDaLixeira(itens[index]),
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 4),
                             padding: const EdgeInsets.all(6),
@@ -606,7 +607,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
-                                    itens[index].substring(itens[index].indexOf(' ') + 1),
+                                    itens[index].substring(
+                                      itens[index].indexOf(' ') + 1,
+                                    ),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 8,

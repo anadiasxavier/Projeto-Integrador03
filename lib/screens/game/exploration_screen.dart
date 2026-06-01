@@ -8,7 +8,7 @@ import '../../services/progress_service.dart';
 import '../../services/game_timer_service.dart';
 import '../../widgets/background.dart';
 import '../../widgets/game_timer_widget.dart';
-import '../../models/entidade_dialogo.dart'; 
+import '../../models/entidade_dialogo.dart';
 
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
@@ -31,6 +31,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   String localizacaoTexto = "Carregando localização...";
   List<String> chaves = [];
   List<String> salasConcluidas = [];
+  static const double _raioAcessoMetros = 30;
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
   final GameTimerService _timerService = GameTimerService();
@@ -39,7 +40,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
     "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
     "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -22.95102162365918, "lng": -47.079051546246646},
     "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
   };
 
@@ -112,17 +113,16 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     return salasConcluidas.contains(sala);
   }
 
-  Future<bool> estaPerto(String lugar) async {
+  Future<double> distanciaAte(String lugar) async {
     Position pos = await LocationService.getCurrentLocation();
     double lat = locais[lugar]!["lat"]!;
     double lng = locais[lugar]!["lng"]!;
-    double distancia = Geolocator.distanceBetween(
-      pos.latitude,
-      pos.longitude,
-      lat,
-      lng,
-    );
-    return distancia <= 10;
+    return Geolocator.distanceBetween(pos.latitude, pos.longitude, lat, lng);
+  }
+
+  Future<bool> estaPerto(String lugar) async {
+    final distancia = await distanciaAte(lugar);
+    return distancia <= _raioAcessoMetros;
   }
 
   @override
@@ -444,13 +444,28 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
           return;
         }
 
-        bool perto = await estaPerto("Praça");
+        double distancia;
+        try {
+          distancia = await distanciaAte("Praça");
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Erro ao ler localização: $e"),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         if (!mounted) return;
 
-        if (!perto) {
+        if (distancia > _raioAcessoMetros) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Você precisa estar em Praça para entrar!"),
+            SnackBar(
+              content: Text(
+                "Você está a ${distancia.toStringAsFixed(0)}m da Praça. Raio atual: ${_raioAcessoMetros.toStringAsFixed(0)}m.",
+              ),
               backgroundColor: Colors.red,
             ),
           );

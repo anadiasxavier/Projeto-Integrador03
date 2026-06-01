@@ -42,6 +42,7 @@ flutter:
     - assets/guardia_biblioteca.png
     - assets/guardiao.png
     - assets/guardiao/arenaguardiao.png
+    - assets/guardiao/pracaguardiao.png
  
   fonts:
     - family: PressStart2P
