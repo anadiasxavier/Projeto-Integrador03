@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
+  // localização única (mantém o que você já tinha)
   static Future<Position> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -15,7 +16,7 @@ class LocationService {
     // verifica permissão atual
     permission = await Geolocator.checkPermission();
 
-    // pede permissão se negada
+    // pede permissão
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
@@ -30,9 +31,18 @@ class LocationService {
       throw Exception('Permissão negada permanentemente');
     }
 
-    // pega localização
     return await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
+  }
+
+  // NOVO: localização em tempo real
+  static Stream<Position> locationStream() {
+    return Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5, // atualiza a cada 5 metros
+      ),
     );
   }
 }
