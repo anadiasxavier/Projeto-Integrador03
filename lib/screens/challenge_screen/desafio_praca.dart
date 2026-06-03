@@ -6,44 +6,38 @@ import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
 import '../../services/progress_service.dart';
-import '../../widgets/game_timer_widget.dart';
+import '../../widgets/dialogo_com_guardiao.dart';
 
-class _RecompensaPracaScreen extends StatefulWidget {
-  const _RecompensaPracaScreen();
+class _RecompensaScreen extends StatefulWidget {
+  final String nomeSala;
+  final String imagemFundo;
+
+  const _RecompensaScreen({required this.nomeSala, required this.imagemFundo});
 
   @override
-  State<_RecompensaPracaScreen> createState() => _RecompensaPracaScreenState();
+  State<_RecompensaScreen> createState() => _RecompensaScreenState();
 }
 
-class _RecompensaPracaScreenState extends State<_RecompensaPracaScreen> {
+class _RecompensaScreenState extends State<_RecompensaScreen> {
   final ProgressService _progress = ProgressService();
-  bool _finalizando = false;
 
-  Future<void> _salvarProgressoERetornar() async {
-    if (_finalizando) return;
-    setState(() => _finalizando = true);
-
+  void _salvarProgressoEVoltarExploration() async {
     try {
-      await _progress
-          .marcarSalaConcluida(raJogador, 'Praça')
-          .timeout(const Duration(seconds: 6));
-      print('Progresso da Praça salvo com sucesso!');
+      await _progress.marcarSalaConcluida(
+        raJogador,
+        widget.nomeSala,
+        novasChaves: ['Manacás', 'Mescla', 'Arena'],
+      );
+      print('Progresso salvo com sucesso!');
     } catch (e) {
-      print('Erro ao salvar progresso da Praça: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao salvar: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      print('Erro ao salvar progresso: $e');
     }
 
     if (!mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const ExplorationScreen()),
+      MaterialPageRoute(builder: (context) => const ExplorationScreen()),
       (route) => false,
     );
   }
@@ -52,90 +46,153 @@ class _RecompensaPracaScreenState extends State<_RecompensaPracaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fragmento de Chave'),
+        title: const Text("Fragmento de Chave"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
       ),
       body: Background(
-        imagem: 'assets/praca.png',
+        imagem: widget.imagemFundo,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withValues(alpha: 0.2),
-                  border: Border.all(color: Colors.amber, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'FRAGMENTO DE CHAVE OBTIDO!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                'A praça volta ao silêncio.\n\n'
-                'Você guardou mais uma peça importante.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 40),
-              GestureDetector(
-                onTap: _finalizando ? null : _salvarProgressoERetornar,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.exit_to_app,
-                        color: Colors.white,
-                        size: 24,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 1500),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Opacity(opacity: value, child: child),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.orange.withOpacity(0.5),
+                        width: 3,
                       ),
-                      const SizedBox(width: 10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.vpn_key,
+                      color: Colors.orange,
+                      size: 80,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  "PARABÉNS!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    shadows: [Shadow(color: Colors.orange, blurRadius: 10)],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.orange.withOpacity(0.4),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text("🗝️", style: TextStyle(fontSize: 40)),
+                      SizedBox(height: 10),
                       Text(
-                        _finalizando ? 'SALVANDO...' : 'VOLTAR AO CAMPUS',
-                        style: const TextStyle(
+                        "Você conseguiu um",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 13,
                           fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "FRAGMENTO DE CHAVE",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        "Você está quase descobrindo todos os\n"
+                        "segredos deste lugar.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontFamily: 'PressStart2P',
+                          height: 1.6,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 30),
+                GestureDetector(
+                  onTap: _salvarProgressoEVoltarExploration,
+                  child: Container(
+                    width: 280,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.orange.withOpacity(0.5),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.orange,
+                          size: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "CONTINUAR JORNADA",
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'PressStart2P',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
@@ -183,7 +240,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
     '🍟 Restos de batata': 'organico',
     '🧃 Caixinha de suco': 'reciclavel',
     '🥤 Copo plástico': 'reciclavel',
-    '🍫 Papel de chocolate': 'organico',
+    '🍫 Pedaço de chocolate': 'organico',
     '📦 Embalagem de papel': 'reciclavel',
     '🍎 Maçã mordida': 'organico',
   };
@@ -312,7 +369,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
           falasConfig: _falasGuardiao,
-          exibirReacoes: false,
+          exibirReacoes: true,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: PersonagemScreen(
@@ -321,7 +378,10 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
             exibirReacoes: true,
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: true,
-            proximaTela: const _RecompensaPracaScreen(),
+            proximaTela: _RecompensaScreen(
+              nomeSala: 'Praça',
+              imagemFundo: 'assets/praca.png',
+            ),
           ),
         ),
       ),
@@ -340,10 +400,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(child: const GameTimerWidget()),
-          ),
+
         ],
       ),
       body: Background(

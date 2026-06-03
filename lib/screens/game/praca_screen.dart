@@ -30,7 +30,7 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // Etapa 2: Personagem reage à sujeira
   List<FalaConfig> get _falasNojo => [
     FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[triste]" : "[tristeM]"} Que lugar nojento... ninguém limpa isso há dias.',
+      '${generoJogador == "feminino" ? "[triste]" : "[triste]"} Que lugar nojento... ninguém limpa isso há dias.',
     ),
   ];
 

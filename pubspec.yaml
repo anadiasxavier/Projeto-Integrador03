@@ -43,6 +43,9 @@ flutter:
     - assets/guardiao.png
     - assets/guardiao/arenaguardiao.png
     - assets/guardiao/pracaguardiao.png
+    - assets/pucdia.png
+    - assets/guardiao/manacasguardiao.png
+    - assets/final.png
  
   fonts:
     - family: PressStart2P

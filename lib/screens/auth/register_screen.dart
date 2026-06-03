@@ -240,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               }
 
                               if (!RegExp(
-                                r'^[0-9]{1,8}$',
+                                r'^[0-9]{8}$',
                               ).hasMatch(value.trim())) {
                                 return 'RA inválido';
                               }

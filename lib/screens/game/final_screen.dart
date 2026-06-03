@@ -11,12 +11,145 @@ class FinalScreen extends StatelessWidget {
 
   const FinalScreen({super.key, required this.chavesConquistadas});
 
+  // Falas do personagem ao final
   List<FalaConfig> get _falasPersonagemFinal => [
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} '
-      '${generoJogador == "feminino" ? "Consegui! Estou livre!" : "Consegui! Estou livre!"}',
-    ),
+    FalaConfig.personagem('[feliz] Consegui! Estou livre!'),
   ];
+
+  // Imagem única com todos os guardiões
+  final String _imagemTodosGuardioes = 'assets/final.png';
+
+  // Falas de todos os guardiões (uma única sequência)
+  final String _falasTodosGuardioes =
+      "Você enfrentou a escuridão, venceu seus medos "
+      "e restaurou o que estava perdido. "
+      "As chaves abriram mais do que portas... "
+      "revelaram sua coragem. "
+      "Seu caminho está livre. Siga em frente.";
+
+  void _mostrarDialogoGuardioes(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          body: Background(
+            imagem: "assets/pucdia.png",
+            child: Stack(
+              children: [
+                // Imagem com todos os guardiões - VERSÃO RESPONSIVA OTIMIZADA
+                Positioned.fill(
+                  child: Center(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Image.asset(
+                          _imagemTodosGuardioes,
+                          width: constraints.maxWidth,
+                          fit: BoxFit.contain,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Caixa de diálogo com todas as falas
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.55,
+                    ),
+                    padding: const EdgeInsets.all(24),
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.amber.withOpacity(0.2),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _falasTodosGuardioes,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontFamily: 'PressStart2P',
+                            height: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context); // fecha este diálogo
+                            _continuarParaPersonagem(context);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(color: Colors.amber),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  "CONTINUAR",
+                                  style: TextStyle(
+                                    color: Colors.amber,
+                                    fontSize: 12,
+                                    fontFamily: 'PressStart2P',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _continuarParaPersonagem(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PersonagemScreen(
+          imagemFundo: "assets/pucdia.png",
+          falasConfig: _falasPersonagemFinal,
+          exibirReacoes: true,
+          instrucaoToque: 'Toque para continuar',
+          substituirAoAvancarFinal: true,
+          proximaTela: const _VitoriaScreen(),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +161,7 @@ class FinalScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: Background(
-        imagem: "assets/puc.png",
+        imagem: "assets/pucdia.png",
         child: Center(
           child: SingleChildScrollView(
             child: Column(
@@ -152,19 +285,7 @@ class FinalScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PersonagemScreen(
-                          imagemFundo: "assets/puc.png",
-                          falasConfig: _falasPersonagemFinal,
-                          exibirReacoes: true,
-                          instrucaoToque: 'Toque para continuar',
-                          substituirAoAvancarFinal: false,
-                          proximaTela: const _VitoriaScreen(),
-                        ),
-                      ),
-                    );
+                    _mostrarDialogoGuardioes(context);
                   },
                   child: Container(
                     width: 300,
@@ -272,227 +393,163 @@ class _VitoriaScreenState extends State<_VitoriaScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 0, 19, 48),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.center,
-            radius: 1.5,
-            colors: [
-              Color.fromARGB(255, 10, 30, 60),
-              Color.fromARGB(255, 0, 19, 48),
-            ],
+      body: Stack(
+        children: [
+          // IMAGEM DE FUNDO
+          Positioned.fill(
+            child: Image.asset("assets/pucdia.png", fit: BoxFit.cover),
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _fadeAnimation.value,
-                  child: Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: child,
-                  ),
-                );
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                      SizedBox(width: 10),
-                      Icon(Icons.star, color: Colors.amber, size: 30),
-                      SizedBox(width: 10),
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(35),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.amber.withOpacity(0.2),
-                          Colors.amber.withOpacity(0.05),
-                          Colors.transparent,
-                        ],
-                      ),
-                      border: Border.all(
-                        color: Colors.amber.withOpacity(0.6),
-                        width: 3,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(0.4),
-                          blurRadius: 40,
-                          spreadRadius: 15,
-                        ),
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(0.2),
-                          blurRadius: 80,
-                          spreadRadius: 30,
-                        ),
-                      ],
+          // ESCURECE UM POUCO A IMAGEM PARA O TEXTO FICAR LEGÍVEL
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.45)),
+          ),
+          // CONTEÚDO DA TELA
+          Center(
+            child: SingleChildScrollView(
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: child,
                     ),
-                    child: const Icon(
-                      Icons.emoji_events,
-                      color: Colors.amber,
-                      size: 90,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.amber, Colors.yellow, Colors.amber],
-                    ).createShader(bounds),
-                    child: const Text(
-                      "VOCE VENCEU!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'PressStart2P',
-                        shadows: [Shadow(color: Colors.amber, blurRadius: 20)],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 30),
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.white.withOpacity(0.08),
-                          Colors.white.withOpacity(0.03),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.amber.withOpacity(0.3),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 15,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: const Column(
+                  );
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 50),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("🌅", style: TextStyle(fontSize: 50)),
-                        SizedBox(height: 15),
-                        Text(
-                          "Voce escapou da PUC\n"
-                          "antes do amanhecer.\n\n"
-                          "A liberdade e sua.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: 'PressStart2P',
-                            height: 1.8,
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.circle, color: Colors.amber, size: 8),
-                            SizedBox(width: 15),
-                            Icon(Icons.circle, color: Colors.amber, size: 8),
-                            SizedBox(width: 15),
-                            Icon(Icons.circle, color: Colors.amber, size: 8),
-                          ],
-                        ),
+                        Icon(Icons.star, color: Colors.amber, size: 20),
+                        SizedBox(width: 10),
+                        Icon(Icons.star, color: Colors.amber, size: 30),
+                        SizedBox(width: 10),
+                        Icon(Icons.star, color: Colors.amber, size: 20),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.amber.withOpacity(0.2)),
-                    ),
-                    child: const Text(
-                      "FIM DE JOGO",
-                      style: TextStyle(
-                        color: Colors.amber,
-                        fontSize: 12,
-                        fontFamily: 'PressStart2P',
-                        letterSpacing: 3,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  GestureDetector(
-                    onTap: _voltarParaLogin,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 50),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 30,
-                      ),
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(35),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
                           colors: [
                             Colors.amber.withOpacity(0.2),
                             Colors.amber.withOpacity(0.05),
+                            Colors.transparent,
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(15),
                         border: Border.all(
-                          color: Colors.amber.withOpacity(0.5),
-                          width: 1.5,
+                          color: Colors.amber.withOpacity(0.6),
+                          width: 3,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.amber.withOpacity(0.1),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                            color: Colors.amber.withOpacity(0.4),
+                            blurRadius: 40,
+                            spreadRadius: 15,
                           ),
                         ],
                       ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: const Icon(
+                        Icons.emoji_events,
+                        color: Colors.amber,
+                        size: 90,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.amber, Colors.yellow, Colors.amber],
+                      ).createShader(bounds),
+                      child: const Text(
+                        "VOCE VENCEU!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.55),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.amber.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: const Column(
                         children: [
-                          Icon(Icons.logout, color: Colors.amber, size: 20),
-                          SizedBox(width: 10),
+                          Icon(Icons.vpn_key, color: Colors.amber, size: 50),
+                          SizedBox(height: 15),
                           Text(
-                            "SAIR DO JOGO",
+                            "Voce escapou da PUC\n"
+                            "antes do amanhecer.\n\n"
+                            "A liberdade e sua.",
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.amber,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 14,
                               fontFamily: 'PressStart2P',
+                              height: 1.8,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 50),
-                ],
+                    const SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: _voltarParaLogin,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 50),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 30,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: Colors.amber.withOpacity(0.5),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.logout, color: Colors.amber, size: 20),
+                            SizedBox(width: 10),
+                            Text(
+                              "SAIR DO JOGO",
+                              style: TextStyle(
+                                color: Colors.amber,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'PressStart2P',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

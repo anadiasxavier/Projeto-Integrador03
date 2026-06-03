@@ -6,7 +6,6 @@ import '../game/personagem_screen.dart';
 import '../game/narrador_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../services/progress_service.dart';
-import '../../widgets/game_timer_widget.dart';
 import '../../widgets/dialogo_com_guardiao.dart';
 
 // Tela de recompensa
@@ -485,10 +484,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(child: GameTimerWidget()),
-          ),
+
         ],
       ),
       body: Background(

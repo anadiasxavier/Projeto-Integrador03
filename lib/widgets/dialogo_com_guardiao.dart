@@ -23,9 +23,10 @@ class DialogoComGuardiao extends StatelessWidget {
       children: [
         personagemScreen,
 
+
         Positioned(
           bottom: 95,
-          right: -95, // espelhado do personagem
+          right: -70, // espelhado do personagem
           child: Transform.rotate(
             angle: 0.04, // espelhado do personagem
             child: Container(

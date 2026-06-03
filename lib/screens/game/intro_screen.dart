@@ -5,8 +5,6 @@ import 'exploration_screen.dart';
 import '../../main.dart';
 import '../../services/firestore_service.dart';
 import '../../services/progress_service.dart';
-import '../../services/game_timer_service.dart';
-import '../../widgets/game_timer_warning_dialog.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -21,8 +19,6 @@ class _IntroScreenState extends State<IntroScreen> {
   bool _isLoading = true;
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
-  final GameTimerService _timerService = GameTimerService();
-  bool _modalMostrado = false;
   bool _transicaoEmAndamento = false;
 
   @override
@@ -88,8 +84,6 @@ class _IntroScreenState extends State<IntroScreen> {
 
   // Inicia o vídeo e os textos narrativos, além de configurar o listener para quando o vídeo terminar
   void _iniciarVideo() {
-    _timerService.ensureTimerForPlayer(raJogador);
-
     _controller = VideoPlayerController.asset('assets/bibli.mp4')
       ..initialize().then((_) {
         if (mounted) {
@@ -110,19 +104,14 @@ class _IntroScreenState extends State<IntroScreen> {
     final valor = _controller.value;
     if (valor.duration > Duration.zero && valor.position >= valor.duration) {
       _controller.pause();
-      _irParaExplorationComModal();
+      _irParaExploration();
     }
   }
 
-  // Quando o vídeo termina, mostra o modal de aviso do timer (se ainda não tiver mostrado) e depois navega para a tela de exploração
-  Future<void> _irParaExplorationComModal() async {
+  // Quando o vídeo termina, navega diretamente para a tela de exploração
+  Future<void> _irParaExploration() async {
     if (_transicaoEmAndamento) return;
     _transicaoEmAndamento = true;
-
-    if (!_modalMostrado && mounted) {
-      _modalMostrado = true;
-      await GameTimerWarningDialog.show(context);
-    }
 
     if (mounted) {
       Navigator.pushNamedAndRemoveUntil(
@@ -144,7 +133,6 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   void dispose() {
-    // Não limpa o timer aqui pois ele continua em outras telas
     _controller.removeListener(_onVideoTick);
     _controller.dispose();
     super.dispose();
@@ -199,7 +187,6 @@ class _IntroScreenState extends State<IntroScreen> {
                     ),
                   ),
                 ),
-
                 Positioned(
                   bottom: 60,
                   left: 20,
@@ -208,12 +195,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(
-                          255,
-                          0,
-                          19,
-                          48,
-                        ).withOpacity(0.95),
+                        color: const Color.fromARGB(255, 0, 19, 48).withOpacity(0.95),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.amber, width: 1),
                       ),

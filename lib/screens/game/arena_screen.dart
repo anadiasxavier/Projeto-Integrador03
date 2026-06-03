@@ -6,7 +6,6 @@ import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../main.dart';
 import '../../services/progress_service.dart';
-import '../../widgets/game_timer_widget.dart';
 import '../game/narrador_screen.dart';
 import '../../widgets/dialogo_com_guardiao.dart';
 
@@ -36,7 +35,10 @@ class _InstrucoesArenaScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFB388FF), width: 2),
+                    border: Border.all(
+                      color: const Color(0xFFB388FF),
+                      width: 2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.computer,
@@ -52,7 +54,9 @@ class _InstrucoesArenaScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: const Color(0xFFB388FF).withOpacity(0.5)),
+                    border: Border.all(
+                      color: const Color(0xFFB388FF).withOpacity(0.5),
+                    ),
                   ),
                   child: const Column(
                     children: [
@@ -113,7 +117,11 @@ class _InstrucoesArenaScreen extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.play_arrow, color: Color(0xFFB388FF), size: 20),
+                        Icon(
+                          Icons.play_arrow,
+                          color: Color(0xFFB388FF),
+                          size: 20,
+                        ),
                       ],
                     ),
                   ),
@@ -133,10 +141,7 @@ class _RecompensaScreen extends StatefulWidget {
   final String nomeSala;
   final String imagemFundo;
 
-  const _RecompensaScreen({
-    required this.nomeSala,
-    required this.imagemFundo,
-  });
+  const _RecompensaScreen({required this.nomeSala, required this.imagemFundo});
 
   @override
   State<_RecompensaScreen> createState() => _RecompensaScreenState();
@@ -298,8 +303,11 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_forward,
-                            color: Colors.deepPurpleAccent, size: 24),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.deepPurpleAccent,
+                          size: 24,
+                        ),
                         SizedBox(width: 10),
                         Text(
                           "CONTINUAR JORNADA",
@@ -331,7 +339,6 @@ class DesafioArenaScreen extends StatefulWidget {
   static const String _imagemGuardiaoArena =
       'assets/guardiao/arenaguardiao.png';
 
-
   @override
   State<DesafioArenaScreen> createState() => _DesafioArenaScreenState();
 }
@@ -362,20 +369,29 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
 
   // Falas do guardião da arena (após acertar tudo)
   static final List<FalaConfig> _falasGuardiao = [
-  FalaConfig.guardiao('Hm... você realmente conseguiu chegar até aqui.'),
-  FalaConfig.guardiao('Poucos suportam os desafios da arena sem hesitar.'),
-  FalaConfig.guardiao('Vejo determinação nos seus passos... isso é raro.'),
-  FalaConfig.guardiao('Mas não pense que sua jornada termina aqui.'),
+    FalaConfig.guardiao('Hm... você realmente conseguiu chegar até aqui.'),
+    FalaConfig.guardiao('Poucos suportam os desafios da arena sem hesitar.'),
+    FalaConfig.guardiao('Vejo determinação nos seus passos... isso é raro.'),
+    FalaConfig.guardiao('Mas não pense que sua jornada termina aqui.'),
   ];
-// Falas do personagem com reações
-List<FalaConfig> get _falasPersonagem => [
-  FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui vencer todos os desafios!',
-  ),
-  FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} De repente, algo chama minha atenção...',
-  ),
-];
+  // Falas do personagem com reações
+  List<FalaConfig> get _falasPersonagem => [
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"}  O que... era aquilo?!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Ele… estava me observando?',
+    ),
+        FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Por que esse lugar ficou tão frio de repente?',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui vencer todos os desafios!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} De repente, algo chama minha atenção...',
+    ),
+  ];
 
   // Falas de erro
   static final List<FalaConfig> _falasErro = [
@@ -410,20 +426,20 @@ List<FalaConfig> get _falasPersonagem => [
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-      builder: (context) => DialogoComGuardiao(
-        imagemGuardiao: DesafioArenaScreen._imagemGuardiaoArena,
-        personagemScreen: PersonagemScreen(
-          imagemFundo: "assets/arena.png",
-          falasConfig: _falasGuardiao,
-          exibirReacoes: false,
-          instrucaoToque: 'Toque para continuar',
-          substituirAoAvancarFinal: true,
-          proximaTela: _segundaEtapa(),
+        builder: (context) => DialogoComGuardiao(
+          imagemGuardiao: DesafioArenaScreen._imagemGuardiaoArena,
+          personagemScreen: PersonagemScreen(
+            imagemFundo: "assets/arena.png",
+            falasConfig: _falasGuardiao,
+            exibirReacoes: false,
+            instrucaoToque: 'Toque para continuar',
+            substituirAoAvancarFinal: true,
+            proximaTela: _segundaEtapa(),
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _segundaEtapa() {
     return PersonagemScreen(
@@ -468,10 +484,6 @@ List<FalaConfig> get _falasPersonagem => [
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(child: GameTimerWidget()),
-          ),
         ],
       ),
       body: Container(
@@ -503,7 +515,10 @@ List<FalaConfig> get _falasPersonagem => [
                     decoration: BoxDecoration(
                       color: const Color(0xFFB388FF).withOpacity(0.2),
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFB388FF), width: 2),
+                      border: Border.all(
+                        color: const Color(0xFFB388FF),
+                        width: 2,
+                      ),
                     ),
                     child: const Icon(
                       Icons.sports_esports,
@@ -513,7 +528,10 @@ List<FalaConfig> get _falasPersonagem => [
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFB388FF).withOpacity(0.3),
                       borderRadius: BorderRadius.circular(20),
@@ -612,29 +630,29 @@ List<FalaConfig> get _falasPersonagem => [
 class ArenaScreen extends StatelessWidget {
   const ArenaScreen({super.key});
 
-static List<FalaConfig> get _falasEntradaArena => [
-  FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} A Arena Gamer… tem luz piscando por baixo da porta…',
-  ),
-  FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} E dá pra ouvir som de jogo… cliques rápidos…',
-  ),
-  FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Parece que tem algo rodando lá dentro…',
-  ),
+  static List<FalaConfig> get _falasEntradaArena => [
     FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} …tem alguém aí?',
-  ),
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} A Arena Gamer… tem luz piscando por baixo da porta…',
+    ),
     FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Uma tela… acendeu sozinha...',
-  ),
-      FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.',
-  ),
-        FalaConfig.personagem(
-    '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem um tipo de desafio acontecendo aqui dentro….',
-  ),
-];
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} E dá pra ouvir som de jogo… cliques rápidos…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Parece que tem algo rodando lá dentro…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} …tem alguém aí?',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Uma tela… acendeu sozinha...',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem alguma coisa rodando aqui… esses comandos… tão passando rápido demais.',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Tem um tipo de desafio acontecendo aqui dentro….',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {

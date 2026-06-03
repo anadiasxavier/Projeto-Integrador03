@@ -5,9 +5,7 @@ import '../../main.dart';
 import '../../services/firestore_service.dart';
 import '../../services/location_service.dart';
 import '../../services/progress_service.dart';
-import '../../services/game_timer_service.dart';
 import '../../widgets/background.dart';
-import '../../widgets/game_timer_widget.dart';
 import '../../models/entidade_dialogo.dart';
 
 import 'arena_screen.dart';
@@ -35,14 +33,13 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   static const double _raioAcessoMetros = 30;
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
-  final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Biblioteca": {"lat": 37.4219983, "lng": -122.084},
+    "Manacas": {"lat": 37.4219983, "lng":  -122.084},
+    "Mescla": {"lat": 37.4219983, "lng":  -122.084},
+    "Praça": {"lat": 37.4219983, "lng":  -122.084},
+    "Arena": {"lat": 37.4219983, "lng":  -122.084},
   };
 
   // COORDENADAS REAIS (PUC)
@@ -73,7 +70,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     super.initState();
     carregarLocalizacao();
     carregarProgresso();
-    _timerService.ensureTimerForPlayer(raJogador);
   }
 
   void carregarLocalizacao() async {
@@ -151,10 +147,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Center(child: const GameTimerWidget()),
-          ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
@@ -272,8 +264,8 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
               imagemFundo: "assets/biblioteca.png",
               proximaTela: PersonagemScreen(
                 imagemFundo: "assets/biblioteca.png",
-                falasConfig: _falasEntradaBiblioteca, // 👈 Usando falasConfig
-                exibirReacoes: true, // 👈 Reações ativadas!
+                falasConfig: _falasEntradaBiblioteca,
+                exibirReacoes: true,
                 instrucaoToque: 'Toque para continuar',
                 substituirAoAvancarFinal: false,
                 proximaTela: const BibliotecaScreen(),

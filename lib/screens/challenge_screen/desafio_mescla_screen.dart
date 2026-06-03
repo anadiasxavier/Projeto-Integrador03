@@ -7,7 +7,6 @@ import '../../main.dart';
 import '../game/personagem_screen.dart';
 import '../game/exploration_screen.dart';
 import '../../services/progress_service.dart';
-import '../../widgets/game_timer_widget.dart';
 
 class MesclaPuzzleScreen extends StatefulWidget {
   const MesclaPuzzleScreen({super.key});
@@ -228,10 +227,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
           onPressed: () => Navigator.maybePop(context),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(child: const GameTimerWidget()),
-          ),
+
         ],
       ),
       body: Background(
