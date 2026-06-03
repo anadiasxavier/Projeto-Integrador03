@@ -38,11 +38,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -22.95101416666666, "lng": -47.07891800000},
-    "Manacas": {"lat": -22.95101416666666, "lng": -47.07891800000},
-    "Mescla": {"lat": -22.95101416666666, "lng": -47.07891800000},
-    "Praça": {"lat": -22.95101416666666, "lng": -47.07891800000},
-    "Arena": {"lat": -22.95101416666666, "lng": -47.07891800000},
+    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
   };
 
   // COORDENADAS REAIS (PUC)

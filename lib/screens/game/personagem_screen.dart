@@ -8,8 +8,8 @@ class PersonagemScreen extends StatefulWidget {
   final Widget? proximaTela;
   final String imagemFundo;
   final String? instrucaoToque;
-  final List<String>? falasCustom; // Mantido para compatibilidade
-  final List<FalaConfig>? falasConfig; // NOVO
+  final List<String>? falasCustom;
+  final List<FalaConfig>? falasConfig;
   final bool exibirReacoes;
   final bool substituirAoAvancarFinal;
 
@@ -19,7 +19,7 @@ class PersonagemScreen extends StatefulWidget {
     required this.imagemFundo,
     this.instrucaoToque,
     this.falasCustom,
-    this.falasConfig, //NOVO
+    this.falasConfig,
     this.exibirReacoes = false,
     this.substituirAoAvancarFinal = true,
   });
@@ -48,14 +48,11 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
   bool get _showReactions => widget.exibirReacoes;
 
-  // Retorna as falas (considerando os 2 formatos)
   List<String> get _falas {
-    // Prioriza o novo formato
     if (widget.falasConfig != null && widget.falasConfig!.isNotEmpty) {
       return widget.falasConfig!.map((f) => f.texto).toList();
     }
 
-    // Fallback para formato antigo
     if (widget.falasCustom != null && widget.falasCustom!.isNotEmpty) {
       return widget.falasCustom!;
     }
@@ -71,34 +68,56 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         : 'assets/personagem.png';
   }
 
-  // NOVO: Determina qual ícone mostrar
-String? _getIconePath() {
-  if (_falas.isEmpty) {
+  String? _getImagemFundo() {
+    if (_falas.isEmpty) {
+      return _defaultCharacterImage();
+    }
+
+    if (widget.falasConfig != null &&
+        widget.falasConfig!.isNotEmpty &&
+        indice < widget.falasConfig!.length) {
+
+      final config = widget.falasConfig![indice];
+      final reaction = _reactionForIndex(indice);
+
+      if (config.entidade == TipoEntidade.guardiao) {
+        if (reaction.startsWith('guardiao_mescla_')) {
+          return _reactionAssetPath(reaction);
+        }
+        return null;
+      }
+      
+      if (_showReactions && reaction.isNotEmpty) {
+        return _reactionAssetPath(reaction);
+      }
+    }
+
+    return null;
+  }
+
+  String? _getIconeBalao() {
+    if (_falas.isEmpty) {
+      return _defaultCharacterImage();
+    }
+
+    if (widget.falasConfig != null &&
+        widget.falasConfig!.isNotEmpty &&
+        indice < widget.falasConfig!.length) {
+
+      final config = widget.falasConfig![indice];
+
+      if (config.entidade == TipoEntidade.guardiao) {
+        final reaction = _reactionForIndex(indice);
+        if (reaction.startsWith('guardiao_mescla_')) {
+          return _reactionAssetPath(reaction);
+        }
+        return null;
+      }
+    }
+
     return _defaultCharacterImage();
   }
 
-  if (widget.falasConfig != null &&
-      widget.falasConfig!.isNotEmpty &&
-      indice < widget.falasConfig!.length) {
-
-    final config = widget.falasConfig![indice];
-    final reaction = _reactionForIndex(indice);
-
-    // Só o guardião do Mescla desenha imagem no PersonagemScreen
-    if (config.entidade == TipoEntidade.guardiao) {
-      if (reaction.startsWith('guardiao_mescla_')) {
-        return _reactionAssetPath(reaction);
-      }
-
-      // Biblioteca / Arena continuam sem desenhar aqui
-      return null;
-    }
-  }
-
-  return _defaultCharacterImage();
-}
-
-  // NOVO: Determina qual nome mostrar
   String _getNomeFalante() {
     if (_falas.isEmpty) return _rotuloPersonagem();
 
@@ -112,11 +131,9 @@ String? _getIconePath() {
       }
     }
 
-    // Padrão: nome do personagem
     return _rotuloPersonagem();
   }
 
-  // NOVO: Cor do nome baseado em quem fala
   Color _getCorNome() {
     if (widget.falasConfig != null &&
         widget.falasConfig!.isNotEmpty &&
@@ -124,11 +141,11 @@ String? _getIconePath() {
       final config = widget.falasConfig![indice];
 
       if (config.entidade == TipoEntidade.guardiao) {
-        return Colors.amber; // Dourado para o guardião
+        return Colors.amber;
       }
     }
 
-    return Colors.cyan; // Ciano para o personagem
+    return Colors.cyan;
   }
 
   String _dialogText(int index) {
@@ -223,11 +240,8 @@ String? _getIconePath() {
 
   @override
   Widget build(BuildContext context) {
-    final reactionImage = _showReactions && _falas.isNotEmpty
-        ? _reactionAssetPath(_reactionForIndex(indice))
-        : null;
-
-    final iconePath = reactionImage ?? _getIconePath();
+    final imagemFundo = _getImagemFundo();
+    final iconeBalao = _getIconeBalao();
 
     return Scaffold(
       appBar: AppBar(
@@ -253,33 +267,32 @@ String? _getIconePath() {
         imagem: widget.imagemFundo,
         child: Stack(
           children: [
-            Positioned(
-              bottom: 95,
-              left: -95,
-              child: Transform.rotate(
-                angle: -0.04,
-                child: Container(
-                  width: 450,
-                  height: 450,
-                  padding: const EdgeInsets.all(10),
-                  child: _getIconePath() != null
-                      ? Image.asset(
-                          reactionImage ?? _getIconePath()!,
-                          width: 210,
-                          height: 210,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset(
-                                _defaultCharacterImage(),
-                                width: 210,
-                                height: 210,
-                                fit: BoxFit.contain,
-                              ),
-                        )
-                 : const SizedBox(),
+            if (imagemFundo != null)
+              Positioned(
+                bottom: 95,
+                left: -95,
+                child: Transform.rotate(
+                  angle: -0.04,
+                  child: Container(
+                    width: 450,
+                    height: 450,
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset(
+                      imagemFundo,
+                      width: 210,
+                      height: 210,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Image.asset(
+                            _defaultCharacterImage(),
+                            width: 210,
+                            height: 210,
+                            fit: BoxFit.contain,
+                          ),
+                    ),
+                  ),
                 ),
               ),
-            ),
             Positioned(
               bottom: 20,
               left: 20,
@@ -296,30 +309,31 @@ String? _getIconePath() {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      child: _getIconePath() != null
-                          ? Image.asset(
-                              _getIconePath()!,
-                              width: 60,
-                              height: 60,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Image.asset(
-                                    _defaultCharacterImage(),
-                                    width: 60,
-                                    height: 60,
-                                  ),
-                            )
-                          : const SizedBox(),
-                    ),
+                      if (iconeBalao != null)
+                        Container(
+                          margin: const EdgeInsets.only(right: 10),
+                          child: Image.asset(
+                            iconeBalao,
+                            width: 60,
+                            height: 60,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset(
+                                  _defaultCharacterImage(),
+                                  width: 60,
+                                  height: 60,
+                                ),
+                          ),
+                        )
+                      else
+                        const SizedBox(),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _getNomeFalante(), // 👈 AGORA USA O MÉTODO
+                              _getNomeFalante(),
                               style: TextStyle(
-                                color: _getCorNome(), // 👈 AGORA USA O MÉTODO
+                                color: _getCorNome(),
                                 fontSize: 12,
                                 fontFamily: 'PressStart2P',
                               ),
