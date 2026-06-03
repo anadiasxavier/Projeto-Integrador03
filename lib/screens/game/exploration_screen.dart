@@ -34,13 +34,13 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
 
-  static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": 37.4219983, "lng": -122.084},
-    "Manacas": {"lat": 37.4219983, "lng":  -122.084},
-    "Mescla": {"lat": 37.4219983, "lng":  -122.084},
-    "Praça": {"lat": 37.4219983, "lng":  -122.084},
-    "Arena": {"lat": 37.4219983, "lng":  -122.084},
-  };
+static const Map<String, Map<String, double>> locais = {
+  "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
+  "Manacás": {"lat": -22.8323, "lng": -47.05144},
+  "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+  "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
+  "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
+};
 
   // COORDENADAS REAIS (PUC)
   // static const Map<String, Map<String, double>> locais = {
