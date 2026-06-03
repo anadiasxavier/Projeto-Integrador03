@@ -1,6 +1,5 @@
 // lib/screens/challenge_screen/desafio_praca.dart
 import 'package:flutter/material.dart';
-
 import '../../widgets/background.dart';
 import '../../models/entidade_dialogo.dart';
 import '../game/personagem_screen.dart';
@@ -8,6 +7,141 @@ import '../game/exploration_screen.dart';
 import '../../main.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/game_timer_widget.dart';
+
+class _RecompensaPracaScreen extends StatefulWidget {
+  const _RecompensaPracaScreen();
+
+  @override
+  State<_RecompensaPracaScreen> createState() => _RecompensaPracaScreenState();
+}
+
+class _RecompensaPracaScreenState extends State<_RecompensaPracaScreen> {
+  final ProgressService _progress = ProgressService();
+  bool _finalizando = false;
+
+  Future<void> _salvarProgressoERetornar() async {
+    if (_finalizando) return;
+    setState(() => _finalizando = true);
+
+    try {
+      await _progress
+          .marcarSalaConcluida(raJogador, 'Praça')
+          .timeout(const Duration(seconds: 6));
+      print('Progresso da Praça salvo com sucesso!');
+    } catch (e) {
+      print('Erro ao salvar progresso da Praça: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const ExplorationScreen()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Fragmento de Chave'),
+        backgroundColor: const Color.fromARGB(255, 0, 19, 48),
+        foregroundColor: Colors.white,
+      ),
+      body: Background(
+        imagem: 'assets/praca.png',
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.amber.withValues(alpha: 0.2),
+                  border: Border.all(color: Colors.amber, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(alpha: 0.3),
+                      blurRadius: 30,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'FRAGMENTO DE CHAVE OBTIDO!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'PressStart2P',
+                ),
+              ),
+              const SizedBox(height: 15),
+              Text(
+                'A praça volta ao silêncio.\n\n'
+                'Você guardou mais uma peça importante.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontFamily: 'PressStart2P',
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 40),
+              GestureDetector(
+                onTap: _finalizando ? null : _salvarProgressoERetornar,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        _finalizando ? 'SALVANDO...' : 'VOLTAR AO CAMPUS',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class DesafioPracaScreen extends StatefulWidget {
   const DesafioPracaScreen({super.key});
@@ -32,7 +166,6 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   static final List<FalaConfig> _falasGuardiao = [
     FalaConfig.guardiao('...Você limpou a praça.'),
     FalaConfig.guardiao('O meio ambiente agradece.'),
-    FalaConfig.guardiao('Mas isso é apenas o começo da sua jornada.'),
   ];
 
   // Falas do personagem
@@ -41,16 +174,8 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Consegui! Tudo no lugar certo!',
     ),
     FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Um brilho surge entre as árvores... é mais um Fragmento de Chave!',
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Um brilho surgiu... achei um fragmento de chave!',
     ),
-  ];
-
-  // Tela do computador
-  List<FalaConfig> get _falasComputador => [
-    FalaConfig.personagem('Olhando para o totem digital da praça...'),
-    FalaConfig.personagem('Uma mensagem aparece na tela:'),
-    FalaConfig.personagem('"DESAFIO CONCLUÍDO!"'),
-    FalaConfig.personagem('"SIGA PARA A PRÓXIMA SALA"'),
   ];
 
   // Mapeamento correto dos itens
@@ -66,18 +191,6 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   String _mensagem = "Selecione um item e coloque na lixeira correta!";
   Color _mensagemCor = Colors.white70;
   bool _acertou = false;
-
-  // Tela do computador
-  Widget _telaComputadorConcluido() {
-    return PersonagemScreen(
-      imagemFundo: "assets/praca.png",
-      falasConfig: _falasComputador,
-      exibirReacoes: true,
-      instrucaoToque: 'Toque para continuar',
-      substituirAoAvancarFinal: true,
-      proximaTela: const SizedBox.shrink(),
-    );
-  }
 
   @override
   void initState() {
@@ -191,9 +304,9 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
   }
 
   Future<void> _vitoria() async {
-    // ⭐ FLUXO SEQUENCIAL DE FALAS
-    // Primeiro: Falas do Guardião
-    await Navigator.push(
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
@@ -202,57 +315,16 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
           exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
-          proximaTela: const SizedBox.shrink(),
-        ),
-      ),
-    );
-
-    // Segundo: Falas do Personagem
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PersonagemScreen(
-          imagemFundo: "assets/praca.png",
-          falasConfig: _falasPersonagem,
-          exibirReacoes: true,
-          instrucaoToque: 'Toque para continuar',
-          substituirAoAvancarFinal: true,
-          proximaTela: const SizedBox.shrink(),
-        ),
-      ),
-    );
-
-    // Terceiro: Tela do Computador
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => _telaComputadorConcluido()),
-    );
-
-    // Finalmente: Salva e volta para Exploration
-    await _salvarProgressoERetornar();
-  }
-
-  // Função que salva o progresso localmente e no Firestore
-  Future<void> _salvarProgressoERetornar() async {
-    try {
-      await _progress.marcarSalaConcluida(raJogador, 'Praça');
-      print('Progresso da Praça salvo com sucesso!');
-    } catch (e) {
-      print('Erro ao salvar progresso da Praça: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao salvar: $e'),
-            backgroundColor: Colors.red,
+          proximaTela: PersonagemScreen(
+            imagemFundo: "assets/praca.png",
+            falasConfig: _falasPersonagem,
+            exibirReacoes: true,
+            instrucaoToque: 'Toque para continuar',
+            substituirAoAvancarFinal: true,
+            proximaTela: const _RecompensaPracaScreen(),
           ),
-        );
-      }
-    }
-    if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      ExplorationScreen.routeName,
-      (route) => false,
+        ),
+      ),
     );
   }
 
