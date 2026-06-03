@@ -17,6 +17,7 @@ import 'narrador_screen.dart';
 import 'personagem_screen.dart';
 import 'praca_screen.dart';
 import 'mescla_screen.dart';
+import 'final_screen.dart';
 
 class ExplorationScreen extends StatefulWidget {
   static const String routeName = '/exploration';
@@ -37,11 +38,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final GameTimerService _timerService = GameTimerService();
 
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Biblioteca": {"lat": -22.95101416666666, "lng": -47.07891800000},
+    "Manacas": {"lat": -22.95101416666666, "lng": -47.07891800000},
+    "Mescla": {"lat": -22.95101416666666, "lng": -47.07891800000},
     "Praça": {"lat": -22.95101416666666, "lng": -47.07891800000},
-    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -22.95101416666666, "lng": -47.07891800000},
   };
 
   // COORDENADAS REAIS (PUC)
@@ -105,6 +106,23 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
         chaves = remoto['chaves']!;
         salasConcluidas = remoto['salasConcluidas']!;
       });
+    }
+
+    _verificarFimDeJogo();
+  }
+
+  void _verificarFimDeJogo() {
+    if (!mounted) return;
+
+    if (salasConcluidas.length >= 5) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              FinalScreen(chavesConquistadas: [...chaves, 'Liberdade']),
+        ),
+        (route) => false,
+      );
     }
   }
 
