@@ -69,6 +69,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
   }
 
   String? _guardiaoImagePath() {
+    // MUDANÇA NO MÉTODO DO GURADIÃO
     if (widget.falasConfig == null || widget.falasConfig!.isEmpty) {
       return null;
     }
@@ -79,7 +80,9 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
 
     final config = widget.falasConfig![indice];
     if (config.entidade == TipoEntidade.guardiao) {
-      return widget.imagemGuardiao ?? 'assets/guardiao.png';
+      // CORREÇÃO 2: fallback alterado de 'assets/guardiao.png' (arquivo deletado)
+      // para null — sem imagem explícita, o personagem padrão é exibido no lugar
+      return widget.imagemGuardiao ?? null;
     }
 
     return null;

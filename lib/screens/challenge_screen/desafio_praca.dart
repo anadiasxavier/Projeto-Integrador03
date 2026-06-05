@@ -368,8 +368,11 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/praca.png",
+          // CORREÇÃO 3: imagemGuardiao adicionado — antes o guardião da praça
+          // não aparecia na tela de vitória pois este parâmetro estava ausente
+          imagemGuardiao: 'assets/guardiao/pracaguardiao.png',
           falasConfig: _falasGuardiao,
-          exibirReacoes: true,
+          exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: true,
           proximaTela: PersonagemScreen(
@@ -399,9 +402,7 @@ class _DesafioPracaScreenState extends State<DesafioPracaScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-
-        ],
+        actions: [],
       ),
       body: Background(
         imagem: "assets/praca.png",
