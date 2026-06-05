@@ -12,6 +12,7 @@ class PersonagemScreen extends StatefulWidget {
   final List<FalaConfig>? falasConfig;
   final bool exibirReacoes;
   final bool substituirAoAvancarFinal;
+  final String? imagemGuardiao;
 
   const PersonagemScreen({
     super.key,
@@ -22,6 +23,7 @@ class PersonagemScreen extends StatefulWidget {
     this.falasConfig,
     this.exibirReacoes = false,
     this.substituirAoAvancarFinal = true,
+    this.imagemGuardiao,
   });
 
   @override
@@ -42,8 +44,6 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     'felizM': 'Masculino_Feliz',
     'triste': 'Triste',
     'tristeM': 'Masculino_Triste',
-    'guardiao_mescla_neutro': 'Guardiao_Mescla_Neutro',
-    'guardiao_mescla_expressao': 'Guardiao_Mescla_Expressao',
   };
 
   bool get _showReactions => widget.exibirReacoes;
@@ -68,25 +68,38 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
         : 'assets/personagem.png';
   }
 
+  String? _guardiaoImagePath() {
+    if (widget.falasConfig == null || widget.falasConfig!.isEmpty) {
+      return null;
+    }
+
+    if (indice >= widget.falasConfig!.length) {
+      return null;
+    }
+
+    final config = widget.falasConfig![indice];
+    if (config.entidade == TipoEntidade.guardiao) {
+      return widget.imagemGuardiao ?? 'assets/guardiao.png';
+    }
+
+    return null;
+  }
+
   String? _getImagemFundo() {
     if (_falas.isEmpty) {
       return _defaultCharacterImage();
     }
 
+    final guardiaoImage = _guardiaoImagePath();
+    if (guardiaoImage != null) {
+      return guardiaoImage;
+    }
+
     if (widget.falasConfig != null &&
         widget.falasConfig!.isNotEmpty &&
         indice < widget.falasConfig!.length) {
-
-      final config = widget.falasConfig![indice];
       final reaction = _reactionForIndex(indice);
 
-      if (config.entidade == TipoEntidade.guardiao) {
-        if (reaction.startsWith('guardiao_mescla_')) {
-          return _reactionAssetPath(reaction);
-        }
-        return null;
-      }
-      
       if (_showReactions && reaction.isNotEmpty) {
         return _reactionAssetPath(reaction);
       }
@@ -100,19 +113,9 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
       return _defaultCharacterImage();
     }
 
-    if (widget.falasConfig != null &&
-        widget.falasConfig!.isNotEmpty &&
-        indice < widget.falasConfig!.length) {
-
-      final config = widget.falasConfig![indice];
-
-      if (config.entidade == TipoEntidade.guardiao) {
-        final reaction = _reactionForIndex(indice);
-        if (reaction.startsWith('guardiao_mescla_')) {
-          return _reactionAssetPath(reaction);
-        }
-        return null;
-      }
+    final guardiaoImage = _guardiaoImagePath();
+    if (guardiaoImage != null) {
+      return guardiaoImage;
     }
 
     return _defaultCharacterImage();
@@ -270,25 +273,24 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
             if (imagemFundo != null)
               Positioned(
                 bottom: 95,
-                left: -95,
+                right: -95, // lado que o guradião fica na tela
                 child: Transform.rotate(
                   angle: -0.04,
                   child: Container(
-                    width: 450,
-                    height: 450,
+                    width: 490,
+                    height: 490,
                     padding: const EdgeInsets.all(10),
                     child: Image.asset(
                       imagemFundo,
                       width: 210,
                       height: 210,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Image.asset(
-                            _defaultCharacterImage(),
-                            width: 210,
-                            height: 210,
-                            fit: BoxFit.contain,
-                          ),
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        _defaultCharacterImage(),
+                        width: 210,
+                        height: 210,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),

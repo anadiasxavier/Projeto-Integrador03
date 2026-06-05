@@ -26,7 +26,6 @@ class ExplorationScreen extends StatefulWidget {
 }
 
 class _ExplorationScreenState extends State<ExplorationScreen> {
-
   // VARIÁVEIS DE ESTADO
   String localizacaoTexto = "Carregando localização...";
   List<String> chaves = [];
@@ -35,14 +34,18 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
 
-  
   // COORDENADAS DOS LOCAIS
   static const Map<String, Map<String, double>> locais = {
-    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    //"Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Biblioteca": {"lat": -22.830634725454658, "lng": -47.02531909040569},
+    //"Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Manacas": {"lat": -22.830634725454658, "lng": -47.02531909040569},
+    //"Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Mescla": {"lat": -22.830634725454658, "lng": -47.02531909040569},
+    //"Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -22.830634725454658, "lng": -47.02531909040569},
+    //"Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -22.830634725454658, "lng": -47.02531909040569},
   };
 
   // COORDENADAS REAIS (PUC)
@@ -54,7 +57,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   // "Praça": {"lat": -22.94804, "lng": -47.05876294},
   // "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},->correta
   //"Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
-
 
   // CICLO DE VIDA
   @override
@@ -137,7 +139,6 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     final distancia = await distanciaAte(lugar);
     return distancia <= _raioAcessoMetros;
   }
-
 
   // BUILD PRINCIPAL
   @override

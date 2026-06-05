@@ -18,7 +18,7 @@ class MesclaScreen extends StatelessWidget {
       '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Essas telas não param... códigos passando, gráficos mudando',
     ),
     FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} E mesmo assim nada parece que tudo está prestes a sair do controle',
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} E mesmo assim, parece que tudo está prestes a sair do controle...',
     ),
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Essa máquina ligou sozinha e parou do nada!',
@@ -30,18 +30,37 @@ class MesclaScreen extends StatelessWidget {
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse ambiente inteiro está instável',
     ),
-    // FALAS DO GUARDIÃO DO MESCLA
+
+    // GUARDIÃO DO MESCLA
     FalaConfig.guardiao(
-      '[guardiao_mescla_neutro] Neste lugar existem regras... lógica... padrões que mantêm tudo em equilíbrio',
+      'Parece que conseguiu chegar até aqui... mas não se engane, isso é apenas o começo',
     ),
-    FalaConfig.guardiao(
-      '[guardiao_mescla_expressao] Mas até mesmo sistemas guiados pela razão podem falhar sem aviso',
-    ),
-    FalaConfig.guardiao(
-      '[guardiao_mescla_neutro] Descubra minha essência e impeça que os erros se espalhem pelo caminho',
+
+    // PERSONAGEM
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Encontrei o guardião do Mescla!',
     ),
     FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Então esse é o Guardião do Mescla... preciso concluir o desafio antes que tudo piore',
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso prestar atenção no que ele vai me dizer se eu quiser sair daqui logo...',
+    ),
+
+    // GUARDIÃO
+    FalaConfig.guardiao(
+      'Neste lugar existem regras... lógica... padrões que mantêm tudo em equilíbrio',
+    ),
+    FalaConfig.guardiao(
+      'Mas até mesmo sistemas guiados pela razão podem falhar sem aviso',
+    ),
+    FalaConfig.guardiao(
+      'Descubra minha essência e impeça que os erros se espalhem pelo caminho',
+    ),
+
+    // PERSONAGEM
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Esse enigma parece difícil...',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Mas preciso concluir o desafio antes que tudo piore!',
     ),
   ];
 
@@ -163,6 +182,7 @@ class MesclaScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => PersonagemScreen(
           imagemFundo: "assets/mescla.png",
+          imagemGuardiao: 'assets/guardiao_mescla.png',
           falasConfig: _falasMescla, // 👈 Mudou para falasConfig
           exibirReacoes: true,
           instrucaoToque: 'Toque para continuar',
