@@ -6,17 +6,16 @@ import '../../services/firestore_service.dart';
 import '../../services/location_service.dart';
 import '../../services/progress_service.dart';
 import '../../widgets/background.dart';
-import '../../models/entidade_dialogo.dart';
 
 import 'arena_screen.dart';
 import 'biblioteca_screen.dart';
 import 'manacas_screen.dart';
 import 'narrador_screen.dart';
-import 'personagem_screen.dart';
 import 'praca_screen.dart';
 import 'mescla_screen.dart';
 import 'final_screen.dart';
 
+/// Tela principal de exploração do campus
 class ExplorationScreen extends StatefulWidget {
   static const String routeName = '/exploration';
 
@@ -27,6 +26,8 @@ class ExplorationScreen extends StatefulWidget {
 }
 
 class _ExplorationScreenState extends State<ExplorationScreen> {
+
+  // VARIÁVEIS DE ESTADO
   String localizacaoTexto = "Carregando localização...";
   List<String> chaves = [];
   List<String> salasConcluidas = [];
@@ -34,37 +35,28 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   final FirestoreService firestore = FirestoreService();
   final ProgressService _progress = ProgressService();
 
-static const Map<String, Map<String, double>> locais = {
-  "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
-  "Manacas": {"lat": -22.8323, "lng": -47.05144},
-  "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
-  "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
-  "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
-};
+  
+  // COORDENADAS DOS LOCAIS
+  static const Map<String, Map<String, double>> locais = {
+    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+  };
 
   // COORDENADAS REAIS (PUC)
-  // static const Map<String, Map<String, double>> locais = {
   //"Biblioteca": {"lat": -22.8338, "lng": -47.051930},
   //"Manacás": {"lat": -22.8323, "lng": -47.05144},
   //"Mescla": {"lat": -22.83416204909936, "lng": -47.05235984253339},
-  //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+  //"Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266}-> correta
   // "Praça": {"lat": -22.8341, "lng": -47.0523566},
   // "Praça": {"lat": -22.94804, "lng": -47.05876294},
+  // "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},->correta
   //"Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
 
-  // FALAS DE ENTRADA DA BIBLIOTECA COM REAÇÕES DO PERSONAGEM
-  List<FalaConfig> get _falasEntradaBiblioteca => [
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Que silêncio...',
-    ),
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Algo não parece certo...',
-    ),
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso explorar com cuidado...',
-    ),
-  ];
 
+  // CICLO DE VIDA
   @override
   void initState() {
     super.initState();
@@ -72,6 +64,7 @@ static const Map<String, Map<String, double>> locais = {
     carregarProgresso();
   }
 
+  // CARREGAMENTO DE DADOS
   void carregarLocalizacao() async {
     try {
       Position pos = await LocationService.getCurrentLocation();
@@ -95,7 +88,7 @@ static const Map<String, Map<String, double>> locais = {
       });
     }
 
-    // 2. Sincroniza com Firestore em background e atualiza a UI se houver diferença
+    // 2. Sincroniza com Firestore em background
     final remoto = await _progress.sincronizarFirestore(raJogador);
     if (remoto != null && mounted) {
       setState(() {
@@ -107,6 +100,7 @@ static const Map<String, Map<String, double>> locais = {
     _verificarFimDeJogo();
   }
 
+  // VERIFICAÇÕES
   void _verificarFimDeJogo() {
     if (!mounted) return;
 
@@ -122,7 +116,12 @@ static const Map<String, Map<String, double>> locais = {
     }
   }
 
-  // 3. Verifica se o jogador já concluiu a sala
+  // Verifica se a biblioteca foi concluída (primeiro ambiente obrigatório)
+  bool bibliotecaFoiConcluida() {
+    return salasConcluidas.contains("Biblioteca");
+  }
+
+  // Verifica se o jogador já concluiu a sala
   bool salaEstaConcluida(String sala) {
     return salasConcluidas.contains(sala);
   }
@@ -139,6 +138,8 @@ static const Map<String, Map<String, double>> locais = {
     return distancia <= _raioAcessoMetros;
   }
 
+
+  // BUILD PRINCIPAL
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,6 +191,7 @@ static const Map<String, Map<String, double>> locais = {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                const SizedBox(height: 30),
                 const Icon(Icons.explore, size: 80, color: Colors.white),
                 const SizedBox(height: 20),
                 const Text(
@@ -228,7 +230,8 @@ static const Map<String, Map<String, double>> locais = {
     );
   }
 
-  // Botão da biblioteca - COM REAÇÕES DO PERSONAGEM
+  // BOTÕES DOS LOCAIS
+  // Botão da biblioteca
   Widget _buildBotaoBiblioteca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Biblioteca");
 
@@ -257,20 +260,11 @@ static const Map<String, Map<String, double>> locais = {
           return;
         }
 
+        // Vai direto para a tela de entrada da biblioteca (com as falas)
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NarradorScreen(
-              imagemFundo: "assets/biblioteca.png",
-              proximaTela: PersonagemScreen(
-                imagemFundo: "assets/biblioteca.png",
-                falasConfig: _falasEntradaBiblioteca,
-                exibirReacoes: true,
-                instrucaoToque: 'Toque para continuar',
-                substituirAoAvancarFinal: false,
-                proximaTela: const BibliotecaScreen(),
-              ),
-            ),
+            builder: (context) => BibliotecaScreen.telaEntrada(),
           ),
         );
       },
@@ -306,12 +300,23 @@ static const Map<String, Map<String, double>> locais = {
     );
   }
 
-  // botao manacas
+  // Botão das Manacás
   Widget _buildBotaoManacas(BuildContext context) {
     bool concluida = salasConcluidas.contains("Manacas");
+    bool bibliotecaOK = bibliotecaFoiConcluida();
 
     return GestureDetector(
       onTap: () async {
+        if (!bibliotecaOK) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Complete a Biblioteca primeiro!"),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+
         if (concluida) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -341,7 +346,7 @@ static const Map<String, Map<String, double>> locais = {
         );
       },
       child: Opacity(
-        opacity: concluida ? 0.4 : 1,
+        opacity: concluida ? 0.4 : (bibliotecaOK ? 1 : 0.4),
         child: Container(
           width: 320,
           padding: const EdgeInsets.all(16),
@@ -356,7 +361,9 @@ static const Map<String, Map<String, double>> locais = {
               const Icon(Icons.coffee, color: Colors.white),
               const SizedBox(height: 10),
               Text(
-                concluida ? "Manacas\n(CONCLUÍDO)" : "Manacas",
+                concluida
+                    ? "Manacas\n(CONCLUÍDO)"
+                    : (bibliotecaOK ? "Manacas" : "Manacas\n🔒"),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -372,12 +379,23 @@ static const Map<String, Map<String, double>> locais = {
     );
   }
 
-  // botão Mescla
+  // Botão da Mescla
   Widget _buildBotaoMescla(BuildContext context) {
     bool concluida = salasConcluidas.contains("Mescla");
+    bool bibliotecaOK = bibliotecaFoiConcluida();
 
     return GestureDetector(
       onTap: () async {
+        if (!bibliotecaOK) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Complete a Biblioteca primeiro!"),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+
         if (concluida) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -407,7 +425,7 @@ static const Map<String, Map<String, double>> locais = {
         );
       },
       child: Opacity(
-        opacity: concluida ? 0.4 : 1,
+        opacity: concluida ? 0.4 : (bibliotecaOK ? 1 : 0.4),
         child: Container(
           width: 320,
           padding: const EdgeInsets.all(16),
@@ -422,7 +440,9 @@ static const Map<String, Map<String, double>> locais = {
               const Icon(Icons.laptop, color: Colors.white),
               const SizedBox(height: 10),
               Text(
-                concluida ? "Mescla\n(CONCLUÍDO)" : "Mescla",
+                concluida
+                    ? "Mescla\n(CONCLUÍDO)"
+                    : (bibliotecaOK ? "Mescla" : "Mescla\n🔒"),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -438,12 +458,23 @@ static const Map<String, Map<String, double>> locais = {
     );
   }
 
-  // botão Praça
+  // Botão da Praça
   Widget _buildBotaoPraca(BuildContext context) {
     bool concluida = salasConcluidas.contains("Praça");
+    bool bibliotecaOK = bibliotecaFoiConcluida();
 
     return GestureDetector(
       onTap: () async {
+        if (!bibliotecaOK) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Complete a Biblioteca primeiro!"),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+
         if (concluida) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -493,7 +524,7 @@ static const Map<String, Map<String, double>> locais = {
         );
       },
       child: Opacity(
-        opacity: concluida ? 0.4 : 1,
+        opacity: concluida ? 0.4 : (bibliotecaOK ? 1 : 0.4),
         child: Container(
           width: 320,
           padding: const EdgeInsets.all(16),
@@ -508,7 +539,9 @@ static const Map<String, Map<String, double>> locais = {
               const Icon(Icons.restaurant, color: Colors.white),
               const SizedBox(height: 10),
               Text(
-                concluida ? "Praça\n(CONCLUÍDO)" : "Praça",
+                concluida
+                    ? "Praça\n(CONCLUÍDO)"
+                    : (bibliotecaOK ? "Praça" : "Praça\n🔒"),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -524,12 +557,23 @@ static const Map<String, Map<String, double>> locais = {
     );
   }
 
-  // botão Arena
+  // Botão da Arena
   Widget _buildBotaoArena(BuildContext context) {
     bool concluida = salasConcluidas.contains("Arena");
+    bool bibliotecaOK = bibliotecaFoiConcluida();
 
     return GestureDetector(
       onTap: () async {
+        if (!bibliotecaOK) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Complete a Biblioteca primeiro!"),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+
         if (concluida) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -564,7 +608,7 @@ static const Map<String, Map<String, double>> locais = {
         );
       },
       child: Opacity(
-        opacity: concluida ? 0.4 : 1,
+        opacity: concluida ? 0.4 : (bibliotecaOK ? 1 : 0.4),
         child: Container(
           width: 320,
           padding: const EdgeInsets.all(16),
@@ -579,7 +623,9 @@ static const Map<String, Map<String, double>> locais = {
               const Icon(Icons.sports_esports, color: Colors.white),
               const SizedBox(height: 10),
               Text(
-                concluida ? "Arena\n(CONCLUÍDO)" : "Arena",
+                concluida
+                    ? "Arena\n(CONCLUÍDO)"
+                    : (bibliotecaOK ? "Arena" : "Arena\n🔒"),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,

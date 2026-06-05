@@ -1,6 +1,7 @@
-// Serviço de persistência do progresso do jogador.
-// Salva localmente (SharedPreferences) para acesso imediato offline
-// e sincroniza com o Firestore para manter os dados do servidor atualizados.
+// Salva progresso do jogador
+
+// SharedPreferences → salva no próprio celular, funciona sem internet
+// Firestore → salva na nuvem, sincroniza entre dispositivos
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firestore_service.dart';
 
 class ProgressService {
+  // Garante que toda vez que qualquer tela chamar ProgressService(), recebe o mesmo objeto
   static final ProgressService _instance = ProgressService._internal();
   factory ProgressService() => _instance;
   ProgressService._internal();
@@ -26,6 +28,7 @@ class ProgressService {
     final chavesJson = prefs.getString(_keyChaves(ra));
     final salasJson = prefs.getString(_keySalas(ra));
     return {
+      // Se não tiver nada salvo, retorna lista vazia
       'chaves':
           chavesJson != null ? List<String>.from(jsonDecode(chavesJson)) : [],
       'salasConcluidas':
@@ -42,6 +45,7 @@ class ProgressService {
     List<String> salasConcluidas,
   ) async {
     final prefs = await SharedPreferences.getInstance();
+    // Converte as listas para JSON e salva no celular.
     await prefs.setString(_keyChaves(ra), jsonEncode(chaves));
     await prefs.setString(_keySalas(ra), jsonEncode(salasConcluidas));
   }
@@ -101,6 +105,7 @@ class ProgressService {
   // ---------------------------------------------------------------------------
   Future<bool> temProgressoLocal(String ra) async {
     final local = await carregarLocal(ra);
+    // Retorna true se o jogador já completou alguma sala ou tem alguma chave
     return local['salasConcluidas']!.isNotEmpty ||
         local['chaves']!.isNotEmpty;
   }
@@ -109,6 +114,7 @@ class ProgressService {
   // Limpa o cache local (usado no logout ou reset)
   // ---------------------------------------------------------------------------
   Future<void> limparLocal(String ra) async {
+    // Usado no logout ou reset — apaga só o cache local, não o Firebase
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyChaves(ra));
     await prefs.remove(_keySalas(ra));

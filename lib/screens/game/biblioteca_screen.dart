@@ -1,4 +1,3 @@
-// lib/screens/biblioteca/biblioteca_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../../main.dart';
@@ -13,12 +12,10 @@ import '../../widgets/dialogo_com_guardiao.dart';
 class BibliotecaScreen extends StatelessWidget {
   const BibliotecaScreen({super.key});
 
-  // Constatntes
   // Imagem do guardião da biblioteca
   static const String _imagemGuardiao = 'assets/guardia_biblioteca.png';
 
-  // Diálogo do fluxo (cronológico)
-  // 1: Guardião aparece e faz sua fala inicial
+  // Etapa 1: Guardião aparece e faz sua fala inicial
   static final List<FalaConfig> _falasGuardiaoInicial = [
     FalaConfig.guardiao('Pare.'),
     FalaConfig.guardiao('Este lugar não foi feito para quem apenas passa.'),
@@ -26,17 +23,17 @@ class BibliotecaScreen extends StatelessWidget {
     FalaConfig.guardiao('Tudo precisa ser conquistado pela compreensão.'),
   ];
 
-  // Etapa 2: Personagem responde ao guardião com reações
+  // Etapa 2: Personagem responde ao guardião
   List<FalaConfig> get _falasPersonagem => [
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Eu só quero sair daqui… Não estou entendendo!',
-    ),
-    FalaConfig.personagem(
-      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Você vai me impedir?',
-    ),
-  ];
+        FalaConfig.personagem(
+          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Eu só quero sair daqui… Não estou entendendo!',
+        ),
+        FalaConfig.personagem(
+          '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Você vai me impedir?',
+        ),
+      ];
 
-  // Etapa 3: Guardião explica seu papel e faz sua resposta
+  // Etapa 3: Guardião explica seu papel
   static final List<FalaConfig> _falasGuardiaoResposta = [
     FalaConfig.guardiao('Eu não impeço ninguém.'),
     FalaConfig.guardiao('Sou apenas uma guardiã.'),
@@ -45,17 +42,17 @@ class BibliotecaScreen extends StatelessWidget {
     FalaConfig.guardiao('Quem compreende… avança.'),
   ];
 
-  // Etapa 4: Guardião ordena que o jogador prove seu conhecimento
+  // Etapa 4: Guardião exige que o jogador prove seu conhecimento
   static final List<FalaConfig> _falasGuardiaoProve = [
     FalaConfig.guardiao('Prove seu entendimento.'),
     FalaConfig.guardiao('Responda... e saberá se está pronto para partir.'),
   ];
 
-  // Build principal
+  // Constrói a tela principal da biblioteca
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar personalizada
+      // Barra superior com título e botão de voltar
       appBar: AppBar(
         title: const Text("Biblioteca"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
@@ -65,13 +62,12 @@ class BibliotecaScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-
-      // Corpo da tela com background personalizado
+      // Fundo com a imagem da biblioteca
       body: Background(
         imagem: "assets/biblioteca.png",
         child: Stack(
           children: [
-            // Conteúdo centralizado com scroll
+            // Centraliza o conteúdo na tela
             Center(
               child: SingleChildScrollView(
                 child: Column(
@@ -79,7 +75,7 @@ class BibliotecaScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 40),
 
-                    // Título da localização
+                    // Nome do local
                     const Text(
                       "BIBLIOTECA CENTRAL",
                       textAlign: TextAlign.center,
@@ -92,7 +88,7 @@ class BibliotecaScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
 
-                    // Descrição do ambiente
+                    // Caixa com a descrição do ambiente
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 30),
                       padding: const EdgeInsets.all(15),
@@ -101,6 +97,7 @@ class BibliotecaScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.white12),
                       ),
+                      // PRIMEIRA TELA APÓS O PERSONAGEM FALAR
                       child: const Text(
                         "O silêncio é absoluto.\n"
                         "Estantes alinhadas, mesas vazias.\n"
@@ -116,8 +113,8 @@ class BibliotecaScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // Botão de interação principal
-                    GestureDetector(
+                    // Botão para investigar o ambiente e iniciar o fluxo
+                    GestureDetector( // Clica e cmc o fluxo
                       onTap: () => _iniciarFluxoBiblioteca(context),
                       child: Container(
                         width: 300,
@@ -171,14 +168,14 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // Métodos de navegação e etapas
-  // Inicia o fluxo de narrativa da biblioteca
+  // Inicia o fluxo de narrativa da biblioteca -> NarradorScreen que monta
+  // Segunda tela após EXPLORAR AMBIENTE
   void _iniciarFluxoBiblioteca(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => NarradorScreen(
-          tituloAppBar: "Uma Presença...",
+          tituloAppBar: "Uma Presença...", //Titulo da cena
           imagemFundo: "assets/biblioteca.png",
           corpoNarracao:
               'Você avança cautelosamente pelo corredor principal.\n\n'
@@ -193,7 +190,7 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // 1: Guardião faz sua fala inicial
+  // Etapa 1: Guardião aparece e faz sua fala inicial
   Widget _etapa1_GuardiaoFalaInicial() {
     return DialogoComGuardiao(
       imagemGuardiao: _imagemGuardiao,
@@ -208,7 +205,7 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // 2: Personagem responde ao guardião
+  // Etapa 2: Personagem responde ao guardião
   Widget _etapa2_PersonagemResponde() {
     return PersonagemScreen(
       imagemFundo: "assets/biblioteca.png",
@@ -220,7 +217,7 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // 3: Guardião responde à reação do personagem
+  // Etapa 3: Guardião responde ao personagem
   Widget _etapa3_GuardiaoResponde() {
     return DialogoComGuardiao(
       imagemGuardiao: _imagemGuardiao,
@@ -235,7 +232,7 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // 4: Livro misterioso cai da prateleira
+  // Etapa 4: Um livro cai misteriosamente da prateleira
   Widget _etapa4_LivroCai() {
     return NarradorScreen(
       tituloAppBar: "O Livro",
@@ -260,7 +257,7 @@ class BibliotecaScreen extends StatelessWidget {
     );
   }
 
-  // 5: Livro se abre revelando o enigma
+  // Etapa 5: Livro se abre sozinho revelando o enigma
   Widget _etapa5_LivroAbre() {
     return NarradorScreen(
       tituloAppBar: "O Livro Misterioso",
@@ -275,6 +272,42 @@ class BibliotecaScreen extends StatelessWidget {
       dica: 'Toque em Continuar para ver o enigma.',
       exibirNarracaoEmCaixa: true,
       proximaTela: const DesafioBibliotecaScreen(),
+    );
+  }
+
+  // Retorna a tela de entrada com as primeiras falas do personagem
+  static Widget telaEntrada() {
+    return const _BibliotecaEntrada();
+  }
+}
+
+// Tela inicial da biblioteca com as primeiras falas do personagem (Etapa 0)
+class _BibliotecaEntrada extends StatelessWidget {
+  const _BibliotecaEntrada();
+
+  // Falas do personagem ao entrar na biblioteca pela primeira vez
+  List<FalaConfig> get _falasEntrada => [
+        FalaConfig.personagem(
+          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse lugar parece abandonado...',
+        ),
+        FalaConfig.personagem(
+          '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Mas tenho a sensação de que não estou sozinho.',
+        ),
+        FalaConfig.personagem(
+          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso descobrir o que está acontecendo aqui.',
+        ),
+      ];
+
+  // Mostra as falas iniciais
+  @override
+  Widget build(BuildContext context) {
+    return PersonagemScreen(
+      imagemFundo: "assets/biblioteca.png",
+      falasConfig: _falasEntrada,
+      exibirReacoes: true,
+      instrucaoToque: 'Toque para continuar',
+      substituirAoAvancarFinal: false,
+      proximaTela: const BibliotecaScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+// onde o jogador escolhe o gênero do personagem
 import 'package:flutter/material.dart';
 import '../../services/firestore_service.dart';
 import '../../main.dart' as main_app;
@@ -22,7 +23,7 @@ class _GenderSelectionScreenState
   final _firestoreService =
       FirestoreService();
 
-  String _genero = 'masculino';
+  String _genero = 'masculino'; // Atualiza a variável
   String _nome = '';
 
   @override
@@ -44,7 +45,9 @@ class _GenderSelectionScreenState
     }
   }
 
+  // Salvar o gênero
   void _saveGender() async {
+    // Salva o gênero no Firebase pra não perguntar de novo
     await _firestoreService.updatePlayerData(
       widget.ra,
       {
@@ -52,9 +55,11 @@ class _GenderSelectionScreenState
       },
     );
 
+    // Preenche as variáveis globais do main.dart
     main_app.generoJogador = _genero;
     main_app.nomeJogador = _nome;
 
+    // Abre a IntroScreen para começar o jogo
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -127,7 +132,7 @@ class _GenderSelectionScreenState
                       onTap: () {
                         setState(() {
                           _genero =
-                              'masculino';
+                              'masculino'; // Atualiza a variável
                         });
                       },
 
@@ -137,7 +142,7 @@ class _GenderSelectionScreenState
                           16,
                         ),
 
-                        decoration:
+                        decoration: // O botão selecionado fica colorido 
                             BoxDecoration(
                           color: _genero ==
                                   'masculino'
@@ -178,7 +183,7 @@ class _GenderSelectionScreenState
                       onTap: () {
                         setState(() {
                           _genero =
-                              'feminino';
+                              'feminino'; // Atualiza gênero
                         });
                       },
 
@@ -190,6 +195,7 @@ class _GenderSelectionScreenState
 
                         decoration:
                             BoxDecoration(
+                          // O botão selecionado fica colorido 
                           color: _genero ==
                                   'feminino'
                               ? Colors.pink

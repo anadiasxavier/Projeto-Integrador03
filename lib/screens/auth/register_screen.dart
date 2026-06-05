@@ -11,9 +11,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
+  // identifica o formulário pra poder validar ele
   final _formKey = GlobalKey<FormState>();
+  // O serviço que conversa com o Firebase
   final _firestoreService = FirestoreService();
 
+// controla se está carregando ou não
   bool _isLoading = false;
 
   String _nome = '';
@@ -26,23 +30,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    _formKey.currentState!.save();
+     // onSaved -> Pega o que o usuário digitou e copia para a variável
+    _formKey.currentState!.save(); // dispara os onSaved de cada campo
 
     setState(() {
       _isLoading = true;
     });
 
     try {
+
+      // Verificação de senha
       if (_senha != _confirmarSenha) {
         throw StateError('As senhas não coincidem');
       }
 
+      // Verifica se o RA já existe no Firebase
       var existingPlayer = await _firestoreService.getPlayerByRA(_ra);
 
       if (existingPlayer != null) {
         throw StateError('RA já cadastrado');
       }
 
+      // Salva o jogador no Firebase
       await _firestoreService.savePlayerData(_ra, {
         'nome': _nome,
         'ra': _ra,
@@ -77,6 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ? error.message
           : error.toString();
 
+      // Mostra uma mensagem de erro na parte de baixo da tela
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(
@@ -181,11 +191,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: Colors.white,
                             ),
 
+                            // Verifica se o valor está completo
+
                             validator: (value) =>
                                 value!.isEmpty
                                     ? 'Campo obrigatório'
                                     : null,
 
+                            // Guarda o valor na variável
                             onSaved: (value) =>
                                 _nome = value!,
                           ),
@@ -225,6 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType:
                                 TextInputType.number,
 
+                            //Formatar — o campo de RA só aceita 8 números
                             inputFormatters: [
                               FilteringTextInputFormatter
                                   .digitsOnly,
@@ -364,6 +378,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     const Size.fromHeight(50),
                               ),
 
+                              // Enquanto está salvando no Firebase, o botão vira um ícone de carregando
                               child: _isLoading
                                   ? const SizedBox(
                                       height: 20,

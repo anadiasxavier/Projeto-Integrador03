@@ -1,8 +1,9 @@
+// LoginScreen escreve diretamente nas variáveis globais usando o main_app
 import 'package:flutter/material.dart';
 import '../../services/firestore_service.dart';
 import '../game/exploration_screen.dart';
 import 'gender_selection_screen.dart';
-import '../../main.dart' as main_app;
+import '../../main.dart' as main_app; // O as main_app cria um apelido para o main.dart. Por isso escreve main_app.nomeJogador em vez de só nomeJogador 
 import '../game/intro_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,17 +23,22 @@ class _LoginScreenState
   String _ra = '';
   String _senha = '';
 
+  // Valida e salva os campos
   void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      // Busca o jogador no Firebase
       var playerData =
           await _firestoreService.getPlayerByRA(
         _ra,
       );
 
+      // Verifica se o RA e senha estão corretos
       if (playerData != null &&
           playerData['senha'] == _senha) {
+
+        // Preenche as variáveis globais do main.dart
         main_app.nomeJogador =
             playerData['nome'];
 
