@@ -124,6 +124,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     _fluxoAcerto();
   }
 
+  // NOVO ESTILO DE TELA PARA QUANDO O FRAGMENTO FOR OBTIDO
   Widget _telaFragmentoObtido() {
     return Scaffold(
       appBar: AppBar(
@@ -134,86 +135,162 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
       body: Background(
         imagem: 'assets/mescla.png',
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withValues(alpha: 0.2),
-                  border: Border.all(color: Colors.amber, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.3),
-                      blurRadius: 30,
-                      spreadRadius: 10,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+
+                // Animação de entrada do ícone da chave
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 1500),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Opacity(opacity: value, child: child),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.amber.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(Icons.vpn_key, color: Colors.amber, size: 80),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'FRAGMENTO DE CHAVE OBTIDO!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PressStart2P',
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                'As telas voltam a piscar.\n'
-                'O Mescla parece... instável de novo.\n'
-                'Mas agora você tem uma peça a mais para sair daqui',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 12,
-                  fontFamily: 'PressStart2P',
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 40),
-              GestureDetector(
-                onTap: _salvarProgressoERetornar,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
+                    child: const Icon(
+                      Icons.vpn_key,
+                      color: Colors.amber,
+                      size: 80,
+                    ),
                   ),
+                ),
+                const SizedBox(height: 30),
+
+                // Título de parabéns
+                const Text(
+                  'PARABÉNS!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.amber,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    shadows: [Shadow(color: Colors.amber, blurRadius: 10)],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Caixa com a descrição do fragmento
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white24),
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.amber.withOpacity(0.4),
+                      width: 2,
+                    ),
                   ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: const Column(
                     children: [
-                      Icon(Icons.exit_to_app, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
+                      Text('🗝️', style: TextStyle(fontSize: 40)),
+                      SizedBox(height: 10),
                       Text(
-                        'VOLTAR AO CAMPUS',
+                        'Você conseguiu um',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 13,
                           fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'FRAGMENTO DE CHAVE',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'PressStart2P',
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        'As telas voltam a piscar.\n'
+                        'O Mescla parece... instável de novo.\n'
+                        'Mas agora você tem uma peça a mais para sair daqui.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontFamily: 'PressStart2P',
+                          height: 1.6,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 30),
+
+                // Botão para continuar a jornada
+                GestureDetector(
+                  onTap: _salvarProgressoERetornar,
+                  child: Container(
+                    width: 280,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.amber.withOpacity(0.5),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.amber,
+                          size: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'CONTINUAR JORNADA',
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'PressStart2P',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // TELA PRINCIPAL DO DESAFIO DO MESCLA
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,129 +303,185 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
           tooltip: 'Voltar uma etapa',
           onPressed: () => Navigator.maybePop(context),
         ),
-        actions: [
-
-        ],
       ),
       body: Background(
         imagem: 'assets/mescla.png',
-        child: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              width: 340,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Ícone do sistema
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.cyan.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.cyan, width: 2),
-                    ),
-                    child: const Icon(
-                      Icons.computer,
-                      color: Colors.cyan,
-                      size: 40,
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    'PUZZLE',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'PressStart2P',
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  ..._linhasSistema.map(
-                    (l) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        l,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
-                          fontFamily: 'PressStart2P',
-                          height: 1.35,
-                        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Header: ícone + status do sistema ──────────────────────
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.cyan.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.cyan, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.computer,
+                        color: Colors.cyan,
+                        size: 28,
                       ),
                     ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        // MUDANÇA 2: centraliza os textos PROCESSO INICIADO / ANÁLISE NECESSÁRIA
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: _linhasSistema
+                            .map(
+                              (linha) => Text(
+                                linha,
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 8,
+                                  fontFamily: 'PressStart2P',
+                                  height: 1.7,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                  height: 50,
+                ), // espaço entre caixa da charada e da analise necessária
+                // ── Caixa da charada ────────────────────────────────────────
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    _charada,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'PressStart2P',
-                      height: 1.6,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.65),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.cyan.withOpacity(0.35),
+                      width: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  for (int i = 0; i < _opcoes.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: ElevatedButton(
-                        onPressed: (_travado || _selectedIndex != null)
-                            ? null
-                            : () => _selecionarOpcao(i),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black.withValues(alpha: 0.25),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(
-                              color: _selectedIndex == null
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : (_selectedIndex == i
-                                        ? (i == 1
-                                              ? Colors.green.withOpacity(0.7)
-                                              : Colors.red.withOpacity(0.7))
-                                        : Colors.white.withValues(alpha: 0.08)),
-                              width: _selectedIndex == i ? 2 : 1,
+                  child: Text(
+                    _charada,
+                    // MUDANÇA 3: justifica o texto da charada para eliminar o alinhamento torto
+                    textAlign: TextAlign.justify,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontFamily: 'PressStart2P',
+                      height: 1.8,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ── Alternativas ────────────────────────────────────────────
+                Expanded(
+                  child: Column(
+                    // MUDANÇA 1: alterado de spaceEvenly para start com espaçamento
+                    // fixo entre botões via Padding, deixando as alternativas mais próximas
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(_opcoes.length, (i) {
+                      final bool selecionada = _selectedIndex == i;
+                      final bool correta = i == 1; // "Algoritmo"
+                      final Color corBorda = selecionada
+                          ? (correta ? Colors.greenAccent : Colors.redAccent)
+                          : Colors.white.withOpacity(0.2);
+                      final Color corFundo = selecionada
+                          ? (correta
+                                ? Colors.green.withOpacity(0.15)
+                                : Colors.red.withOpacity(0.15))
+                          : Colors.white.withOpacity(0.06);
+                      final Color corTexto = selecionada
+                          ? (correta ? Colors.greenAccent : Colors.redAccent)
+                          : Colors.white;
+                      final String letra = ['A', 'B', 'C', 'D'][i];
+
+                      return Padding(
+                        // MUDANÇA 1: espaçamento fixo de 10px entre cada alternativa
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
+                        ), // espaço entre as alternativas
+                        child: GestureDetector(
+                          onTap: (_travado || _selectedIndex != null)
+                              ? null
+                              : () => _selecionarOpcao(i),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              color: corFundo,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: corBorda, width: 1.5),
+                            ),
+                            child: Row(
+                              children: [
+                                // Letra da alternativa
+                                Text(
+                                  '$letra)',
+                                  style: TextStyle(
+                                    color: selecionada
+                                        ? corTexto
+                                        : Colors.white38,
+                                    fontSize: 11,
+                                    fontFamily: 'PressStart2P',
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                // Texto da alternativa
+                                Expanded(
+                                  child: Text(
+                                    _opcoes[i],
+                                    style: TextStyle(
+                                      color: corTexto,
+                                      fontSize: 11,
+                                      fontFamily: 'PressStart2P',
+                                    ),
+                                  ),
+                                ),
+                                // Ícone de resultado
+                                if (selecionada)
+                                  Icon(
+                                    correta ? Icons.check_circle : Icons.cancel,
+                                    color: corTexto,
+                                    size: 20,
+                                  ),
+                              ],
                             ),
                           ),
                         ),
-                        child: Text(
-                          _opcoes[i],
-                          style: const TextStyle(
-                            fontFamily: 'PressStart2P',
-                            fontSize: 12,
-                          ),
-                        ),
+                      );
+                    }),
+                  ),
+                ),
+
+                // ── Mensagem de sistema instável ───────────────────────────
+                if (_travado)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 15),
+                    child: Text(
+                      'Sistema instável... aguarde.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 11,
+                        fontFamily: 'PressStart2P',
                       ),
                     ),
-                  if (_travado)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text(
-                        'Sistema instável... aguarde.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 10,
-                          fontFamily: 'PressStart2P',
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                  ),
+
+                const SizedBox(height: 15),
+              ],
             ),
           ),
         ),
