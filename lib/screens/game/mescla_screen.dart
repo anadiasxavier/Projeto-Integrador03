@@ -32,9 +32,9 @@ class MesclaScreen extends StatelessWidget {
     ),
 
     // GUARDIÃO DO MESCLA
-    FalaConfig.guardiao(
-      'Parece que conseguiu chegar até aqui... mas não se engane, isso é apenas o começo',
-    ),
+    FalaConfig.guardiao('Parece que conseguiu chegar até aqui...'),
+    FalaConfig.guardiao('Mas não se engane, isso é apenas o começo do caminho'),
+    FalaConfig.guardiao('O verdadeiro desafio ainda está por vir!'),
 
     // PERSONAGEM
     FalaConfig.personagem(
