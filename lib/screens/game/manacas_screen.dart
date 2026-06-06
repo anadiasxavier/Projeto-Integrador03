@@ -162,41 +162,36 @@ class ManacasScreen extends StatelessWidget {
   }
 
   void _iniciarFluxo(BuildContext context) async {
-Future<void> falaGuardiao(String texto) async {
-  debugPrint('ABRINDO GUARDIAO: $texto');
+    Future<void> falaGuardiao(String texto) async {
+      debugPrint('ABRINDO GUARDIAO: $texto');
 
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) {
-        debugPrint('CONSTRUIU DIALOGO');
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) {
+            debugPrint('CONSTRUIU DIALOGO');
 
-        return DialogoComGuardiao(
-          imagemGuardiao:
-              'assets/guardiao/manacasguardiao.png',
+            return DialogoComGuardiao(
+              personagemScreen: PersonagemScreen(
+                imagemFundo: "assets/manacas.png",
+                imagemGuardiao:
+                    'assets/guardiao/manacasguardiao.png', // Adiciona a imagem do guardião no balão de fala dele
 
-          personagemScreen: PersonagemScreen(
-            imagemFundo: "assets/manacas.png",
+                falasConfig: [FalaConfig.guardiao(texto)],
 
-            falasConfig: [
-              FalaConfig.guardiao(texto),
-            ],
+                exibirReacoes: false,
+                instrucaoToque: 'Toque para continuar',
 
-            exibirReacoes: false,
-            instrucaoToque:
-                'Toque para continuar',
+                substituirAoAvancarFinal: true,
 
-            substituirAoAvancarFinal:
-                true,
+                proximaTela: const SizedBox.shrink(),
+              ),
+            );
+          },
+        ),
+      );
+    }
 
-            proximaTela:
-                const SizedBox.shrink(),
-          ),
-        );
-      },
-    ),
-  );
-}
     Future<void> falaPersonagem(String texto) async {
       await Navigator.push(
         context,

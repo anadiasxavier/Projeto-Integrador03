@@ -21,7 +21,6 @@ class DesafioBibliotecaScreen extends StatefulWidget {
 
 class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     with SingleTickerProviderStateMixin {
-  
   // Imagem do guardião da biblioteca
   static const String _imagemGuardiao = 'assets/guardia_biblioteca.png';
 
@@ -43,8 +42,7 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
   // A resposta correta é a segunda opção (índice 1)
   final int _respostaCorretaIndex = 1;
 
-
-  // DIÁLOGOS DO FLUXO DE ACERTO 
+  // DIÁLOGOS DO FLUXO DE ACERTO
   // Etapa 1: Guardião reconhece que o jogador compreendeu
   static final List<FalaConfig> _falasGuardiaoAcerto = [
     FalaConfig.guardiao('Agora sim…'),
@@ -55,30 +53,29 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
 
   // Etapa 2: Personagem reage feliz ao acertar
   List<FalaConfig> get _falasPersonagemAcerto => [
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Então… era isso…',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Tem algo aqui.',
-        ),
-      ];
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Então… era isso…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Tem algo aqui.',
+    ),
+  ];
 
   // Etapa 3: Personagem encontra o fragmento de chave
   List<FalaConfig> get _falasPersonagemPegaFragmento => [
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Uma... chave?',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Talvez isso me ajude a sair daqui.',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Preciso continuar explorando...',
-        ),
-      ];
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Uma... chave?',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Talvez isso me ajude a sair daqui.',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Preciso continuar explorando...',
+    ),
+  ];
 
   int? _respostaSelecionada; // Qual alternativa o jogador escolheu
   int _tentativas = 0; // Quantas vezes o jogador tentou
-
 
   // Verifica se a resposta do jogador está correta
   void _verificarResposta(int index) {
@@ -188,13 +185,14 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
     );
   }
 
-  // ETAPAS DO FLUXO DE ACERTO 
+  // ETAPAS DO FLUXO DE ACERTO
   // Etapa 1: Guardião aparece e parabeniza o jogador
   Widget _etapaAcerto1_GuardiaoFala() {
     return DialogoComGuardiao(
-      imagemGuardiao: _imagemGuardiao,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
+        imagemGuardiao:
+            _imagemGuardiao, // adiciona a imagem do guardião no balão de fala dele
         falasConfig: _falasGuardiaoAcerto,
         exibirReacoes: false,
         instrucaoToque: 'Toque para continuar',
@@ -350,16 +348,17 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                         // Muda a cor se foi selecionada
                         color: selecionada
                             ? (index == _respostaCorretaIndex
-                                    ? Colors.green // Verde se acertou
-                                    : Colors.redAccent) // Vermelho se errou
-                                .withOpacity(0.2)
+                                      ? Colors
+                                            .green // Verde se acertou
+                                      : Colors.redAccent) // Vermelho se errou
+                                  .withOpacity(0.2)
                             : Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selecionada
                               ? (index == _respostaCorretaIndex
-                                  ? Colors.green
-                                  : Colors.redAccent)
+                                    ? Colors.green
+                                    : Colors.redAccent)
                               : Colors.white24,
                           width: 2,
                         ),
@@ -368,12 +367,16 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                         children: [
                           // Letra da alternativa (A, B, C)
                           Text(
-                            '${index == 0 ? 'A' : index == 1 ? 'B' : 'C'})',
+                            '${index == 0
+                                ? 'A'
+                                : index == 1
+                                ? 'B'
+                                : 'C'})',
                             style: TextStyle(
                               color: selecionada
                                   ? (index == _respostaCorretaIndex
-                                      ? Colors.green
-                                      : Colors.redAccent)
+                                        ? Colors.green
+                                        : Colors.redAccent)
                                   : Colors.white54,
                               fontSize: 14,
                               fontFamily: 'PressStart2P',
@@ -387,8 +390,8 @@ class _DesafioBibliotecaScreenState extends State<DesafioBibliotecaScreen>
                               style: TextStyle(
                                 color: selecionada
                                     ? (index == _respostaCorretaIndex
-                                        ? Colors.green
-                                        : Colors.redAccent)
+                                          ? Colors.green
+                                          : Colors.redAccent)
                                     : Colors.white,
                                 fontSize: 12,
                                 fontFamily: 'PressStart2P',
@@ -479,7 +482,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
     );
   }
 
-/////////////////////////////// ANIMAÇÃO FRAGMENTO DE CHAVE ////////////////////
+  /////////////////////////////// ANIMAÇÃO FRAGMENTO DE CHAVE ////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -621,8 +624,11 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_forward,
-                            color: Colors.amber, size: 24),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.amber,
+                          size: 24,
+                        ),
                         SizedBox(width: 10),
                         Text(
                           "CONTINUAR JORNADA",

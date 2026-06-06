@@ -19,6 +19,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
   final ProgressService _progress = ProgressService();
   int? _selectedIndex;
+  bool _errou = false; // ← NOVO
 
   // ⭐ FALAS DO PERSONAGEM (COM REAÇÕES)
   List<FalaConfig> get _falasPersonagemFinal => [
@@ -56,6 +57,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   ];
 
   void _fluxoAcerto() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -95,33 +97,32 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     );
   }
 
+  // ── NOVO: decide acerto ou erro ao tocar uma alternativa ──────────────────
   void _selecionarOpcao(int index) async {
-    if (_travado || _selectedIndex != null) return;
+    const int indexCorreta = 1; // "Algoritmo"
 
-    setState(() => _selectedIndex = index);
-
-    final bool ok = index == 1; // "Algoritmo"
-    if (!ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ERRO... ERRO... ERRO...'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      setState(() => _travado = true);
-      await Future<void>.delayed(const Duration(seconds: 3));
-      if (!mounted) return;
+    if (index == indexCorreta) {
+      setState(() => _selectedIndex = index);
+      _fluxoAcerto();
+    } else {
+      // ← NOVO: marca erro e bloqueia
       setState(() {
-        _travado = false;
-        _selectedIndex = null;
+        _selectedIndex = index;
+        _travado = true;
+        _errou = true;
       });
-      return;
-    }
 
-    // Mostra feedback visual antes de prosseguir
-    await Future<void>.delayed(const Duration(milliseconds: 450));
-    if (!mounted) return;
-    _fluxoAcerto();
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      // ← NOVO: limpa e libera para nova tentativa
+      setState(() {
+        _selectedIndex = null;
+        _travado = false;
+        _errou = false;
+      });
+    }
   }
 
   // NOVO ESTILO DE TELA PARA QUANDO O FRAGMENTO FOR OBTIDO
@@ -386,8 +387,6 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                 // ── Alternativas ────────────────────────────────────────────
                 Expanded(
                   child: Column(
-                    // MUDANÇA 1: alterado de spaceEvenly para start com espaçamento
-                    // fixo entre botões via Padding, deixando as alternativas mais próximas
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: List.generate(_opcoes.length, (i) {
                       final bool selecionada = _selectedIndex == i;
@@ -449,7 +448,6 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                                     ),
                                   ),
                                 ),
-                                // Ícone de resultado
                                 if (selecionada)
                                   Icon(
                                     correta ? Icons.check_circle : Icons.cancel,
@@ -465,22 +463,20 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                   ),
                 ),
 
-                // ── Mensagem de sistema instável ───────────────────────────
-                if (_travado)
+                // ── NOVO: mensagem de erro estática ─────────────────────────
+                if (_errou)
                   const Padding(
-                    padding: EdgeInsets.only(top: 15),
+                    padding: EdgeInsets.only(bottom: 150),
                     child: Text(
-                      'Sistema instável... aguarde.',
+                      'Resposta incorreta! Tente novamente.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.redAccent,
-                        fontSize: 11,
+                        fontSize: 12,
                         fontFamily: 'PressStart2P',
                       ),
                     ),
                   ),
-
-                const SizedBox(height: 15),
               ],
             ),
           ),

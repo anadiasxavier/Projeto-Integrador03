@@ -25,13 +25,13 @@ class BibliotecaScreen extends StatelessWidget {
 
   // Etapa 2: Personagem responde ao guardião
   List<FalaConfig> get _falasPersonagem => [
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Eu só quero sair daqui… Não estou entendendo!',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Você vai me impedir?',
-        ),
-      ];
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Eu só quero sair daqui… Não estou entendendo!',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Você vai me impedir?',
+    ),
+  ];
 
   // Etapa 3: Guardião explica seu papel
   static final List<FalaConfig> _falasGuardiaoResposta = [
@@ -114,7 +114,8 @@ class BibliotecaScreen extends StatelessWidget {
                     const SizedBox(height: 40),
 
                     // Botão para investigar o ambiente e iniciar o fluxo
-                    GestureDetector( // Clica e cmc o fluxo
+                    GestureDetector(
+                      // Clica e cmc o fluxo
                       onTap: () => _iniciarFluxoBiblioteca(context),
                       child: Container(
                         width: 300,
@@ -193,9 +194,10 @@ class BibliotecaScreen extends StatelessWidget {
   // Etapa 1: Guardião aparece e faz sua fala inicial
   Widget _etapa1_GuardiaoFalaInicial() {
     return DialogoComGuardiao(
-      imagemGuardiao: _imagemGuardiao,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
+        imagemGuardiao:
+            _imagemGuardiao, // adiconando a imagem do guardião no balão de fala dele
         falasConfig: _falasGuardiaoInicial,
         exibirReacoes: false,
         instrucaoToque: 'Toque para continuar',
@@ -220,11 +222,12 @@ class BibliotecaScreen extends StatelessWidget {
   // Etapa 3: Guardião responde ao personagem
   Widget _etapa3_GuardiaoResponde() {
     return DialogoComGuardiao(
-      imagemGuardiao: _imagemGuardiao,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/biblioteca.png",
+        imagemGuardiao:
+            _imagemGuardiao, // adiconando a imagem do guardião no balão de fala dele
         falasConfig: _falasGuardiaoResposta,
-        exibirReacoes: false,
+        exibirReacoes: true,
         instrucaoToque: 'Toque para continuar',
         substituirAoAvancarFinal: false,
         proximaTela: _etapa4_LivroCai(),
@@ -244,9 +247,10 @@ class BibliotecaScreen extends StatelessWidget {
       dica: 'Toque em Continuar.',
       exibirNarracaoEmCaixa: true,
       proximaTela: DialogoComGuardiao(
-        imagemGuardiao: _imagemGuardiao,
         personagemScreen: PersonagemScreen(
           imagemFundo: "assets/biblioteca.png",
+          imagemGuardiao:
+              _imagemGuardiao, // adiconando a imagem do guardião no balão de fala dele
           falasConfig: _falasGuardiaoProve,
           exibirReacoes: false,
           instrucaoToque: 'Toque para continuar',
@@ -287,16 +291,16 @@ class _BibliotecaEntrada extends StatelessWidget {
 
   // Falas do personagem ao entrar na biblioteca pela primeira vez
   List<FalaConfig> get _falasEntrada => [
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse lugar parece abandonado...',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Mas tenho a sensação de que não estou sozinho.',
-        ),
-        FalaConfig.personagem(
-          '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso descobrir o que está acontecendo aqui.',
-        ),
-      ];
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Esse lugar parece abandonado...',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Mas tenho a sensação de que não estou sozinho.',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Preciso descobrir o que está acontecendo aqui.',
+    ),
+  ];
 
   // Mostra as falas iniciais
   @override

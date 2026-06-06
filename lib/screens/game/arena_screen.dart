@@ -382,7 +382,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[inquieta]" : "[inquieto]"} Ele… estava me observando?',
     ),
-        FalaConfig.personagem(
+    FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} Por que esse lugar ficou tão frio de repente?',
     ),
     FalaConfig.personagem(
@@ -393,10 +393,14 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
     ),
   ];
 
-  // Falas de erro
-  static final List<FalaConfig> _falasErro = [
-    FalaConfig.personagem('A tela ficou vermelha…'),
-    FalaConfig.personagem('Isso não parece nada bom…'),
+  // Falas de erro - alterado para aparecer as reações do personagem e do guardião na tela
+  static List<FalaConfig> get _falasErro => [
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[surpresa]" : "[surpreso]"} A tela ficou vermelha…',
+    ),
+    FalaConfig.personagem(
+      '${generoJogador == "feminino" ? "[confusa]" : "[confuso]"} Isso não parece nada bom…',
+    ),
     FalaConfig.guardiao('VOCÊ FALHOU NO DESAFIO!'),
     FalaConfig.guardiao('Os jogos nunca perdoam quem erra...'),
     FalaConfig.guardiao('Tente novamente quando estiver pronto.'),
@@ -427,11 +431,12 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DialogoComGuardiao(
-          imagemGuardiao: DesafioArenaScreen._imagemGuardiaoArena,
           personagemScreen: PersonagemScreen(
             imagemFundo: "assets/arena.png",
+            imagemGuardiao: DesafioArenaScreen
+                ._imagemGuardiaoArena, // adiciona a imagem do guardião no balão de fala dele
             falasConfig: _falasGuardiao,
-            exibirReacoes: false,
+            exibirReacoes: true,
             instrucaoToque: 'Toque para continuar',
             substituirAoAvancarFinal: true,
             proximaTela: _segundaEtapa(),
@@ -461,7 +466,11 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
       MaterialPageRoute(
         builder: (_) => PersonagemScreen(
           imagemFundo: "assets/arena.png",
+          imagemGuardiao: DesafioArenaScreen
+              ._imagemGuardiaoArena, // adiciona a imagem do guardião no balão de fala dele
           falasConfig: _falasErro,
+          exibirReacoes:
+              true, // exibe as reações do personagem para as falas de erro
           instrucaoToque: 'Tente novamente',
           substituirAoAvancarFinal: false,
           proximaTela: const DesafioArenaScreen(),
@@ -483,8 +492,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-        ],
+        actions: [],
       ),
       body: Container(
         decoration: const BoxDecoration(

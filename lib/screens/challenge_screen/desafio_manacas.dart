@@ -12,7 +12,8 @@ import '../../widgets/dialogo_com_guardiao.dart';
 class DesafioManacasScreen extends StatefulWidget {
   const DesafioManacasScreen({super.key});
 
-  static const String _imagemGuardiaoManacas = 'assets/guardiao/manacasguardiao.png';
+  static const String _imagemGuardiaoManacas =
+      'assets/guardiao/manacasguardiao.png';
 
   @override
   State<DesafioManacasScreen> createState() => _DesafioManacasScreenState();
@@ -47,6 +48,8 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
   Widget _dialogo(List<FalaConfig> falas) {
     return PersonagemScreen(
       imagemFundo: "assets/manacas.png",
+      imagemGuardiao:
+          'assets/guardiao/manacasguardiao.png', // Adiciona a imagem do guardião no balão de fala dele
       falasConfig: falas,
       exibirReacoes: true,
       instrucaoToque: 'Toque para continuar',
@@ -153,9 +156,10 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => DialogoComGuardiao(
-          imagemGuardiao: DesafioManacasScreen._imagemGuardiaoManacas,
           personagemScreen: PersonagemScreen(
             imagemFundo: "assets/manacas.png",
+            imagemGuardiao: DesafioManacasScreen
+                ._imagemGuardiaoManacas, // Adiciona a imagem do guardião no balão de fala dele
             falasConfig: _falasGuardiao,
             exibirReacoes: false,
             instrucaoToque: 'Toque para continuar',
@@ -174,9 +178,7 @@ class _DesafioManacasScreenState extends State<DesafioManacasScreen> {
         title: const Text("Jogo do Guardião - Manacas"),
         backgroundColor: const Color.fromARGB(255, 0, 19, 48),
         foregroundColor: Colors.white,
-        actions: [
-
-        ],
+        actions: [],
       ),
       body: Background(
         imagem: "assets/manacas.png",

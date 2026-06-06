@@ -294,9 +294,10 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 5: Guardião responde
   Widget _etapaGuardiaoResponde() {
     return DialogoComGuardiao(
-      imagemGuardiao: _imagemGuardiaoPraca,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/praca.png",
+        imagemGuardiao:
+            _imagemGuardiaoPraca, // adiciona a imagem do guardião no balão de fala dele
         falasConfig: _falasGuardiao1,
         exibirReacoes: false,
         instrucaoToque: 'Toque para continuar',
@@ -349,9 +350,10 @@ class PracaAlimentacaoScreen extends StatelessWidget {
   // ETAPA 8: Guardião instrui sobre o desafio
   Widget _etapaInstrucaoDesafio() {
     return DialogoComGuardiao(
-      imagemGuardiao: _imagemGuardiaoPraca,
       personagemScreen: PersonagemScreen(
         imagemFundo: "assets/praca.png",
+        imagemGuardiao:
+            _imagemGuardiaoPraca, // adiciona a imagem do guardião no balão de fala dele
         falasConfig: _falasGuardiaoDesafio,
         exibirReacoes: false,
         instrucaoToque: 'Toque para continuar',
