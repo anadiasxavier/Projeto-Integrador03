@@ -37,15 +37,15 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   // COORDENADAS DOS LOCAIS
   static const Map<String, Map<String, double>> locais = {
     //"Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Biblioteca": {"lat": -23.02432, "lng": -46.850458},
     //"Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Manacas": {"lat": -23.02432, "lng": -46.850458},
     //"Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Mescla": {"lat": -23.02432, "lng": -46.850458},
     //"Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Praça": {"lat": -23.02432, "lng": -46.850458},
     //"Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
+    "Arena": {"lat": -23.02432, "lng": -46.850458},
   };
 
   // COORDENADAS REAIS (PUC)

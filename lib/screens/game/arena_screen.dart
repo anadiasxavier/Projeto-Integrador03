@@ -157,7 +157,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
         widget.nomeSala,
         novasChaves: [],
       );
-      await _progress.removerChave(raJogador, 'Arena'); 
+      await _progress.removerChave(raJogador, 'Arena');
       print('Progresso salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso: $e');
@@ -434,8 +434,7 @@ class _DesafioArenaScreenState extends State<DesafioArenaScreen> {
         builder: (context) => DialogoComGuardiao(
           personagemScreen: PersonagemScreen(
             imagemFundo: "assets/arena.png",
-            imagemGuardiao: DesafioArenaScreen
-                ._imagemGuardiaoArena, 
+            imagemGuardiao: DesafioArenaScreen._imagemGuardiaoArena,
             falasConfig: _falasGuardiao,
             exibirReacoes: true,
             instrucaoToque: 'Toque para continuar',
