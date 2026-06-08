@@ -21,10 +21,12 @@ class FinalScreen extends StatelessWidget {
 
   // Falas de todos os guardiões (uma única sequência)
   final String _falasTodosGuardioes =
-      "Você enfrentou a escuridão, venceu seus medos "
+      "Você enfrentou a escuridão, venceu seus medos"
       "e restaurou o que estava perdido. "
-      "As chaves abriram mais do que portas... "
-      "revelaram sua coragem. "
+      "Coisa que nós não conseguimos fazer e ficamos presos aqui."
+      "Nós eramos alunos e não conseguimos escapar, mas você conseguiu. "
+      "As chaves abriram mais do que portas pra você... "
+      "revelaram sua coragem! "
       "Seu caminho está livre. Siga em frente.";
 
   void _mostrarDialogoGuardioes(BuildContext context) {
