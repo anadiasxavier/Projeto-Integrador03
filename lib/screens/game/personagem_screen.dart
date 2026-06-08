@@ -40,7 +40,7 @@ class PersonagemScreen extends StatefulWidget {
 class _PersonagemScreenState extends State<PersonagemScreen> {
   int indice = 0; // começa em 0 e vai avançando conforme o jogador toca na tela
 
-  // traduz a tag para o nome do arquivo:
+  // 3.traduz a tag para o nome do arquivo:
   static const Map<String, String> _reactionAssetNames = {
     'confuso': 'Confuso',
     'confusa': 'Confusa',
@@ -161,14 +161,14 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     return Colors.cyan;
   }
 
-  // Mostra só o texto sem a tag, e a tag vira o nome de um asset de imagem.
+  // 2.Mostra só o texto sem a tag, e a tag vira o nome de um asset de imagem.
   String _dialogText(int index) {
     if (_falas.isEmpty) return '';
     if (!_showReactions) return _falas[index];
     return _parseFala(_falas[index]).key;
   }
 
-  // usa uma regex para extrair uma tag, se encontrar, separa a reação do texto real
+  // 1. Usa uma regex para extrair uma tag, se encontrar, separa a reação do texto real
   MapEntry<String, String> _parseFala(String fala) {
     final match = RegExp(r'^\s*\[([^\]]+)\]\s*(.*)').firstMatch(fala);
     if (match != null) {

@@ -42,18 +42,18 @@ class StartScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
                       GestureDetector(
-                      onTap: () async {
-                        await AudioService.instance.playBackgroundMusic(
-                          'audio/arena.mp3',
-                        );
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ),
-                        );
-                      },
+                        onTap: () async {
+                          await AudioService.instance.playBackgroundMusic(
+                            'audio/arena.mp3',
+                          );
+                          // Tela de Cadastro
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
                         child: SizedBox(
                           width: buttonWidth,
                           child: Container(
@@ -119,7 +119,7 @@ class StartScreen extends StatelessWidget {
                           await AudioService.instance.playBackgroundMusic(
                             'audio/arena.mp3',
                           );
-
+                          // Tela de Login
                           Navigator.push(
                             context,
                             MaterialPageRoute(

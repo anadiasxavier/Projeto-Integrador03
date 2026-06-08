@@ -102,6 +102,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
   void _verificarFimDeJogo() {
     if (!mounted) return;
 
+    // QUANDO TODAS AS SALAS FOREM CONCLUÍDAS VAI PARA FINALSCREEN
     if (salasConcluidas.length >= 5) {
       Navigator.pushAndRemoveUntil(
         context,

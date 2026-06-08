@@ -135,6 +135,7 @@ class FinalScreen extends StatelessWidget {
     );
   }
 
+  // CONTINUAR PARA IR PARA TELA FINAL DE VITÓRIA
   void _continuarParaPersonagem(BuildContext context) {
     Navigator.pushReplacement(
       context,
