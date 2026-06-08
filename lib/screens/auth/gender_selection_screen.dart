@@ -7,21 +7,14 @@ import '../game/intro_screen.dart';
 class GenderSelectionScreen extends StatefulWidget {
   final String ra;
 
-  const GenderSelectionScreen({
-    super.key,
-    required this.ra,
-  });
+  const GenderSelectionScreen({super.key, required this.ra});
 
   @override
-  _GenderSelectionScreenState createState() =>
-      _GenderSelectionScreenState();
+  _GenderSelectionScreenState createState() => _GenderSelectionScreenState();
 }
 
-class _GenderSelectionScreenState
-    extends State<GenderSelectionScreen> {
-
-  final _firestoreService =
-      FirestoreService();
+class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
+  final _firestoreService = FirestoreService();
 
   String _genero = 'masculino'; // Atualiza a variável
   String _nome = '';
@@ -33,10 +26,7 @@ class _GenderSelectionScreenState
   }
 
   void _loadPlayerData() async {
-    var data =
-        await _firestoreService.getPlayerByRA(
-      widget.ra,
-    );
+    var data = await _firestoreService.getPlayerByRA(widget.ra);
 
     if (data != null) {
       setState(() {
@@ -48,12 +38,7 @@ class _GenderSelectionScreenState
   // Salvar o gênero
   void _saveGender() async {
     // Salva o gênero no Firebase pra não perguntar de novo
-    await _firestoreService.updatePlayerData(
-      widget.ra,
-      {
-        'genero': _genero,
-      },
-    );
+    await _firestoreService.updatePlayerData(widget.ra, {'genero': _genero});
 
     // Preenche as variáveis globais do main.dart
     main_app.generoJogador = _genero;
@@ -62,10 +47,7 @@ class _GenderSelectionScreenState
     // Abre a IntroScreen para começar o jogo
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) =>
-            const IntroScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const IntroScreen()),
     );
   }
 
@@ -75,39 +57,25 @@ class _GenderSelectionScreenState
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              "assets/puc.png",
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset("assets/puc.png", fit: BoxFit.cover),
           ),
 
           Positioned.fill(
-            child: Container(
-              color:
-                  Colors.black.withOpacity(0.7),
-            ),
+            child: Container(color: Colors.black.withOpacity(0.7)),
           ),
 
           Center(
             child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
 
               children: [
                 Text(
                   "Bem-vindo, $_nome!",
                   style: const TextStyle(
                     fontSize: 24,
-                    fontWeight:
-                        FontWeight.bold,
-                    fontFamily:
-                        'PressStart2P',
-                    color: Color.fromARGB(
-                      255,
-                      255,
-                      213,
-                      0,
-                    ),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PressStart2P',
+                    color: Color.fromARGB(255, 255, 213, 0),
                   ),
                 ),
 
@@ -115,46 +83,32 @@ class _GenderSelectionScreenState
 
                 const Text(
                   "Escolha o sexo do seu personagem:",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
 
                 const SizedBox(height: 20),
 
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
 
                   children: [
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _genero =
-                              'masculino'; // Atualiza a variável
+                          _genero = 'masculino'; // Atualiza a variável
                         });
                       },
 
                       child: Container(
-                        padding:
-                            const EdgeInsets.all(
-                          16,
-                        ),
+                        padding: const EdgeInsets.all(16),
 
-                        decoration: // O botão selecionado fica colorido 
-                            BoxDecoration(
-                          color: _genero ==
-                                  'masculino'
+                        decoration: // O botão selecionado fica colorido
+                        BoxDecoration(
+                          color: _genero == 'masculino'
                               ? Colors.blue
-                              : Colors.white
-                                  .withOpacity(
-                                  0.1,
-                                ),
+                              : Colors.white.withOpacity(0.1),
 
-                          borderRadius:
-                              BorderRadius
-                                  .circular(16),
+                          borderRadius: BorderRadius.circular(16),
                         ),
 
                         child: Column(
@@ -167,10 +121,7 @@ class _GenderSelectionScreenState
 
                             const Text(
                               "Masculino",
-                              style: TextStyle(
-                                color:
-                                    Colors.white,
-                              ),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
@@ -182,31 +133,20 @@ class _GenderSelectionScreenState
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _genero =
-                              'feminino'; // Atualiza gênero
+                          _genero = 'feminino'; // Atualiza gênero
                         });
                       },
 
                       child: Container(
-                        padding:
-                            const EdgeInsets.all(
-                          16,
-                        ),
+                        padding: const EdgeInsets.all(16),
 
-                        decoration:
-                            BoxDecoration(
-                          // O botão selecionado fica colorido 
-                          color: _genero ==
-                                  'feminino'
+                        decoration: BoxDecoration(
+                          // O botão selecionado fica colorido
+                          color: _genero == 'feminino'
                               ? Colors.pink
-                              : Colors.white
-                                  .withOpacity(
-                                  0.1,
-                                ),
+                              : Colors.white.withOpacity(0.1),
 
-                          borderRadius:
-                              BorderRadius
-                                  .circular(16),
+                          borderRadius: BorderRadius.circular(16),
                         ),
 
                         child: Column(
@@ -219,10 +159,7 @@ class _GenderSelectionScreenState
 
                             const Text(
                               "Feminino",
-                              style: TextStyle(
-                                color:
-                                    Colors.white,
-                              ),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
@@ -236,22 +173,13 @@ class _GenderSelectionScreenState
                 ElevatedButton(
                   onPressed: _saveGender,
 
-                  style:
-                      ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color.fromARGB(
-                      255,
-                      255,
-                      213,
-                      0,
-                    ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 213, 0),
                   ),
 
                   child: const Text(
                     'Começar Aventura',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ],

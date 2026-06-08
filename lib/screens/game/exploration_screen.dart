@@ -36,16 +36,11 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
 
   // COORDENADAS DOS LOCAIS
   static const Map<String, Map<String, double>> locais = {
-    //"Biblioteca": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Biblioteca": {"lat": -23.02432, "lng": -46.850458},
-    //"Manacas": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Manacas": {"lat": -23.02432, "lng": -46.850458},
-    //"Mescla": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Mescla": {"lat": -23.02432, "lng": -46.850458},
-    //"Praça": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Praça": {"lat": -23.02432, "lng": -46.850458},
-    //"Arena": {"lat": -23.021627474078784, "lng": -46.82875430902276},
-    "Arena": {"lat": -23.02432, "lng": -46.850458},
+    "Biblioteca": {"lat": -22.8338, "lng": -47.051930},
+    "Manacás": {"lat": -22.8323, "lng": -47.05144},
+    "Mescla": {"lat": -22.833947164313, "lng": -47.051908251893266},
+    "Praça": {"lat": -22.833181245096416, "lng": -47.05207601711004},
+    "Arena": {"lat": -22.834067861489412, "lng": -47.052351861193955},
   };
 
   // COORDENADAS REAIS (PUC)
@@ -66,7 +61,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     carregarProgresso();
   }
 
-  // CARREGAMENTO DE DADOS
+  // CARREGAMENTO DE DADOS de localização e progresso
   void carregarLocalizacao() async {
     try {
       Position pos = await LocationService.getCurrentLocation();
@@ -80,6 +75,7 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     }
   }
 
+  //carrega as salas concluídas e chaves
   void carregarProgresso() async {
     // 1. Carrega do cache local imediatamente (sem esperar rede)
     final local = await _progress.carregarLocal(raJogador);
@@ -135,12 +131,13 @@ class _ExplorationScreenState extends State<ExplorationScreen> {
     return Geolocator.distanceBetween(pos.latitude, pos.longitude, lat, lng);
   }
 
+  //  verificar se o jogador pode entrar num ambiente
   Future<bool> estaPerto(String lugar) async {
     final distancia = await distanciaAte(lugar);
     return distancia <= _raioAcessoMetros;
   }
 
-  // BUILD PRINCIPAL
+  // BUILD PRINCIPAL FRONT
   @override
   Widget build(BuildContext context) {
     return Scaffold(

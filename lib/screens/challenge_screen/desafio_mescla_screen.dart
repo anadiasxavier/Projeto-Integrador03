@@ -1,4 +1,3 @@
-// lib/screens/challenge_screen/desafio_mescla_screen.dart
 import 'package:flutter/material.dart';
 
 import '../../widgets/background.dart';
@@ -19,9 +18,9 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   bool _travado = false;
   final ProgressService _progress = ProgressService();
   int? _selectedIndex;
-  bool _errou = false; // ← NOVO
+  bool _errou = false;
 
-  // ⭐ FALAS DO PERSONAGEM (COM REAÇÕES)
+  // FALAS DO PERSONAGEM DEPOIS DE CONCLUIR O DESAFIO DO MESCLA
   List<FalaConfig> get _falasPersonagemFinal => [
     FalaConfig.personagem(
       '${generoJogador == "feminino" ? "[feliz]" : "[feliz]"} Funcionou!',
@@ -56,6 +55,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     'Programa',
   ];
 
+  // SE ELE ACERTAR A ALTERNATIVA
   void _fluxoAcerto() async {
     await Future.delayed(const Duration(milliseconds: 500));
     await Navigator.push(
@@ -76,12 +76,11 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   // Função que salva o progresso localmente e no Firestore
   Future<void> _salvarProgressoERetornar() async {
     try {
-      await _progress.marcarSalaConcluida(
+      await _progress.marcarSalaConcluida(raJogador, 'Mescla', novasChaves: []);
+      await _progress.removerChave(
         raJogador,
         'Mescla',
-        novasChaves: [],
-      );
-      await _progress.removerChave(raJogador, 'Mescla'); // ← Remove a chave após concluir
+      ); // ← Remove a chave após concluir
       print('Progresso do Mescla salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso do Mescla: $e');
@@ -102,15 +101,17 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     );
   }
 
-  // ── NOVO: decide acerto ou erro ao tocar uma alternativa ──────────────────
+  // ───── Decide acerto ou erro ao tocar uma alternativa ────────
   void _selecionarOpcao(int index) async {
     const int indexCorreta = 1; // "Algoritmo"
 
     if (index == indexCorreta) {
+      // acertou alternativa então vai seguir o fluxo de acerto
       setState(() => _selectedIndex = index);
       _fluxoAcerto();
     } else {
-      // ← NOVO: marca erro e bloqueia
+      // errou alternativa
+      //marca erro e bloqueia
       setState(() {
         _selectedIndex = index;
         _travado = true;
@@ -121,7 +122,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
 
       if (!mounted) return;
 
-      // ← NOVO: limpa e libera para nova tentativa
+      // limpa e libera para nova tentativa
       setState(() {
         _selectedIndex = null;
         _travado = false;
@@ -130,7 +131,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
     }
   }
 
-  // NOVO ESTILO DE TELA PARA QUANDO O FRAGMENTO FOR OBTIDO
+  // FRAGMENTO DE CHAVE FOR OBTIDO
   Widget _telaFragmentoObtido() {
     return Scaffold(
       appBar: AppBar(
@@ -337,7 +338,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
-                        // MUDANÇA 2: centraliza os textos PROCESSO INICIADO / ANÁLISE NECESSÁRIA
+                        // Centraliza os textos PROCESSO INICIADO / ANÁLISE NECESSÁRIA
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: _linhasSistema
                             .map(
@@ -376,7 +377,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                   ),
                   child: Text(
                     _charada,
-                    // MUDANÇA 3: justifica o texto da charada para eliminar o alinhamento torto
+                    // Justifica o texto da charada para eliminar o alinhamento torto
                     textAlign: TextAlign.justify,
                     style: const TextStyle(
                       color: Colors.white,
@@ -386,7 +387,6 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
 
                 // ── Alternativas ────────────────────────────────────────────
@@ -410,7 +410,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                       final String letra = ['A', 'B', 'C', 'D'][i];
 
                       return Padding(
-                        // MUDANÇA 1: espaçamento fixo de 10px entre cada alternativa
+                        // Espaçamento fixo de 10px entre cada alternativa
                         padding: const EdgeInsets.only(
                           bottom: 10,
                         ), // espaço entre as alternativas
@@ -468,7 +468,7 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
                   ),
                 ),
 
-                // ── NOVO: mensagem de erro estática ─────────────────────────
+                // ── Mensagem de erro estática ─────────────────────────
                 if (_errou)
                   const Padding(
                     padding: EdgeInsets.only(bottom: 150),

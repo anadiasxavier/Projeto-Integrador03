@@ -1,8 +1,10 @@
 // lib/services/progress_service.dart
 
 // Salva progresso do jogador
-// SharedPreferences → salva no próprio celular, funciona sem internet
-// Firestore → salva na nuvem, sincroniza entre dispositivos
+// Há 2 camadas de consistência:
+// Camada local = SharedPreferences → salva no próprio celular, funciona sem internet, A chave é prefixada com o RA do jogador
+// p/não misturar dados de usuários diferentes no mesmo dispositivo.
+// Camada remota (Firestore) → salva na nuvem, sincroniza entre dispositivos
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,10 +32,12 @@ class ProgressService {
     final salasJson = prefs.getString(_keySalas(ra));
     return {
       // Se não tiver nada salvo, retorna lista vazia
-      'chaves':
-          chavesJson != null ? List<String>.from(jsonDecode(chavesJson)) : [],
-      'salasConcluidas':
-          salasJson != null ? List<String>.from(jsonDecode(salasJson)) : [],
+      'chaves': chavesJson != null
+          ? List<String>.from(jsonDecode(chavesJson))
+          : [],
+      'salasConcluidas': salasJson != null
+          ? List<String>.from(jsonDecode(salasJson))
+          : [],
     };
   }
 
@@ -46,7 +50,7 @@ class ProgressService {
     List<String> salasConcluidas,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    // Converte as listas para JSON e salva no celular
+    // Converte as listas para JSON e salva no celular (shared_preferences)
     await prefs.setString(_keyChaves(ra), jsonEncode(chaves));
     await prefs.setString(_keySalas(ra), jsonEncode(salasConcluidas));
   }
@@ -87,12 +91,12 @@ class ProgressService {
 
     // Adiciona a sala na lista de concluídas (se ainda não estiver)
     if (!salas.contains(sala)) salas.add(sala);
-    
+
     // Adiciona as novas chaves (se ainda não tiver)
     for (final chave in novasChaves) {
       if (!chaves.contains(chave)) chaves.add(chave);
     }
-    
+
     // Salva no cache local
     await salvarLocal(ra, chaves, salas);
 
@@ -103,7 +107,7 @@ class ProgressService {
     if (novasChaves.isNotEmpty) {
       dados['chaves'] = FieldValue.arrayUnion(novasChaves);
     }
-    
+
     // Envia para Firestore
     await _firestore.updatePlayerData(ra, dados);
   }
@@ -140,8 +144,7 @@ class ProgressService {
   Future<bool> temProgressoLocal(String ra) async {
     final local = await carregarLocal(ra);
     // Retorna true se o jogador já completou alguma sala ou tem alguma chave
-    return local['salasConcluidas']!.isNotEmpty ||
-        local['chaves']!.isNotEmpty;
+    return local['salasConcluidas']!.isNotEmpty || local['chaves']!.isNotEmpty;
   }
 
   // ---------------------------------------------------------------------------

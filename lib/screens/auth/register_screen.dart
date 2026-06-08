@@ -26,11 +26,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _confirmarSenha = '';
 
   void _register() async {
+    // valida o formulário (dispara as validações de cada campo)
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-     // onSaved -> Pega o que o usuário digitou e copia para a variável
+     // onSaved -> Pega o que o usuário digitou e copia para preencher as variáveis
     _formKey.currentState!.save(); // dispara os onSaved de cada campo
 
     setState(() {
@@ -39,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
 
-      // Verificação de senha
+      // Verifica se as senhas coincidem
       if (_senha != _confirmarSenha) {
         throw StateError('As senhas não coincidem');
       }

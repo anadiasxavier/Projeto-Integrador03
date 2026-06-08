@@ -96,10 +96,9 @@ class MesclaScreen extends StatelessWidget {
                     fontFamily: 'PressStart2P',
                   ),
                 ),
-
                 const SizedBox(height: 15),
 
-                // DESCRIÇÃO
+                // DESCRIÇÃO DO AMBIENTE
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 30),
                   padding: const EdgeInsets.all(15),
@@ -121,10 +120,9 @@ class MesclaScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
 
-                // BOTÃO EXPLORAR
+                // BOTÃO EXPLORAR MESCLA
                 GestureDetector(
                   onTap: () => _iniciarFluxo(context),
                   child: Container(
@@ -166,7 +164,6 @@ class MesclaScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
               ],
             ),
@@ -176,15 +173,18 @@ class MesclaScreen extends StatelessWidget {
     );
   }
 
+  // Quando o botão "EXPLORAR MESCLA" for pressionado, vai para a tela personagem_screen
   void _iniciarFluxo(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PersonagemScreen(
+          // vai para personagem_screen, mas com as falas do Mescla
           imagemFundo: "assets/mescla.png",
           imagemGuardiao: 'assets/guardiao_mescla.png',
-          falasConfig: _falasMescla, // 👈 Mudou para falasConfig
-          exibirReacoes: true,
+          falasConfig:
+              _falasMescla, // lista das falas iniciais antes do desafio, definidas como objetos de falaconfig
+          exibirReacoes: true, // permite exibir reações do personagem
           instrucaoToque: 'Toque para continuar',
           substituirAoAvancarFinal: false,
           proximaTela: const MesclaPuzzleScreen(),

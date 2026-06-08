@@ -29,6 +29,7 @@ class FirestoreService {
   }
 
   // Atualiza dados do jogador
+  // Usado para salvar progresso, adicionar chaves e salas concluídas.
   Future<void> updatePlayerData(String uid, Map<String, dynamic> data) async {
     await _db.collection('players').doc(uid).update(data);
   }

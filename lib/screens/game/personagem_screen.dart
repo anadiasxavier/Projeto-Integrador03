@@ -1,9 +1,12 @@
-// lib/screens/game/personagem_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/background.dart';
 import '../../main.dart';
 import '../../models/entidade_dialogo.dart';
 
+// Tela central que exibe os diálogos de qualquer ambiente
+// é um "leitor de falas" genérico
+// imagem de fundo, imagem do personagem e imagem do guardião
+// quem está falando e o que aparece na imagem grande
 class PersonagemScreen extends StatefulWidget {
   final Widget? proximaTela;
   final String imagemFundo;
@@ -30,9 +33,14 @@ class PersonagemScreen extends StatefulWidget {
   State<PersonagemScreen> createState() => _PersonagemScreenState();
 }
 
+// Para as reações do personagem, a lógica é: as falas do personagem podem ter uma tag no começo como [surpreso]
+// A tela separa essa tag do texto real
+// A tag vira o nome de uma imagem — por exemplo [surpreso] vira assets/reactions/Masculino_Surpreso.png
+// Essa imagem é colocada no canto direito da tela e o texto exibido no balão é o que sobrou depois de remover a tag.
 class _PersonagemScreenState extends State<PersonagemScreen> {
-  int indice = 0;
+  int indice = 0; // começa em 0 e vai avançando conforme o jogador toca na tela
 
+  // traduz a tag para o nome do arquivo:
   static const Map<String, String> _reactionAssetNames = {
     'confuso': 'Confuso',
     'confusa': 'Confusa',
@@ -56,7 +64,6 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     if (widget.falasCustom != null && widget.falasCustom!.isNotEmpty) {
       return widget.falasCustom!;
     }
-
     return [];
   }
 
@@ -154,12 +161,14 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     return Colors.cyan;
   }
 
+  // Mostra só o texto sem a tag, e a tag vira o nome de um asset de imagem.
   String _dialogText(int index) {
     if (_falas.isEmpty) return '';
     if (!_showReactions) return _falas[index];
     return _parseFala(_falas[index]).key;
   }
 
+  // usa uma regex para extrair uma tag, se encontrar, separa a reação do texto real
   MapEntry<String, String> _parseFala(String fala) {
     final match = RegExp(r'^\s*\[([^\]]+)\]\s*(.*)').firstMatch(fala);
     if (match != null) {
@@ -178,6 +187,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
     return parsed.value;
   }
 
+  //  monta o caminho completo
   String _reactionAssetPath(String reaction) {
     if (reaction.isEmpty || !_reactionAssetNames.containsKey(reaction)) {
       return _defaultCharacterImage();
@@ -276,7 +286,7 @@ class _PersonagemScreenState extends State<PersonagemScreen> {
             if (imagemFundo != null)
               Positioned(
                 bottom: 95,
-                right: -95, // lado que o guradião fica na tela
+                right: -95, // lado que o guardião fica na tela
                 child: Transform.rotate(
                   angle: -0.04,
                   child: Container(

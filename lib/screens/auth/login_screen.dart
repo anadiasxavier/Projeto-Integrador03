@@ -14,8 +14,13 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+// Quando o jogador clica em "Continurar Jogo" vem pra cá
 class _LoginScreenState extends State<LoginScreen> {
+
+  // valida o formulário
   final _formKey = GlobalKey<FormState>();
+
+  // Conexão com o Firebase
   final _firestoreService = FirestoreService();
 
   String _ra = '';
@@ -31,15 +36,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Verifica se o RA e senha estão corretos
       if (playerData != null && playerData['senha'] == _senha) {
+
         // Preenche as variáveis globais do main.dart
         main_app.nomeJogador = playerData['nome'];
 
+      
         main_app.generoJogador = playerData['genero'] ?? 'masculino';
 
         main_app.raJogador = _ra;
 
         String genero = playerData['genero'] ?? '';
-
         if (genero.isEmpty) {
           Navigator.pushReplacement(
             context,
