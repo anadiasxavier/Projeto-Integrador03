@@ -1,3 +1,4 @@
+// lib/screens/challenge_screen/desafio_manacas_screen.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
 
@@ -257,6 +258,8 @@ class _RecompensaManacasScreenState extends State<RecompensaManacasScreen> {
   Future<void> _salvarProgressoERetornar() async {
     try {
       await _progress.marcarSalaConcluida(raJogador, 'Manacas');
+      await _progress.removerChave(raJogador, 'Manacas'); // ← Remove a chave após concluir
+      print('Progresso salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso: $e');
     }

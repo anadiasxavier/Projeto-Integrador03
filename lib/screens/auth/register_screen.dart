@@ -57,13 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'ra': _ra,
         'senha': _senha,
         'genero': '',
-        'nivel': 1,
-        'experiencia': 0,
-
-        'localAtual': 'Biblioteca',
-
         'chaves': [],
-
         'salasConcluidas': [],
       });
       

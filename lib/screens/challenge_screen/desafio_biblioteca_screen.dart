@@ -464,7 +464,7 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
         raJogador,
         widget.nomeSala,
         // Chaves que libera
-        novasChaves: ['Manacás', 'Mescla', 'Praça', 'Arena'],
+        novasChaves: ['Manacas', 'Mescla', 'Praça', 'Arena'],
       );
       print('Progresso salvo com sucesso!');
     } catch (e) {

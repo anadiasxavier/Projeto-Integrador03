@@ -26,8 +26,9 @@ class _RecompensaScreenState extends State<_RecompensaScreen> {
       await _progress.marcarSalaConcluida(
         raJogador,
         widget.nomeSala,
-        novasChaves: ['Manacás', 'Mescla', 'Arena'],
+        novasChaves: [],
       );
+      await _progress.removerChave(raJogador, 'Praça'); // ← Remove a chave após concluir
       print('Progresso salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso: $e');

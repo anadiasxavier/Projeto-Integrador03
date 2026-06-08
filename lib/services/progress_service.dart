@@ -1,5 +1,6 @@
-// Salva progresso do jogador
+// lib/services/progress_service.dart
 
+// Salva progresso do jogador
 // SharedPreferences → salva no próprio celular, funciona sem internet
 // Firestore → salva na nuvem, sincroniza entre dispositivos
 
@@ -45,14 +46,14 @@ class ProgressService {
     List<String> salasConcluidas,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    // Converte as listas para JSON e salva no celular.
+    // Converte as listas para JSON e salva no celular
     await prefs.setString(_keyChaves(ra), jsonEncode(chaves));
     await prefs.setString(_keySalas(ra), jsonEncode(salasConcluidas));
   }
 
   // ---------------------------------------------------------------------------
-  // Sincroniza com o Firestore e atualiza o cache local.
-  // Retorna os dados do Firestore ou null em caso de falha.
+  // Sincroniza com o Firestore e atualiza o cache local
+  // Retorna os dados do Firestore ou null em caso de falha
   // ---------------------------------------------------------------------------
   Future<Map<String, List<String>>?> sincronizarFirestore(String ra) async {
     try {
@@ -79,25 +80,58 @@ class ProgressService {
     String sala, {
     List<String> novasChaves = const [],
   }) async {
-    // Atualiza cache local
+    // Carrega dados atuais
     final local = await carregarLocal(ra);
     final chaves = local['chaves']!;
     final salas = local['salasConcluidas']!;
 
+    // Adiciona a sala na lista de concluídas (se ainda não estiver)
     if (!salas.contains(sala)) salas.add(sala);
+    
+    // Adiciona as novas chaves (se ainda não tiver)
     for (final chave in novasChaves) {
       if (!chaves.contains(chave)) chaves.add(chave);
     }
+    
+    // Salva no cache local
     await salvarLocal(ra, chaves, salas);
 
-    // Envia para Firestore
+    // Prepara dados para enviar ao Firestore
     final Map<String, dynamic> dados = {
       'salasConcluidas': FieldValue.arrayUnion([sala]),
     };
     if (novasChaves.isNotEmpty) {
       dados['chaves'] = FieldValue.arrayUnion(novasChaves);
     }
+    
+    // Envia para Firestore
     await _firestore.updatePlayerData(ra, dados);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Remove uma chave específica do jogador (quando completa o ambiente)
+  // ---------------------------------------------------------------------------
+  Future<void> removerChave(String ra, String chave) async {
+    // Carrega dados atuais
+    final local = await carregarLocal(ra);
+    final chaves = local['chaves']!;
+    final salas = local['salasConcluidas']!;
+
+    // Remove a chave da lista (se existir)
+    chaves.remove(chave);
+
+    // Salva no cache local com a lista atualizada
+    await salvarLocal(ra, chaves, salas);
+
+    // Remove a chave do Firestore
+    try {
+      await _firestore.updatePlayerData(ra, {
+        'chaves': FieldValue.arrayRemove([chave]),
+      });
+    } catch (e) {
+      // Se falhar no Firestore, o cache local já foi atualizado
+      print('Erro ao remover chave do Firestore: $e');
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -114,7 +148,7 @@ class ProgressService {
   // Limpa o cache local (usado no logout ou reset)
   // ---------------------------------------------------------------------------
   Future<void> limparLocal(String ra) async {
-    // Usado no logout ou reset — apaga só o cache local, não o Firebase
+    // Apaga só o cache local, não o Firebase
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyChaves(ra));
     await prefs.remove(_keySalas(ra));

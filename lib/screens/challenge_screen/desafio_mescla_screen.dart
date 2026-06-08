@@ -76,7 +76,12 @@ class _MesclaPuzzleScreenState extends State<MesclaPuzzleScreen> {
   // Função que salva o progresso localmente e no Firestore
   Future<void> _salvarProgressoERetornar() async {
     try {
-      await _progress.marcarSalaConcluida(raJogador, 'Mescla');
+      await _progress.marcarSalaConcluida(
+        raJogador,
+        'Mescla',
+        novasChaves: [],
+      );
+      await _progress.removerChave(raJogador, 'Mescla'); // ← Remove a chave após concluir
       print('Progresso do Mescla salvo com sucesso!');
     } catch (e) {
       print('Erro ao salvar progresso do Mescla: $e');
